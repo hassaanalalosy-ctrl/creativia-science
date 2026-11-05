@@ -1,0 +1,129 @@
+{
+  "license": "Pixabay Content License",
+  "use": {
+    "whoosh": "scene transitions",
+    "pop": "element appears",
+    "click": "button/press",
+    "typing": "words appearing (short bursts only)",
+    "sparkle": "glow, magic moment",
+    "riser": "build-up before a reveal",
+    "soft-impact": "reveal landing",
+    "ding": "tip/idea moment",
+    "notification": "chip or badge appears",
+    "ui": "small UI motion",
+    "camera": "photo/image reveal",
+    "tick": "countdown/time topics",
+    "tension": "dramatic story hook",
+    "applause": "winners/awards"
+  },
+  "tracks": [
+    {
+      "file": "freesound_community-ding-80828.mp3",
+      "role": "ding",
+      "duration": 1.18,
+      "onset": 0.082
+    },
+    {
+      "file": "soundshelfstudio-ui-error-pop-515668.mp3",
+      "role": "pop",
+      "duration": 1.23,
+      "onset": 0.027
+    },
+    {
+      "file": "universfield-soft-bell-ding-485895.mp3",
+      "role": "ding",
+      "duration": 2.06,
+      "onset": 0.076
+    },
+    {
+      "file": "freeeverythingxx-object-fall-soft-275694.mp3",
+      "role": "soft-impact",
+      "duration": 2.12,
+      "onset": 0.477
+    },
+    {
+      "file": "universfield-new-notification-017-352293.mp3",
+      "role": "notification",
+      "duration": 1.94,
+      "onset": 0.081
+    },
+    {
+      "file": "asproductionmusic-whoosh-1-588295.mp3",
+      "role": "whoosh",
+      "duration": 1.88,
+      "onset": 0.069
+    },
+    {
+      "file": "47313572-ui-pop-sound-316482.mp3",
+      "role": "pop",
+      "duration": 1.36,
+      "onset": 0.059
+    },
+    {
+      "file": "universfield-mouse-click-351398.mp3",
+      "role": "click",
+      "duration": 1.06,
+      "onset": 0.141
+    },
+    {
+      "file": "47313572-ui-sound-270349.mp3",
+      "role": "ui",
+      "duration": 3.24,
+      "onset": 0.122
+    },
+    {
+      "file": "soundshelfstudio-sci-fi-ui-click-sound-596258.mp3",
+      "role": "click",
+      "duration": 1.39,
+      "onset": 0.025
+    },
+    {
+      "file": "malarbrush-camera-flash-204151.mp3",
+      "role": "camera",
+      "duration": 1.75,
+      "onset": 0.18
+    },
+    {
+      "file": "dragon-studio-typing-keyboard-asmr-356116.mp3",
+      "role": "typing",
+      "duration": 8.1,
+      "onset": 0.255
+    },
+    {
+      "file": "vvqne-applause-383901.mp3",
+      "role": "applause",
+      "duration": 26.17,
+      "onset": 0.051
+    },
+    {
+      "file": "u_1pruylktlg-riser-7-130957.mp3",
+      "role": "riser",
+      "duration": 5.07,
+      "onset": 0.049
+    },
+    {
+      "file": "47313572-ui-sounds-pack-2-sound-5-358890.mp3",
+      "role": "ui",
+      "duration": 0.68,
+      "onset": 0.138
+    },
+    {
+      "file": "phoenix_connection_brazil-sound-effect-thriller-1-108404.mp3",
+      "role": "tension",
+      "duration": 1.88,
+      "onset": 0.441
+    },
+    {
+      "file": "humordome-fairy-sparkle-451414.mp3",
+      "role": "sparkle",
+      "duration": 1.91,
+      "onset": 0.024
+    },
+    {
+      "file": "11325622-clock-ticking-sound-effect-240503.mp3",
+      "role": "tick",
+      "duration": 9.4,
+      "onset": 0.029
+    }
+  ]
+}

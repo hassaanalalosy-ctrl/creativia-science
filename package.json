@@ -1,0 +1,12 @@
+{
+  "name": "creativia-content",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Slide renderer for @creativia.mag",
+  "scripts": { "render": "node engine/render.js" },
+  "dependencies": {
+    "@fontsource/playpen-sans-arabic": "^5.0.0",
+    "@fontsource/rubik": "^5.0.0",
+    "puppeteer": "^24.0.0"
+  }
+}

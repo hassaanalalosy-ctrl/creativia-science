@@ -1,0 +1,66 @@
+name: Voice test
+
+on:
+  workflow_dispatch:
+    inputs:
+      voice_id:
+        description: 'ElevenLabs voice id'
+        required: false
+        default: 'JBFqnCBsd6RMkjVDRZzb'
+      model_id:
+        description: 'ElevenLabs model'
+        required: false
+        default: 'eleven_multilingual_v2'
+      text:
+        description: 'Optional short text (overrides script.txt)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install ffmpeg and jq
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg jq >/dev/null)
+      - name: Generate voice
+        env:
+          XI_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          test -n "$XI_KEY" || { echo "Secret ELEVENLABS_API_KEY is missing"; exit 1; }
+          mkdir -p test/voice/out
+          if [ -n "${{ github.event.inputs.text }}" ]; then printf '%s' "${{ github.event.inputs.text }}" > test/voice/script.txt; fi
+          body=$(jq -n --rawfile t test/voice/script.txt --arg m "${{ github.event.inputs.model_id }}" '{text: ($t|rtrimstr("\n")), model_id: $m, voice_settings: {stability: 0.45, similarity_boost: 0.8, style: 0.2}}')
+          code=$(curl -sS -o test/voice/out/voice.mp3 -w "%{http_code}" -X POST \
+            "https://api.elevenlabs.io/v1/text-to-speech/${{ github.event.inputs.voice_id }}?output_format=mp3_44100_128" \
+            -H "xi-api-key: $XI_KEY" -H "Content-Type: application/json" -d "$body")
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then cat test/voice/out/voice.mp3; exit 1; fi
+          ffprobe -v error -show_entries format=duration -of csv=p=0 test/voice/out/voice.mp3 | tee test/voice/out/voice-seconds.txt
+      - name: Render 5 second clip
+        run: |
+          mkdir -p posts/_voice-test
+          cp test/voice/reel.json posts/_voice-test/reel.json
+          node engine/reel.js _voice-test
+      - name: Mix
+        run: |
+          ffmpeg -y -loglevel error -i posts/_voice-test/reel.mp4 -i test/voice/out/voice.mp3 \
+            -filter_complex "[1:a]adelay=300|300,apad[a]" -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k -shortest test/voice/out/voice-test.mp4
+          rm -rf posts/_voice-test
+      - name: Commit
+        run: |
+          git config user.name "creativia-bot"
+          git config user.email "creativia-bot@users.noreply.github.com"
+          git checkout -- test/voice/script.txt 2>/dev/null || true
+          git add test/voice/out
+          git commit -m "Voice test output"
+          git pull --rebase origin main
+          git push

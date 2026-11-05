@@ -1,0 +1,77 @@
+name: Voice compare
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ffmpeg and jq
+        run: command -v ffmpeg && command -v jq || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg jq >/dev/null)
+      - name: Generate and mix
+        env:
+          XI_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          set -e
+          C=test/voice/compare.json
+          O=test/voice/compare-out
+          rm -rf $O && mkdir -p $O
+          API=https://api.elevenlabs.io/v1
+          # choose model: v4 if available, else multilingual v2 (no credits used)
+          curl -sS "$API/models" -H "xi-api-key: $XI_KEY" > $O/models.json || true
+          jq -r '.[]? | "\(.model_id) | ar=\([.languages[]?.language_id] | index("ar") != null) | \(.name)"' $O/models.json > $O/models.txt || true
+          cat $O/models.txt
+          MODEL=$(jq -r '[.[]? | select(.can_do_text_to_speech) | select([.languages[]?.language_id] | index("ar")) | .model_id] | (map(select(.=="eleven_v4"))[0] // map(select(test("^eleven_v4")))[0] // map(select(.=="eleven_multilingual_v2"))[0] // "eleven_multilingual_v2")' $O/models.json 2>/dev/null || echo eleven_multilingual_v2)
+          echo "MODEL=$MODEL" | tee $O/model.txt
+          REEL=posts/$(jq -r .reel $C)/reel.mp4
+          VDUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 $REEL)
+          MUSIC=$(jq -r .music $C)
+          N=$(jq '.lines|length' $C)
+          i=0
+          for V in $(jq -r '.voices[]' $C); do
+            i=$((i+1))
+            NAME=$(curl -sS "$API/voices/$V" -H "xi-api-key: $XI_KEY" | jq -r '.name // "voice"')
+            echo "$i $V $NAME" >> $O/voices.txt
+            inputs=""; filt=""; mixin=""; prev=0
+            for k in $(seq 0 $((N-1))); do
+              T=$(jq -r ".lines[$k].text" $C); AT=$(jq -r ".lines[$k].at" $C)
+              f=$O/v${i}_$k.mp3
+              body=$(jq -n --arg t "$T" --arg m "$MODEL" '{text:$t, model_id:$m, voice_settings:{stability:0.5, similarity_boost:0.75}}')
+              code=$(curl -sS -o $f -w "%{http_code}" -X POST "$API/text-to-speech/$V?output_format=mp3_44100_128" -H "xi-api-key: $XI_KEY" -H "Content-Type: application/json" -d "$body")
+              if [ "$code" != "200" ]; then
+                echo "retry without settings ($code): $(head -c 300 $f)"
+                body=$(jq -n --arg t "$T" --arg m "$MODEL" '{text:$t, model_id:$m}')
+                code=$(curl -sS -o $f -w "%{http_code}" -X POST "$API/text-to-speech/$V?output_format=mp3_44100_128" -H "xi-api-key: $XI_KEY" -H "Content-Type: application/json" -d "$body")
+              fi
+              if [ "$code" != "200" ]; then echo "voice $V line $k failed $code: $(head -c 400 $f)" | tee -a $O/errors.txt; continue 2; fi
+              d=$(ffprobe -v error -show_entries format=duration -of csv=p=0 $f)
+              start=$(python3 -c "print(max($AT, $prev+0.12))")
+              prev=$(python3 -c "print($start+$d)")
+              ms=$(python3 -c "print(int($start*1000))")
+              inputs="$inputs -i $f"
+              filt="$filt[$k:a]adelay=$ms|$ms[s$k];"
+              mixin="$mixin[s$k]"
+            done
+            TOT=$(python3 -c "print(round(max($VDUR, $prev+0.6),2))")
+            FO=$(python3 -c "print(round($TOT-1.5,2))")
+            NM=$N
+            ffmpeg -y -loglevel error $inputs -i $MUSIC -filter_complex \
+              "${filt}${mixin}amix=inputs=$N:normalize=0,apad,atrim=0:$TOT,asplit=2[voice][sc];[$NM:a]atrim=0:$TOT,asetpts=PTS-STARTPTS,volume=0.32,afade=t=in:d=0.4,afade=t=out:st=$FO:d=1.5[mus];[mus][sc]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=350[duck];[voice][duck]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]" \
+              -map "[a]" -ar 44100 $O/mix$i.wav
+            ffmpeg -y -loglevel error -i $REEL -i $O/mix$i.wav -filter_complex "[0:v]tpad=stop_mode=clone:stop_duration=3[v]" -map "[v]" -map 1:a -c:v libx264 -crf 18 -preset veryfast -pix_fmt yuv420p -c:a aac -b:a 192k -t $TOT $O/voice-$i.mp4
+            rm -f $O/v${i}_*.mp3 $O/mix$i.wav
+          done
+          cat $O/voices.txt
+      - name: Commit
+        run: |
+          git config user.name "creativia-bot"
+          git config user.email "creativia-bot@users.noreply.github.com"
+          git add test/voice/compare-out
+          git commit -m "Voice compare output" || exit 0
+          git pull --rebase origin main
+          git push

@@ -1,0 +1,147 @@
+{
+  "license": "Pixabay Content License — free for commercial use, no attribution required",
+  "moods": {
+    "upbeat": "energetic tips, fun facts, events",
+    "lofi": "calm tips, process, how-to",
+    "ambient": "architecture, art, reflective topics",
+    "emotional": "serious or sad news"
+  },
+  "tracks": [
+    {
+      "file": "hitslab-upbeat-upbeat-music-300654.mp3",
+      "mood": "upbeat",
+      "artist": "hitslab",
+      "source": "Pixabay",
+      "pixabay_id": "300654",
+      "duration": 102.3
+    },
+    {
+      "file": "ikoliks_aj-upbeat-upbeat-music-628248.mp3",
+      "mood": "upbeat",
+      "artist": "ikoliks_aj",
+      "source": "Pixabay",
+      "pixabay_id": "628248",
+      "duration": 99.0
+    },
+    {
+      "file": "sub_clair-upbeat-instrumental-588419.mp3",
+      "mood": "upbeat",
+      "artist": "sub_clair",
+      "source": "Pixabay",
+      "pixabay_id": "588419",
+      "duration": 108.0
+    },
+    {
+      "file": "nastelbom-ambient-ambient-music-623746.mp3",
+      "mood": "ambient",
+      "artist": "nastelbom",
+      "source": "Pixabay",
+      "pixabay_id": "623746",
+      "duration": 111.7
+    },
+    {
+      "file": "zephiramusic-lofi-house-611107.mp3",
+      "mood": "lofi",
+      "artist": "zephiramusic",
+      "source": "Pixabay",
+      "pixabay_id": "611107",
+      "duration": 194.0
+    },
+    {
+      "file": "atlasaudio-ambient-background-625678.mp3",
+      "mood": "ambient",
+      "artist": "atlasaudio",
+      "source": "Pixabay",
+      "pixabay_id": "625678",
+      "duration": 136.5
+    },
+    {
+      "file": "gr0za-upbeat-upbeat-music-627570.mp3",
+      "mood": "upbeat",
+      "artist": "gr0za",
+      "source": "Pixabay",
+      "pixabay_id": "627570",
+      "duration": 129.0
+    },
+    {
+      "file": "kulakovka-lofi-upbeat-611601.mp3",
+      "mood": "lofi",
+      "artist": "kulakovka",
+      "source": "Pixabay",
+      "pixabay_id": "611601",
+      "duration": 100.1
+    },
+    {
+      "file": "leberch-ambient-cinematic-628167.mp3",
+      "mood": "ambient",
+      "artist": "leberch",
+      "source": "Pixabay",
+      "pixabay_id": "628167",
+      "duration": 168.0
+    },
+    {
+      "file": "the_mountain-lofi-lofi-music-496553.mp3",
+      "mood": "lofi",
+      "artist": "the_mountain",
+      "source": "Pixabay",
+      "pixabay_id": "496553",
+      "duration": 102.2
+    },
+    {
+      "file": "kulakovka-upbeat-funk-614901.mp3",
+      "mood": "upbeat",
+      "artist": "kulakovka",
+      "source": "Pixabay",
+      "pixabay_id": "614901",
+      "duration": 103.4
+    },
+    {
+      "file": "zephiramusic-lofi-reel-588906.mp3",
+      "mood": "lofi",
+      "artist": "zephiramusic",
+      "source": "Pixabay",
+      "pixabay_id": "588906",
+      "duration": 108.1
+    },
+    {
+      "file": "sub_clair-upbeat-587078.mp3",
+      "mood": "upbeat",
+      "artist": "sub_clair",
+      "source": "Pixabay",
+      "pixabay_id": "587078",
+      "duration": 102.7
+    },
+    {
+      "file": "atlasaudio-upbeat-swing-625742.mp3",
+      "mood": "upbeat",
+      "artist": "atlasaudio",
+      "source": "Pixabay",
+      "pixabay_id": "625742",
+      "duration": 127.9
+    },
+    {
+      "file": "zephiramusic-lofi-gaming-606302.mp3",
+      "mood": "lofi",
+      "artist": "zephiramusic",
+      "source": "Pixabay",
+      "pixabay_id": "606302",
+      "duration": 154.7
+    },
+    {
+      "file": "alexgrohl-sad-story-629163.mp3",
+      "mood": "emotional",
+      "artist": "alexgrohl",
+      "source": "Pixabay",
+      "pixabay_id": "629163",
+      "duration": 126.0
+    },
+    {
+      "file": "viacheslavstarostin-upbeat-upbeat-music-627648.mp3",
+      "mood": "upbeat",
+      "artist": "viacheslavstarostin",
+      "source": "Pixabay",
+      "pixabay_id": "627648",
+      "duration": 220.1
+    }
+  ]
+}

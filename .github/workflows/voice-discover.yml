@@ -1,0 +1,32 @@
+name: Voice discover
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List models and Arabic voices
+        env:
+          XI_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          mkdir -p test/voice/out
+          for ep in "models" "shared-voices?language=ar&page_size=40&sort=trending" "voices" "user/subscription"; do
+            f=test/voice/out/raw-$(echo "$ep" | cut -d'?' -f1 | tr '/' '-').json
+            code=$(curl -sS -o "$f" -w "%{http_code}" "https://api.elevenlabs.io/v1/$ep" -H "xi-api-key: $XI_KEY")
+            echo "$ep -> $code"
+            echo "$ep $code" >> test/voice/out/status.txt
+          done
+      - name: Commit
+        run: |
+          git config user.name "creativia-bot"
+          git config user.email "creativia-bot@users.noreply.github.com"
+          git add test/voice/out
+          git commit -m "Voice discovery" || exit 0
+          git pull --rebase origin main
+          git push
