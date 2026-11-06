@@ -20,6 +20,7 @@ concurrency:
 jobs:
   render:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,10 +28,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Arabic system fonts fallback
-        run: sudo apt-get install -y -qq fonts-noto-core >/dev/null || true
+      # ffmpeg from a ready-made static build (apt mirrors on the runners can hang for many minutes)
       - name: Install ffmpeg
-        run: (command -v ffmpeg && command -v jq) || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg jq >/dev/null)
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          ffmpeg-version: release
       - name: Render slides
         run: node engine/render.js ${{ github.event.inputs.post }}
       - name: Render reels
