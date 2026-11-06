@@ -49,7 +49,7 @@ Always set `"engine": 2`. 18 to 45 seconds, 5 to 8 scenes. Titles under ~35 char
 
 ## Storytelling (owner's reference reels, Nov 2026)
 The owner shared reference reels (space without a suit, laughing-gas balloons, how far is the Sun, why zombies are green, two grapes in a microwave). What to take from them, done in OUR 2D dreamy style (never copy their 3D or presenters):
-- **Hook = ONE short line (1 to 2 seconds), then straight into the information** (owner rule). No long intros, no long jokes: humour only works in the references because of rich 3D characters, which we do not have. Examples: "كم تزن هذه الغيمة؟", "ماذا لو…؟", "لماذا…؟".
+- **Hook = one or two short sentences (2 to 4 seconds at most), then straight into the information** (owner rule). No long intros, no long jokes: humour only works in the references because of rich 3D characters, which we do not have. Examples: "كم تزن هذه الغيمة؟", "ماذا لو…؟", "لماذا…؟".
 - **Tell it as a short story**, not a list: a situation → what happens step by step (with a running timer or counter on screen) → the surprising twist → a light, funny ending.
 - **Bust a myth** when there is one ("لا، لن تنفجر").
 - **Zoom in**: from the object to its inside (a lens circle, skin layers, blood cells, molecules), then back out to the result.
