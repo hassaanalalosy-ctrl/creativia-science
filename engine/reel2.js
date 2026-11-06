@@ -99,7 +99,7 @@ const S = {
     const grow = spring(seg(t, 1.35, 2.0));
     return {
       shape: { x: sh.x + (sh.w - sh.w * grow) / 2, y: sh.y, w: Math.max(sh.h * grow, sh.w * grow), h: sh.h * clamp(grow * 1.2), r: 30 }, shapeOp: s.pill ? clamp(grow * 2) : 0,
-      inner: '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;' + fadeIn(t, 1.8, 0.5) + '"><span style="width:10px;height:10px;border-radius:50%;background:' + C.accent + ';box-shadow:0 0 10px ' + C.accent + '"></span><span dir="ltr" style="font-size:24px;font-weight:800;letter-spacing:1px">' + esc(s.pill) + '</span></div>',
+      inner: '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;' + fadeIn(t, 1.8, 0.5) + '"><span style="width:10px;height:10px;border-radius:50%;background:' + C.accent + ';box-shadow:0 0 10px ' + C.accent + '"></span><span dir="auto" style="unicode-bidi:isolate;font-size:24px;font-weight:800;letter-spacing:1px">' + esc(s.pill) + '</span></div>',
       over: kretiAt(s.pose || 'point', 104, t, 0.5, 26, 74)
         + star(t, 290, 96, 18, 0.9) + star(t, 40, 420, 13, 2.1) + dot(t, 300, 440, 7, 2.2) + dot(t, 60, 250, 5, 1.2)
         + '<div style="position:absolute;right:26px;left:26px;top:204px;font-size:' + (s.size || 38) + 'px;font-weight:800;line-height:1.25">' + words(s.title, t, 0.15, 0.22) + '</div>'
