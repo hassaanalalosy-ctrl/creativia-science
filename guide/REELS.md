@@ -2,7 +2,7 @@
 
 About 20 reels per month: every day except the post days (3, 6, 9, 12, 15, 18, 21, 24, 27, 30), which are carousels or single posts. One feed post every day.
 All reels are story reels (engine 3). Narration costs about 500 to 800 ElevenLabs credits per reel (about 10,000 to 16,000 a month), from the Starter plan's 30,000 shared with @creativia.mag.
-**All 10 reels have a voiceover** in simple Modern Standard Arabic — see "Voice reels" below. Music plays under the voice.
+**Every reel has a voiceover** in simple Modern Standard Arabic — see "Voice reels" below. Music plays under the voice.
 
 ## Topics
 - Quick shocking facts (one surprising fact explained in 30 seconds).
