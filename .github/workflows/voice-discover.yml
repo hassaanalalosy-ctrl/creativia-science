@@ -16,8 +16,8 @@ jobs:
           XI_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         run: |
           mkdir -p test/voice/out
-          for ep in "models" "shared-voices?language=ar&page_size=40&sort=trending" "voices" "user/subscription"; do
-            f=test/voice/out/raw-$(echo "$ep" | cut -d'?' -f1 | tr '/' '-').json
+          for ep in "shared-voices?search=Hamida&page_size=20" "voices" "user/subscription"; do
+            f=test/voice/out/raw-$(echo "$ep" | cut -d'?' -f1 | tr '/' '-')$(echo "$ep" | grep -q search && echo -search).json
             code=$(curl -sS -o "$f" -w "%{http_code}" "https://api.elevenlabs.io/v1/$ep" -H "xi-api-key: $XI_KEY")
             echo "$ep -> $code"
             echo "$ep $code" >> test/voice/out/status.txt
