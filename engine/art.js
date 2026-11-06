@@ -34,7 +34,7 @@ const LIB = {
   drop: { palette: 'sky', box: [140, 50, 260, 245],
     parts: ['<path d="M200 54 C200 54 142 134 142 182 A58 58 0 0 0 258 182 C258 134 200 54 200 54 Z"/>'],
     gloss: 'M164 176 C164 150 180 124 194 104' },
-  elephant: { palette: 'blue', box: [60, 80, 330, 262],
+  elephant: { palette: 'blue', box: [58, 78, 346, 264],
     parts: [
       '<rect x="176" y="190" width="34" height="72" rx="16"/>', '<rect x="262" y="190" width="34" height="72" rx="16"/>',
       '<ellipse cx="230" cy="160" rx="96" ry="64"/>',
@@ -134,6 +134,10 @@ const LIB = {
     parts: ['<rect x="168" y="70" width="64" height="186" rx="22"/>'],
     details: ['<rect x="184" y="44" width="32" height="34" rx="10" fill="#5E6478"/>', '<rect x="180" y="110" width="40" height="58" rx="12" fill="#A35BF0" opacity="0.85"/>', '<circle cx="200" cy="214" r="8" fill="#5CC7F7"/>'],
     gloss: 'M180 90 L180 236' },
+  hair: { palette: 'brown', box: [120, 112, 280, 188], noShadow: true, // drawn wider than its box: inside a lens it runs past the rim
+    parts: ['<path d="M-40 132 C100 110 300 110 440 124 L440 176 C300 164 100 166 -40 190 Z"/>'],
+    details: ['<path d="M40 128 C48 146 48 168 40 184 M80 124 C88 140 88 162 80 180 M120 120 C128 138 128 160 120 176 M160 117 C168 136 168 158 160 172 M200 116 C208 134 208 156 200 170 M240 116 C248 134 248 156 240 168 M280 118 C288 136 288 156 280 168 M320 121 C328 138 328 158 320 170" fill="none" stroke="#5A3418" stroke-width="3" stroke-linecap="round" opacity="0.45"/>'],
+    gloss: 'M0 136 C140 118 260 118 400 128' },
   eye: { palette: 'white', box: [80, 80, 320, 200],
     parts: ['<path d="M84 140 C130 84 270 84 316 140 C270 196 130 196 84 140 Z"/>'],
     details: ['<circle cx="200" cy="140" r="44" fill="#5FA4F5"/><circle cx="200" cy="140" r="44" fill="none" stroke="#2C5BC9" stroke-width="5"/><circle cx="200" cy="140" r="20" fill="#14204A"/><circle cx="212" cy="128" r="8" fill="#fff"/>'],
@@ -181,38 +185,179 @@ function arrow([x1, y1, x2, y2, bend = 0.25], mode) {
   const h = (s) => `${(x2 - L * Math.cos(a + s)).toFixed(1)} ${(y2 - L * Math.sin(a + s)).toFixed(1)}`;
   return `<path d="M${x1} ${y1} Q${mx.toFixed(1)} ${my.toFixed(1)} ${x2} ${y2} M${h(0.5)} L${x2} ${y2} L${h(-0.5)}" fill="none" stroke="${ink(mode)}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
-const sym = (t, [x, y], mode) => `<g stroke="${ink(mode)}" stroke-width="7" stroke-linecap="round">${t === '+' ? `<path d="M${x - 14} ${y} H${x + 14} M${x} ${y - 14} V${y + 14}"/>` : `<path d="M${x - 14} ${y - 7} H${x + 14} M${x - 14} ${y + 7} H${x + 14}"/>`}</g>`;
+// symbols, drawn centred on (x, y). Arrows point right-to-left (reading direction).
+function sym(t, [x, y], mode) {
+  const st = `stroke="${ink(mode)}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+  const d = {
+    '+': `M${x - 14} ${y} H${x + 14} M${x} ${y - 14} V${y + 14}`,
+    '=': `M${x - 14} ${y - 7} H${x + 14} M${x - 14} ${y + 7} H${x + 14}`,
+    '>': `M${x - 10} ${y - 14} L${x + 10} ${y} L${x - 10} ${y + 14}`,
+    '<': `M${x + 10} ${y - 14} L${x - 10} ${y} L${x + 10} ${y + 14}`,
+    '→': `M${x + 18} ${y} H${x - 16} M${x - 6} ${y - 10} L${x - 16} ${y} L${x - 6} ${y + 10}`
+  }[t] || '';
+  return `<path d="${d}" ${st}/>`;
+}
 const sparkle = (x, y, s, mode) => `<path transform="translate(${x} ${y}) scale(${s / 24})" d="M12 0 C13 8 16 11 24 12 C16 13 13 16 12 24 C11 16 8 13 0 12 C8 11 11 8 12 0 Z" fill="${mode === 'dark' ? '#F1E2FF' : '#FFFFFF'}" opacity="0.9"/>`;
 
-// Returns the SVG markup (400 x 300) for an `art` spec.
-function artSvg(spec, mode = 'light', size = { w: 400, h: 300 }) {
+const SYMS = ['=', '+', '>', '<', '→'];
+const defOf = it => { const d = it.name ? LIB[it.name] : it; if (!d) throw new Error('Unknown art item: ' + it.name); return d; };
+const boxOf = d => { const [x0, y0, x1, y1] = d.box || [100, 60, 300, 262]; return { x0, y0, w: x1 - x0, h: y1 - y0 }; };
+
+// Every animated piece is wrapped in a group with placeholder tokens; reels fill them per frame, stills clear them.
+function ctx(anim) {
+  const meta = [];
+  return {
+    meta,
+    wrap(inner, m) {
+      const i = meta.length; meta.push(m);
+      return `<g transform="__A${i}__" opacity="__O${i}__">${inner}</g>`;
+    }
+  };
+}
+
+// natural size of a row entry (canvas units, before scaling)
+function measure(e) {
+  if (typeof e === 'string') return { w: 34, h: 34, sym: true };
+  if (e.lens) { const D = e.d || 170; return { w: D + (e.handle === false ? 0 : 30), h: D + (e.handle === false ? 0 : 30) }; }
+  const b = boxOf(defOf(e));
+  if (e.count > 1) {
+    const cols = e.cols || Math.ceil(Math.sqrt(e.count * 1.4)), rows = Math.ceil(e.count / cols);
+    const cw = b.w * 1.18, ch = b.h * 1.14;
+    return { w: cw * cols + (rows > 1 ? cw / 2 : 0), h: ch * rows, cols, rows, cw, ch, b };
+  }
+  return { w: b.w, h: b.h, b };
+}
+
+function drawItemAt(e, n, mode, x, y, sc, c, delay) {
+  // draws an item so that its box's top-left lands at (x, y) at scale sc
+  const d = defOf(e), b = boxOf(d);
+  const g = `<g transform="translate(${(x - b.x0 * sc).toFixed(1)} ${(y - b.y0 * sc).toFixed(1)}) scale(${sc.toFixed(4)})">${item(d, n, mode, e)}</g>`;
+  return c.wrap(g, { cx: x + b.w * sc / 2, cy: y + b.h * sc / 2, delay, kind: e.motion || d.motion || 'float', amp: e.amp });
+}
+
+function rowSvg(spec, mode, c, t0 = 0.4) {
+  const entries = spec.row;
+  const gap = spec.gap || 20, cy = spec.cy || 150, maxW = spec.width || 384, defH = spec.h || 140;
+  const m = entries.map(measure);
+  let sc = entries.map((e, i) => m[i].sym ? 1 : (typeof e === 'object' && e.h ? e.h : e.lens ? m[i].h : (m[i].rows > 1 ? Math.min(200, defH * 1.35) : defH * 1.1)) / m[i].h);
+  let widths = m.map((mm, i) => mm.w * sc[i]);
+  const total = widths.reduce((a, b) => a + b, 0) + gap * (entries.length - 1);
+  const k = total > maxW ? maxW / total : 1;
+  sc = sc.map((v, i) => m[i].sym ? 1 : v * k); widths = widths.map((w, i) => m[i].sym ? w : w * k);
+  const W = widths.reduce((a, b) => a + b, 0) + gap * k * (entries.length - 1);
+  // right-to-left: the first entry sits on the right
+  let xr = 200 + W / 2, out = '', delay = t0;
+  entries.forEach((e, i) => {
+    const w = widths[i], x = xr - w;
+    if (m[i].sym) {
+      out += c.wrap(sym(e, [x + w / 2, cy], mode), { cx: x + w / 2, cy, delay, kind: 'none' });
+      delay += 0.3;
+    } else if (e.lens) {
+      out += lensSvg(e, mode, x, cy - m[i].h * sc[i] / 2, sc[i], c, delay);
+      delay += 0.45;
+    } else if (e.count > 1) {
+      const mm = m[i], s2 = sc[i], top = cy - mm.h * s2 / 2;
+      for (let n = 0; n < e.count; n++) {
+        const r = Math.floor(n / mm.cols), col = n % mm.cols;
+        // fill right-to-left; odd rows shift half a cell so the herd reads as a crowd
+        const cx = x + w - (col + 1) * mm.cw * s2 - (r % 2 ? mm.cw * s2 / 2 : 0) + (mm.cw - mm.b.w) * s2 / 2;
+        const cyy = top + r * mm.ch * s2 + (mm.ch - mm.b.h) * s2 / 2;
+        out += drawItemAt(Object.assign({}, e, { motion: e.motion || 'bob' }), n, mode, cx, cyy, s2, c, delay + n * 0.06);
+      }
+      delay += 0.3 + e.count * 0.06;
+    } else {
+      const hh = m[i].h * sc[i];
+      out += drawItemAt(e, i, mode, x, cy - hh / 2, sc[i], c, delay);
+      delay += 0.4;
+    }
+    xr = x - gap * k;
+  });
+  return out;
+}
+
+function lensSvg(e, mode, x, y, sc, c, delay) {
+  const D = (e.d || 170) * sc, r = D / 2, cx = x + r, cyy = y + r;
+  const id = 'z' + (++uid);
+  const inner = e.lens.row ? rowSvg(Object.assign({ width: 330, h: e.lens.h || 110 }, e.lens), mode, { wrap: (g) => g, meta: [] })
+    : e.lens.stack ? stackSvg(e.lens, mode, { wrap: (g) => g, meta: [] })
+    : contentSvg(e.lens, mode, { wrap: (g) => g, meta: [] });
+  const bg = mode === 'dark' ? ['#3A1A5C', '#1A0D29'] : ['#FFFFFF', '#EEE2FB'];
+  const handle = e.handle === false ? '' : `<path d="M${(cx + r * 0.72).toFixed(1)} ${(cyy + r * 0.72).toFixed(1)} L${(cx + r * 0.72 + 30 * sc).toFixed(1)} ${(cyy + r * 0.72 + 30 * sc).toFixed(1)}" stroke="#912EE8" stroke-width="${(16 * sc).toFixed(1)}" stroke-linecap="round"/>`;
+  const g = `<defs><clipPath id="c${id}"><circle cx="${cx}" cy="${cyy}" r="${r - 4 * sc}"/></clipPath>
+<radialGradient id="b${id}" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="${bg[0]}"/><stop offset="1" stop-color="${bg[1]}"/></radialGradient>
+<linearGradient id="r${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EBD4FF"/><stop offset="0.5" stop-color="#A35BF0"/><stop offset="1" stop-color="#6D28D9"/></linearGradient></defs>
+${handle}<circle cx="${cx}" cy="${cyy}" r="${r}" fill="url(#b${id})"/>
+<g clip-path="url(#c${id})"><g transform="translate(${cx} ${cyy}) scale(${(D / 300).toFixed(4)}) translate(-200 -150)">${inner}</g></g>
+<circle cx="${cx}" cy="${cyy}" r="${r - 3 * sc}" fill="none" stroke="url(#r${id})" stroke-width="${(9 * sc).toFixed(1)}"/>
+<path d="M${(cx - r * 0.62).toFixed(1)} ${(cyy - r * 0.3).toFixed(1)} A${(r * 0.7).toFixed(1)} ${(r * 0.7).toFixed(1)} 0 0 1 ${(cx - r * 0.2).toFixed(1)} ${(cyy - r * 0.66).toFixed(1)}" fill="none" stroke="#fff" stroke-width="${(5 * sc).toFixed(1)}" stroke-linecap="round" opacity="0.8"/>`;
+  return c.wrap(g, { cx, cy: cyy, delay, kind: 'pop' });
+}
+
+function stackSvg(spec, mode, c) {
+  const gap = spec.gap || 24, defH = spec.h || 90;
+  const ent = spec.stack.map(e => { const d = defOf(e), b = boxOf(d), sc = (e.h || defH) / b.h; return { e, b, sc, h: b.h * sc, w: b.w * sc }; });
+  const H = ent.reduce((a, x) => a + x.h, 0) + gap * (ent.length - 1);
+  let y = (spec.cy || 150) - H / 2, out = '', delay = 0.4;
+  ent.forEach((x, i) => { out += drawItemAt(x.e, i, mode, 200 - x.w / 2, y, x.sc, c, delay); y += x.h + gap; delay += 0.4; });
+  return out;
+}
+
+function contentSvg(s, mode, c) {
+  let out = '';
+  if (s.row) out += rowSvg(s, mode, c);
+  if (s.stack) out += stackSvg(s, mode, c);
+  (s.items || []).forEach((it, k) => {
+    const def = defOf(it);
+    const sc = it.s || 1, x = it.x || 0, y = it.y || 0, rot = it.rot || 0;
+    const [x0, , x1] = def.box || [100, 60, 300, 262];
+    const gx = (x0 + x1) / 2;
+    const g = `<g transform="translate(${x} ${y}) translate(${gx} ${G}) scale(${sc}) rotate(${rot}) translate(${-gx} ${-G})">${item(def, k, mode, it)}</g>`;
+    out += c.wrap(g, { cx: gx + x, cy: 150 + y, delay: 0.4 + k * 0.35, kind: it.motion || def.motion || 'float' });
+  });
+  (s.arrows || []).forEach(a => { out += arrow(a, mode); });
+  (s.plus || []).forEach(p => { out += sym('+', p, mode); });
+  (s.equals || []).forEach(p => { out += sym('=', p, mode); });
+  return out;
+}
+
+// Returns the SVG markup (400 x 300) for an `art` spec. With {anim:true} returns {svg, meta} for reels.
+function artSvg(spec, mode = 'light', size = { w: 400, h: 300 }, opt = {}) {
   if (!spec) return '';
   const s = typeof spec === 'string' ? { items: [{ name: spec }] } : spec;
   const halo = mode === 'dark' ? 'rgba(160,90,255,0.30)' : 'rgba(255,255,255,0.95)';
   let out = `<defs><radialGradient id="halo${++uid}" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${halo}"/><stop offset="1" stop-color="${halo.replace(/[\d.]+\)$/, '0)')}"/></radialGradient></defs>`;
   out += `<ellipse cx="200" cy="150" rx="190" ry="140" fill="url(#halo${uid})"/>`;
-  (s.items || []).forEach((it, k) => {
-    const def = it.name ? LIB[it.name] : it;
-    if (!def) throw new Error('Unknown art item: ' + it.name);
-    const sc = it.s || 1, x = it.x || 0, y = it.y || 0, rot = it.rot || 0;
-    // scale around the item's ground centre so it stays standing on the ground
-    const [x0, , x1] = def.box || [100, 60, 300, 262];
-    const gx = (x0 + x1) / 2;
-    out += `<g transform="translate(${x} ${y}) translate(${gx} ${G}) scale(${sc}) rotate(${rot}) translate(${-gx} ${-G})">${item(def, k, mode, it)}</g>`;
-  });
-  (s.arrows || []).forEach(a => { out += arrow(a, mode); });
-  (s.plus || []).forEach(p => { out += sym('+', p, mode); });
-  (s.equals || []).forEach(p => { out += sym('=', p, mode); });
+  const c = ctx();
+  out += contentSvg(s, mode, c);
   if (s.sparkles === true) out += sparkle(30, 28, 14, mode) + sparkle(360, 34, 11, mode);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size.w}" height="${size.h}" viewBox="0 0 400 300">${out}</svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size.w}" height="${size.h}" viewBox="0 0 400 300" style="overflow:visible">${out}</svg>`;
+  if (opt.anim) return { svg, meta: c.meta };
+  return svg.replace(/__A\d+__/g, '').replace(/__O\d+__/g, '1');
 }
+
+// Per-frame transform for one animated piece (used by the reel page; same maths in the browser).
+const ANIM_JS = `function artFrame(svg, meta, t) {
+  return svg.replace(/__([AO])(\\d+)__/g, function (m, k, i) {
+    var a = meta[+i], p = Math.max(0, Math.min(1, (t - a.delay) / 0.7));
+    var sp = 1 - Math.exp(-6 * p) * Math.cos(9 * p);
+    if (k === 'O') return String(Math.min(1, p * 2.2));
+    var dx = (1 - Math.min(1, p * 1.4)) * 40;           // enters from the right
+    var amp = a.amp == null ? 1 : a.amp;
+    var idle = a.kind === 'float' ? Math.sin(t * 1.6 + a.cx * 0.05) * 5 * amp
+             : a.kind === 'bob' ? -Math.abs(Math.sin(t * 3.2 + a.cx * 0.11)) * 4 * amp : 0;
+    var s = a.kind === 'none' ? Math.min(1, p * 1.6) : Math.max(0.0001, sp);
+    return 'translate(' + dx + ' ' + idle + ') translate(' + a.cx + ' ' + a.cy + ') scale(' + s + ') translate(' + (-a.cx) + ' ' + (-a.cy) + ')';
+  });
+}`;
 
 const artUri = (spec, mode) => 'data:image/svg+xml;base64,' + Buffer.from(artSvg(spec, mode, { w: 1200, h: 900 })).toString('base64');
 
-// Turns every `art` field into a ready image so all existing layouts can show it.
-function applyArt(obj, mode) {
-  if (obj && obj.art && !obj.image) { obj.image = artUri(obj.art, obj.mode || mode); if (!obj.fit) obj.fit = 'contain'; }
+// Slides and stories: turn `art` into a ready image. Reels: keep it as live markup that moves.
+function applyArt(obj, mode, opt = {}) {
+  if (!obj || !obj.art || obj.image) return obj;
+  if (opt.anim) { const r = artSvg(obj.art, obj.mode || mode, { w: '100%', h: '100%' }, { anim: true }); obj.artSvg = r.svg; obj.artMeta = r.meta; }
+  else { obj.image = artUri(obj.art, obj.mode || mode); if (!obj.fit) obj.fit = 'contain'; }
   return obj;
 }
 
-module.exports = { artSvg, artUri, applyArt, LIB, PAL };
+module.exports = { artSvg, artUri, applyArt, ANIM_JS, LIB, PAL };

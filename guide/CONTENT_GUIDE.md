@@ -94,14 +94,22 @@ Science must be explained and simplified with **vector illustrations** in the Cr
 - Real photos stay for real, specific things (a news story, a real discovery, a NASA image, an animal species). Everything else is illustrated.
 - Style (built into `engine/art.js`): soft gradient body, inner light and shade, glossy highlight, gentle glow and a soft ground shadow. Natural colours are welcome: a white cloud, a blue elephant, a red heart. Do not force the brand purple onto illustrations.
 - Put `"art"` instead of `"image"` on `inner`, `single`, `image`, `coverImage` slides, on reel `point` and `image` scenes, and on the story `fact`. It shows the whole drawing (`fit: contain` by default).
-- Library items: cloud, drop, elephant, bolt, sun, earth, moon, planet, rocket, atom, heart, brain, lungs, dna, flask, magnet, can, thermometer, bubble, mountain, tree, fish, cigarette, vape, eye.
+- Library items: cloud, drop, elephant, hair, bolt, sun, earth, moon, planet, rocket, atom, heart, brain, lungs, dna, flask, magnet, can, thermometer, bubble, mountain, tree, fish, cigarette, vape, eye.
 - One item: `"art": "cloud"`.
-- A small explanatory scene (2 to 3 items at most, with arrows and + / = signs):
+- **The drawing must SHOW the fact, literally and clearly** (owner rule). Ask: could someone understand the idea from the picture alone?
+  - "A cloud weighs as much as 100 elephants" → a cloud = a herd of many elephants (not one). Use `count` (6 to 12 copies; it does not need to be the real number, it must read as "many").
+  - "A cloud droplet is smaller than a hair" → a magnifier lens showing a hair strand with the tiny droplet next to it, at a believable relative size. (A real credited microscope photo is also fine.)
+  - Before / after, cause → effect, bigger / smaller: use `=`, `+`, `>`, `<`, `→` between items.
+- **Layout: always use `row` or `stack`** so everything is aligned automatically: all items and signs sit on one shared centre line, evenly spaced, nothing touching. The row reads right to left: the first entry is on the right.
 ```json
-"art": {"items": [{"name": "cloud", "x": -100, "y": -40, "s": 0.62}, {"name": "elephant", "x": 105, "s": 0.55}],
-        "equals": [[205, 140]], "arrows": [[150, 110, 250, 110, -0.25]], "plus": [[200, 150]]}
+"art": {"row": [{"name": "cloud"}, "=", {"name": "elephant", "count": 8, "cols": 4}]}
+"art": {"row": [{"lens": {"stack": [{"name": "hair", "h": 76}, {"name": "drop", "h": 22}], "gap": 34}, "d": 250}]}
+"art": {"row": [{"name": "can"}, "→", {"name": "heart"}]}
+"art": {"stack": [{"name": "sun", "h": 90}, {"name": "earth", "h": 110}]}
 ```
-  Canvas 400 x 300, ground around y = 262. `x`/`y` move an item from its own place, `s` scales it, `rot` rotates it. Arrow = [x1, y1, x2, y2, bend].
+  Entries: a library item `{"name": ...}` (optional `h` = height, to keep true relative sizes), a herd `{"name": ..., "count": n, "cols": c}`, a magnifier `{"lens": {...a row or stack...}, "d": diameter, "handle": true}`, or a sign `"="`, `"+"`, `">"`, `"<"`, `"→"`. Use 1 to 3 entries plus signs.
+- In reels the drawing moves: items pop in one by one from right to left, a herd appears animal by animal, clouds float, animals bob. This happens automatically for `art` on `point` and `image` scenes.
+- Free placement (`"items"` with x/y offsets, `"arrows"`) still exists for special cases, but prefer `row` / `stack`.
 - Something not in the library: draw it as a custom item with the same treatment, using simple closed shapes:
 ```json
 {"parts": ["<path d='M...Z'/>", "<circle cx='200' cy='140' r='40'/>"], "palette": "green", "box": [x0, y0, x1, y1],

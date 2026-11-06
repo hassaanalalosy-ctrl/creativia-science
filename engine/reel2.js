@@ -7,7 +7,7 @@ const path = require('path');
 const { spawn, execFileSync } = require('child_process');
 const puppeteer = require('puppeteer');
 const { kreti, mark } = require('./kreti');
-const { applyArt } = require('./art');
+const { applyArt, ANIM_JS } = require('./art');
 
 const ROOT = path.join(__dirname, '..');
 const FPS = 30;
@@ -155,17 +155,18 @@ const S = {
   // one tip: glowing number tile (or a credited image) inside the glass card, title + body below
   point(s, t) {
     const p = spring(seg(t, 0.3, 1.0));
-    const inner = s.image
-      ? '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:' + (s.fit || 'cover') + ';transform:scale(' + (1.04 + 0.06 * seg(t, 0, s.dur)) + ') translateX(' + (-6 * seg(t, 0, s.dur)) + 'px)">'
+    const pic = s.image || s.artSvg;
+    const inner = pic
+      ? (s.artSvg ? '<div style="position:absolute;inset:8px">' + artFrame(s.artSvg, s.artMeta, t) + '</div>' : '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:' + (s.fit || 'cover') + ';transform:scale(' + (1.04 + 0.06 * seg(t, 0, s.dur)) + ') translateX(' + (-6 * seg(t, 0, s.dur)) + 'px)">')
         + (s.num ? '<span dir="ltr" style="position:absolute;right:12px;top:12px;width:42px;height:42px;border-radius:14px;background:' + C.accent + ';color:#100B14;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px ' + C.accent + ';transform:scale(' + p + ')">' + esc(s.num) + '</span>' : '')
       : '<div style="position:absolute;right:28px;top:34px;width:130px;height:130px;border-radius:38px;background:linear-gradient(145deg,#D09BFF,#912EE8 50%,#B91097);box-shadow:0 0 40px rgba(145,46,232,0.55);transform:scale(' + p + ') rotate(' + (1 - p) * -14 + 'deg);display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:72px;font-weight:800;color:#100B14">' + esc(s.num) + '</span></div>'
         + (s.icon ? '' : star(t, 60, 50, 20, 0.8) + star(t, 120, 140, 13, 1.0));
     return {
-      shape: s.image ? { x: 24, y: 84, w: 312, h: 250, r: 28 } : { x: 24, y: 92, w: 312, h: 200, r: 30 }, shapeOp: 1,
-      inner: inner + (s.kreti && !s.image ? kretiAt(s.kreti, 96, t, 0.6, 36, 70) : ''),
-      over: (s.credit ? '<div style="position:absolute;right:30px;left:30px;top:' + (s.image ? 342 : 300) + 'px;font-size:11.5px;color:' + C.muted + ';' + fadeIn(t, 0.8) + '">' + cred(s.credit) + '</div>' : '')
-        + '<div style="position:absolute;right:26px;left:26px;top:' + (s.image ? 366 : 318) + 'px;font-size:' + (s.size || 26) + 'px;font-weight:800;line-height:1.3">' + words(s.title, t, 0.35, 0.13) + '</div>'
-        + '<div style="position:absolute;right:26px;left:26px;top:' + (s.image ? 412 : 364) + 'px;font-size:16.5px;line-height:1.65;color:' + C.muted + '">' + words(s.body, t, 0.85, 0.06) + '</div>'
+      shape: pic ? { x: 24, y: 84, w: 312, h: 250, r: 28 } : { x: 24, y: 92, w: 312, h: 200, r: 30 }, shapeOp: 1,
+      inner: inner + (s.kreti && !pic ? kretiAt(s.kreti, 96, t, 0.6, 36, 70) : ''),
+      over: (s.credit ? '<div style="position:absolute;right:30px;left:30px;top:' + (pic ? 342 : 300) + 'px;font-size:11.5px;color:' + C.muted + ';' + fadeIn(t, 0.8) + '">' + cred(s.credit) + '</div>' : '')
+        + '<div style="position:absolute;right:26px;left:26px;top:' + (pic ? 366 : 318) + 'px;font-size:' + (s.size || 26) + 'px;font-weight:800;line-height:1.3">' + words(s.title, t, 0.35, 0.13) + '</div>'
+        + '<div style="position:absolute;right:26px;left:26px;top:' + (pic ? 412 : 364) + 'px;font-size:16.5px;line-height:1.65;color:' + C.muted + '">' + words(s.body, t, 0.85, 0.06) + '</div>'
     };
   },
   // title + up to 4 glass rows; the morph shape becomes the first row
@@ -204,7 +205,7 @@ const S = {
     const z = 1.05 + 0.1 * seg(t, 0, s.dur);
     return {
       shape: { x: 24, y: 80, w: 312, h: s.tall ? 360 : 300, r: 28 }, shapeOp: 1,
-      inner: '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:' + (s.fit || 'cover') + ';transform:scale(' + z + ') translateX(' + (-10 * seg(t, 0, s.dur)) + 'px)">',
+      inner: s.artSvg ? '<div style="position:absolute;inset:10px">' + artFrame(s.artSvg, s.artMeta, t) + '</div>' : '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:' + (s.fit || 'cover') + ';transform:scale(' + z + ') translateX(' + (-10 * seg(t, 0, s.dur)) + 'px)">',
       over: (s.chip ? '<div style="position:absolute;right:34px;top:94px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,0.35);backdrop-filter:blur(10px);color:#fff;font-size:13px;font-weight:700;' + fadeIn(t, 0.6) + '">' + esc(s.chip) + '</div>' : '')
         + '<div style="position:absolute;right:26px;left:26px;top:' + (s.tall ? 456 : 398) + 'px;font-size:' + (s.size || 24) + 'px;font-weight:800;line-height:1.3">' + words(s.title, t, 0.45, 0.12) + '</div>'
         + (s.credit ? '<div style="position:absolute;right:26px;left:26px;top:' + (s.tall ? 492 : 450) + 'px;font-size:12px;color:' + C.muted + ';' + fadeIn(t, 1.0) + '">' + cred(s.credit) + '</div>' : '')
@@ -292,7 +293,7 @@ function sfxPlan(spec) {
   const spec = JSON.parse(fs.readFileSync(path.join(dir, 'reel.json'), 'utf8'));
   const mode = spec.mode || 'dark';
   const theme = THEME[mode];
-  for (const sc of spec.scenes) { applyArt(sc, mode); if (sc.image) sc.image = await toDataUri(sc.image); }
+  for (const sc of spec.scenes) { applyArt(sc, mode, { anim: true }); if (sc.image) sc.image = await toDataUri(sc.image); }
   // voiceover: each scene lasts at least as long as its clip (+ lead-in and breath)
   const VLEAD = 0.35;
   const vjson = path.join(dir, 'voice', 'voice.json');
@@ -304,7 +305,7 @@ function sfxPlan(spec) {
   const data = { ...spec, theme, kreti: poses, mark: mark({ size: 24 }), grain };
   const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">${FONT_CSS}
 <style>body{margin:0;background:#000}#stage{position:relative;width:360px;height:640px;overflow:hidden;font-family:'Rubik',sans-serif;color:${theme.text};direction:rtl}</style></head>
-<body><div id="stage"></div><script>window.REEL=${JSON.stringify(data)};</script><script>${PAGE}</script></body></html>`;
+<body><div id="stage"></div><script>window.REEL=${JSON.stringify(data)};</script><script>${ANIM_JS}</script><script>${PAGE}</script></body></html>`;
   const tmp = path.join(__dirname, '_tmp'); fs.mkdirSync(tmp, { recursive: true });
   const f = path.join(tmp, 'reel2.html'); fs.writeFileSync(f, html);
 
