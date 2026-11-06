@@ -34,13 +34,13 @@ const catIcon = c => { for (const [re, n] of CAT_ICON) if (re.test(c || '')) ret
 const blob = (c, s, x, y) => `<div style="position:absolute;width:${s}px;height:${s}px;left:${x - s / 2}px;top:${y - s / 2}px;background:radial-gradient(circle,${c} 0%,rgba(0,0,0,0) 66%)"></div>`;
 const star = (C, x, y, s) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="position:absolute;left:${x}px;top:${y}px;filter:drop-shadow(0 0 6px ${C.accent})"><path fill="${C.ink}" d="M12 0 C13 8 16 11 24 12 C16 13 13 16 12 24 C11 16 8 13 0 12 C8 11 11 8 12 0 Z"/></svg>`;
 const glass = (C, x, y, w, h, r, inner, extra = '') => `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;border-radius:${r}px;background:linear-gradient(160deg,rgba(255,255,255,0.18),${C.glass} 45%,rgba(255,255,255,0.04));backdrop-filter:blur(16px) saturate(150%);border:1.5px solid ${C.rim};box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),inset 0 -24px 40px ${C.glow},0 0 50px ${C.glow},0 24px 50px rgba(0,0,0,0.3);overflow:hidden;${extra}">${inner}</div>`;
-function frame(C, body, k) {
+function frame(C, body, k, noHandle) {
   return `<div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 70% 10%,${C.bg1},${C.bg2})"></div>`
     + blob(C.b1, 580, 270, 140) + blob(C.b2, 540, 60, 500) + blob(C.b3, 400, 300, 600)
     + `<div style="position:absolute;inset:0;background-image:linear-gradient(${C.grid} 1px,transparent 1px),linear-gradient(90deg,${C.grid} 1px,transparent 1px);background-size:28px 28px"></div>`
     + `<div style="position:absolute;top:70px;left:24px">${k.mark}</div>`
     + body
-    + `<div dir="ltr" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-size:14px;font-weight:700;color:${C.muted}">@creativia.sci</div>`;
+    + (noHandle ? '' : `<div dir="ltr" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-size:14px;font-weight:700;color:${C.muted}">@creativia.sci</div>`);
 }
 (async () => {
   const id = process.argv[2];
@@ -57,15 +57,15 @@ function frame(C, body, k) {
     const cover = spec.alert.image || (fs.existsSync(path.join(dir, 'slides/01.png')) ? `posts/${id}/slides/01.png` : `posts/${id}/reel-cover.jpg`);
     const img = await uri(cover);
     const ratio = /reel-cover/.test(cover) ? 16 / 9 : 5 / 4;
-    const w = ratio > 1.5 ? 140 : 176, h = Math.round(w * ratio);
+    const w = ratio > 1.5 ? 124 : 176, h = Math.round(w * ratio);
     pages.alert = frame(C,
       `<div style="position:absolute;right:24px;top:70px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:${C.pill};color:${C.pillText};font-size:15px;font-weight:800;box-shadow:0 0 24px ${C.glow}">✦ ${spec.alert.label || 'منشور جديد'}</div>`
       + glass(C, (360 - w - 20) / 2, 128, w + 20, h + 20, 26, `<img src="${img}" style="position:absolute;left:10px;top:10px;width:${w}px;height:${h}px;border-radius:18px;object-fit:cover">`, 'transform:rotate(-3deg)')
       + star(C, 300, 140, 22) + star(C, 34, 330, 15)
       + tile(C, catIcon(cat), 26, 262, -8) + tile(C, spec.alert.icon2 || 'atom', 296, 310, 9)
       + (cat ? `<div style="position:absolute;left:0;right:0;top:${128 + h + 34}px;display:flex;justify-content:center">${chip(C, catIcon(cat), cat, 'position:relative', -2)}</div>` : '')
-      + `<div style="position:absolute;right:28px;left:28px;top:${128 + h + 80}px;display:flex;flex-direction:column;align-items:center;gap:14px"><div style="text-align:center;font-size:${spec.alert.size || 20}px;font-weight:800;line-height:1.35;color:${C.text};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(spec.alert.title)}</div><span style="padding:10px 20px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};font-size:15px;font-weight:700;color:${C.text}">${esc(spec.alert.cta || 'شاهده الآن في الصفحة ←')}</span></div>`
-      + K('point', 58, 10, 132), k);
+      + `<div style="position:absolute;right:28px;left:28px;top:${128 + h + 80}px;display:flex;flex-direction:column;align-items:center;gap:14px"><div style="text-align:center;font-size:${spec.alert.size || 20}px;font-weight:800;line-height:1.35;color:${C.text};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(spec.alert.title)}</div><span style="padding:10px 20px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};font-size:15px;font-weight:700;color:${C.text}">${esc(spec.alert.cta || 'شاهده الآن في الصفحة ←')}</span><div dir="ltr" style="font-size:14px;font-weight:700;color:${C.muted}">@creativia.sci</div></div>`
+      + K('point', 58, 10, 132), k, true);
   }
   if (spec.fact) {
     const f = applyArt(Object.assign({}, spec.fact), mode), img = f.image ? await uri(f.image) : null;

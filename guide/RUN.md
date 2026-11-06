@@ -45,8 +45,17 @@ Write `posts/<id>/stories.json` together with the post spec:
 - `mode`: same as the post.
 - The Action renders `story-alert.png` (with the post cover) and `story-fact.png`. Open both with Read and check them.
 
+## Language check (owner: very important — this is a science page)
+Before writing ANY spec, proofread every Arabic text that will appear on screen: reel `show` lines, labels, units, notes, counters, slide titles, bodies, points, tags, story alert and fact texts, and the caption. Correct Standard Arabic spelling and grammar only. Check:
+- hamzas (أ إ ء ؤ ئ, همزة الوصل في اسم/ابن/امرأة), ta marbuta vs ha (ة/ه), alif maqsura vs ya (ى/ي);
+- tanween on accusatives (ضوءاً، تقريباً، جداً) and house spelling **إذاً** (never write إذن);
+- number agreement with the counted noun (3 قلوب، 8 دقائق، 243 يوماً، مئة فيل);
+- gender/number agreement of verbs and adjectives, case after prepositions and إنّ/كان, no dialect words;
+- punctuation: Arabic comma ، and question mark ؟.
+Re-read the whole text once more after any edit. A `show` fix keeps the same word count as `say`; `say` is re-voiced only if a word in it is actually wrong (cost credits).
+
 ## Overlap rule (owner: very important)
-Nothing may sit on top of anything else in any slide, reel frame or story: no text over text, no Kreti over text, cards or images, no element over the handle or the badge, nothing cut off. Check every image/frame you open for this. If anything overlaps, shorten the text or fix the spec and re-render BEFORE scheduling. Story alert titles must be under 60 characters; fact titles under 40.
+Nothing may sit on top of anything else in any slide, reel frame or story: no text over text, no Kreti over text, cards or images, no element over the handle or the badge, no button or handle inside or across another text, nothing cut off. Check every image/frame you open for this. If anything overlaps, shorten the text or fix the spec and re-render BEFORE scheduling. Story alert titles must be under 60 characters; fact titles under 40.
 
 ## 4. Put it in Metricool
 Call createScheduledPost with blogId 7909822, date `<slot>T21:00:00+03:00`, and info:

@@ -20,6 +20,9 @@ Rotate categories: never the same category three posts in a row (check `log/post
 - "What happens if…" topics: describe what science actually knows, with the source; if the answer is an estimate, say it is an estimate.
 - News: say what was actually achieved (prototype, test, study in mice…) and do not oversell it.
 
+## Language (owner: very important)
+Every on-screen text and caption is proofread for correct Standard Arabic spelling and grammar before it is written (full checklist in `guide/RUN.md`, "Language check"). House spelling: إذاً, never إذن.
+
 ## Choosing a topic
 A topic qualifies only if ALL are true:
 1. Recent science news (last 14 days), OR a timeless surprising fact / question / experiment that most Arab readers do not know (about 1 post in 2 may be timeless).

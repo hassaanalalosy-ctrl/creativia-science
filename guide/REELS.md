@@ -74,6 +74,8 @@ Reference: `posts/test-tunnel-2/reel.json` (the approved test). Always `"engine"
   - **Lens** (`lens` in `art`) to zoom into tiny things; `counters` for numbers that climb; `labels` to name parts.
 - **Music sits far under the narrator** (the engine sets it low and ducks it hard under the voice). Never raise `musicVolume`; the narrator and the sound effects must always be clearly heard.
 
+- Every `show` line, label, unit and note is proofread for correct Arabic spelling and grammar before rendering (`guide/RUN.md`, "Language check"); write إذاً, never إذن.
+
 ## Storytelling (owner's reference reels, Nov 2026)
 The owner shared reference reels (space without a suit, laughing-gas balloons, how far is the Sun, why zombies are green, two grapes in a microwave). What to take from them, done in OUR 2D dreamy style (never copy their 3D or presenters):
 - **Hook = one or two short sentences (2 to 4 seconds at most), then straight into the information** (owner rule). No long intros, no long jokes: humour only works in the references because of rich 3D characters, which we do not have. Examples: "كم تزن هذه الغيمة؟", "ماذا لو…؟", "لماذا…؟".
