@@ -75,5 +75,5 @@ Two or three lines in Arabic: the slot date, the topic, number of slides (or "ر
 ## Extra posts (huge trends, same day)
 Every run, before the slot work, check the last 24 hours of science and tech news. If something is a truly HUGE trend that everyone is talking about (owner's example: a flying car shown by a big company; also a landmark discovery, a major space mission moment, a Nobel science prize) and it is confirmed by reliable outlets, make ONE extra post about it **for today**: a `single` post or a short carousel (fast to make), scheduled today at 15:00 Asia/Baghdad, or at the next full hour if 15:00 has passed (never later than 19:00, to keep distance from the 21:00 post). On Instagram and Facebook like every post, no stories. Log it with key `<date>-extra`. Say clearly what is confirmed and what is only a claim or a prototype. At most 3 extra posts in any 7 days; skip if nothing is clearly huge (most days nothing is).
 
-## Weekly review
-The weekly analytics task writes `log/insights.md`. Read it before choosing topics and formats, and follow its "Do more / Do less" lines.
+## Results review (every 15 days)
+A separate scheduled task reviews the results every 15 days (`guide/REVIEW.md`) and writes `log/insights.md`. Read it before choosing topics, hooks and formats, and follow its "Do more" / "Do less" lines (they never override the plan, the voice or the identity).
