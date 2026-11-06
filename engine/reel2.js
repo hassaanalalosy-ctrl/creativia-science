@@ -42,7 +42,9 @@ const CUES = {
   list: [[0.0, 'whoosh', 0.4], [0.7, 'click', 0.35], [1.1, 'click', 0.3], [1.5, 'click', 0.3], [1.9, 'click', 0.3]],
   compare: [[0.0, 'whoosh', 0.4], [0.7, 'ui', 0.35], [1.5, 'ding', 0.4]],
   image: [[0.0, 'whoosh', 0.4], [0.3, 'camera', 0.35]],
-  statement: [[0.0, 'riser', 0.3], [1.0, 'soft-impact', 0.5]]
+  statement: [[0.0, 'riser', 0.3], [1.0, 'soft-impact', 0.5]],
+  open: [[0.05, 'riser', 0.3]],
+  window: [[0.0, 'whoosh', 0.35], [0.45, 'pop', 0.35]]
 };
 
 const PAGE = String.raw`
@@ -93,8 +95,66 @@ function glass(x, y, w, h, r, t, inner, extra) {
     + inner + '</div>';
 }
 
+// spoken caption: each word appears when it is said (blur -> sharp, from the right)
+function caption(s, t, css) {
+  if (!s.words) return '';
+  return '<div style="position:absolute;' + css + ';font-weight:800;line-height:1.5">' + s.words.map(o => {
+    const p = ease(seg(t, o.t - 0.05, o.t + 0.3));
+    return '<span style="display:inline-block;opacity:' + p + ';filter:blur(' + (1 - p) * 6 + 'px);transform:translateX(' + (1 - p) * 14 + 'px)">' + esc(o.w) + '</span>';
+  }).join(' ') + '</div>';
+}
+// time (in seconds from scene start) of the first spoken word containing key, else def
+function wordAt(s, key, def) { if (key == null || !s.words) return def; const o = s.words.find(x => x.w.indexOf(key) >= 0); return o ? o.t : def; }
+// a small Kreti that travels inside the illustration (art coordinates 400 x 300)
+function mover(s, t) {
+  const m = s.mover; if (!m) return '';
+  const a = wordAt(s, m.atWord, m.at || 0.3), d = m.dur || Math.max(0.5, s.dur - a - 0.4);
+  let p = seg(t, a, a + d);
+  p = m.ease === 'in' ? p * p : m.ease === 'out' ? 1 - (1 - p) * (1 - p) : m.ease === 'inout' ? inout(p) : m.ease === 'pendulum' ? 0.5 - 0.5 * Math.cos(Math.max(0, t - a) * Math.PI * 2 / (m.period || 2.4)) : p;
+  const x = lerp(m.from[0], m.to[0], p), y = lerp(m.from[1], m.to[1], p), sz = m.size || 50;
+  const k = (D.kreti[m.pose || 'jump'] || '').replace(/width="\d+" height="\d+"/, 'x="' + (x - sz / 2) + '" y="' + (y - sz / 2) + '" width="' + sz + '" height="' + sz + '"');
+  return '<svg viewBox="0 0 400 300" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">' + k + '</svg>';
+}
+// glass counters inside the window: time (minutes -> mm:ss) or numbers, counting with the story
+function counters(s, t) {
+  return (s.counters || []).map(c => {
+    const a = wordAt(s, c.atWord, c.at || 0.3), d = c.dur || Math.max(0.5, s.dur - a - 0.5);
+    let p = seg(t, a, a + d); p = c.ease === 'in' ? p * p : c.ease === 'out' ? 1 - (1 - p) * (1 - p) : inout(p);
+    const v = lerp(c.from || 0, c.to, p);
+    const txt = c.fmt === 'time' ? (Math.floor(v) + ':' + String(Math.floor((v % 1) * 60)).padStart(2, '0')) : (c.digits ? v.toFixed(c.digits) : String(Math.round(v)));
+    const op = clamp(seg(t, a - 0.3, a));
+    if (c.big) return '<div dir="ltr" style="position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:44px;font-weight:800;color:' + C.text + ';text-shadow:0 0 24px ' + C.accent + ';opacity:' + op + ';transform:scale(' + (0.8 + 0.2 * spring(seg(t, a, a + 0.8))) + ')">' + txt + (c.unit ? '<span style="font-size:18px;margin-left:6px;color:' + C.muted + '">' + esc(c.unit) + '</span>' : '') + '</div>';
+    const pos = c.pos === 'tl' ? 'left:12px;top:12px' : c.pos === 'bl' ? 'left:12px;bottom:12px' : c.pos === 'br' ? 'right:12px;bottom:12px' : 'right:12px;top:12px';
+    return '<div style="position:absolute;' + pos + ';display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:14px;background:rgba(0,0,0,0.28);backdrop-filter:blur(10px);border:1px solid ' + C.rim + ';color:#fff;opacity:' + op + '">'
+      + (c.label ? '<span style="font-size:11.5px;font-weight:600;opacity:0.85">' + esc(c.label) + '</span>' : '')
+      + '<span dir="ltr" style="font-size:17px;font-weight:800;unicode-bidi:isolate">' + txt + (c.unit ? ' <span style="font-size:11px;font-weight:600">' + esc(c.unit) + '</span>' : '') + '</span></div>';
+  }).join('');
+}
+
 // ---- scenes: each returns {shape:{x,y,w,h,r}, inner (inside shape), over (on stage)} ----
 const S = {
+  // full-screen opening scene: an illustration fills the frame, then the next scene shrinks it into the glass window
+  open(s, t) {
+    const z = 1.02 + 0.06 * seg(t, 0, s.dur);
+    return {
+      shape: { x: -3, y: -3, w: 366, h: 646, r: 0 }, shapeOp: 1,
+      inner: (s.artSvg ? '<div style="position:absolute;left:-40px;right:-40px;top:70px;height:340px;transform:scale(' + z + ') rotate(' + (-2 * seg(t, 0, s.dur)) + 'deg)">' + artFrame(s.artSvg, s.artMeta, t) + '</div>' : '')
+        + star(t, 60, 110, 16, 0.3) + star(t, 290, 430, 12, 0.6) + dot(t, 300, 90, 5, 0.4) + dot(t, 50, 380, 4, 0.7),
+      over: caption(s, t, 'right:26px;left:26px;top:' + (s.capTop || 420) + 'px;font-size:' + (s.size || 22) + 'px;text-align:right;text-shadow:0 2px 18px ' + C.bg2)
+    };
+  },
+  // the glass window holding an explanatory illustration (moving), with Kreti beside it and the spoken caption
+  window(s, t) {
+    const bigC = (s.counters || []).find(c => c.big), bp = bigC ? ease(seg(t, wordAt(s, bigC.atWord, bigC.at || 0.3) - 0.5, wordAt(s, bigC.atWord, bigC.at || 0.3))) : 0;
+    const pic = s.artSvg ? '<div style="position:absolute;inset:8px;transform:translateY(' + (-30 * bp) + 'px) scale(' + (1 - 0.24 * bp) + ');transform-origin:50% 0">' + artFrame(s.artSvg, s.artMeta, t) + mover(s, t) + '</div>' : (s.image ? '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '');
+    return {
+      shape: { x: 24, y: 70, w: 312, h: 296, r: 30 }, shapeOp: 1,
+      inner: pic + counters(s, t),
+      over: (s.note ? '<div style="position:absolute;right:28px;left:28px;top:372px;font-size:11px;color:' + C.muted + ';' + fadeIn(t, 0.6) + '">' + cred(s.note) + '</div>' : '')
+        + (s.kreti !== false ? kretiAt(s.kreti || 'think', 100, t, 0.6, 18, 392) : '')
+        + caption(s, t, 'right:26px;left:' + (s.kreti !== false ? 128 : 26) + 'px;top:396px;font-size:' + (s.size || 19) + 'px;text-align:right')
+    };
+  },
   hook(s, t) {
     const sh = { x: 50, y: 318, w: 260, h: 60, r: 30 };
     const grow = spring(seg(t, 1.35, 2.0));
@@ -246,25 +306,27 @@ window.drawFrame = function (t) {
   while (k < D.scenes.length - 1 && t >= starts[k + 1]) k++;
   const sc = D.scenes[k], lt = t - starts[k];
   const cur = S[sc.type](sc, lt);
+  let carry = '';
   let shape = cur.shape, op = cur.shapeOp;
   if (k > 0 && lt < MORPH) {
     const prevS = D.scenes[k - 1], prev = S[prevS.type](prevS, prevS.dur);
     const p = inout(lt / MORPH);
     shape = { x: lerp(prev.shape.x, shape.x, p), y: lerp(prev.shape.y, shape.y, p), w: lerp(prev.shape.w, shape.w, p), h: lerp(prev.shape.h, shape.h, p), r: lerp(prev.shape.r, shape.r, p) };
     op = lerp(prev.shapeOp, op, p);
+    if (prevS.type === 'open') { const po = S.open(prevS, prevS.dur + lt); carry = '<div style="position:absolute;left:0;top:0;width:360px;height:640px;transform-origin:0 0;transform:translate(' + (-37.5 * p) + 'px,' + (-110 * p) + 'px) scale(' + (shape.w / 360 * (1 + 0.24 * p)) + ');opacity:' + (1 - seg(lt, MORPH * 0.55, MORPH)) + '">' + po.inner + '</div>'; }
   }
   // content enters from the right, leaves to the left
   const inP = k === 0 ? 1 : ease(seg(lt, 0.15, 0.6));
   const outP = k === D.scenes.length - 1 ? 0 : ease(seg(lt, sc.dur - 0.35, sc.dur));
   const cOp = inP * (1 - outP), cX = (1 - inP) * 36 - outP * 36, cB = (1 - inP + outP) * 6;
-  const innerOp = k > 0 && lt < MORPH ? seg(lt, MORPH * 0.6, MORPH) : 1 - outP;
+  const innerOp = k > 0 && lt < MORPH ? seg(lt, MORPH * 0.6, MORPH) : sc.type === 'open' ? 1 : 1 - outP;
   // camera: slow push + slight 3D tilt
   const push = 1 + 0.035 * seg(lt, 0, sc.dur), tiltY = Math.sin(t * 0.45) * 3.5, tiltX = Math.cos(t * 0.37) * 2;
   document.getElementById('stage').innerHTML = bg(t)
     + '<div style="position:absolute;top:22px;right:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:' + C.muted + '"><span style="width:7px;height:7px;border-radius:50%;background:' + C.accent + ';opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا ساينس') + '</div>'
     + '<div style="position:absolute;top:20px;left:22px">' + D.mark + '</div>'
     + '<div style="position:absolute;inset:0;perspective:900px"><div style="position:absolute;inset:0;transform:scale(' + push + ') rotateY(' + tiltY + 'deg) rotateX(' + tiltX + 'deg);transform-style:preserve-3d">'
-    + (op > 0.01 ? glass(shape.x, shape.y, shape.w, shape.h, shape.r, t, '<div style="position:absolute;inset:0;opacity:' + innerOp + '">' + cur.inner + '</div>', 'opacity:' + op + ';') : '')
+    + (op > 0.01 ? glass(shape.x, shape.y, shape.w, shape.h, shape.r, t, carry + '<div style="position:absolute;inset:0;opacity:' + innerOp + '">' + cur.inner + '</div>', 'opacity:' + op + ';') : '')
     + '<div style="position:absolute;inset:0;opacity:' + cOp + ';transform:translateX(' + cX + 'px);filter:blur(' + cB + 'px)">' + cur.over + '</div>'
     + '</div></div>';
 };
@@ -299,6 +361,17 @@ function sfxPlan(spec) {
   const vjson = path.join(dir, 'voice', 'voice.json');
   const voice = spec.voice && fs.existsSync(vjson) ? JSON.parse(fs.readFileSync(vjson, 'utf8')).clips : [];
   for (const c of voice) { const sc = spec.scenes[c.scene]; sc.dur = Math.max(sc.dur || 0, Math.round((c.dur + VLEAD + 0.55) * 100) / 100); }
+  // words of each "say" line with their spoken time (scene-relative). Without a voice file, timings are estimated
+  // (about 12 characters per second) so silent previews still show captions and synced actions.
+  spec.scenes.forEach((sc, k) => {
+    if (!sc.say) return;
+    const c = voice.find(v => v.scene === k);
+    if (c && c.words && c.words.length) sc.words = c.words.map(x => ({ w: x.w, t: x.t + VLEAD }));
+    else {
+      let t = VLEAD; sc.words = sc.say.split(/\s+/).filter(Boolean).map(w => { const o = { w, t }; t += (w.length + 1) / 12; return o; });
+      if (!c) sc.dur = Math.max(sc.dur || 0, Math.round((t + 0.6) * 100) / 100);
+    }
+  });
   const poses = {};
   for (const p of ['wave', 'point', 'jump', 'think']) poses[p] = kreti({ pose: p, size: 240, mode, cut: theme.cut, look: 'dream' });
   const grain = 'data:image/svg+xml;base64,' + Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0"/></filter><rect width="180" height="180" filter="url(#n)"/></svg>').toString('base64');

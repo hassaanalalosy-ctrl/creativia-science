@@ -1,0 +1,209 @@
+{
+  "id": "test-tunnel",
+  "topic": "How long would it take to fall through a tunnel through the Earth",
+  "category": "فيزياء",
+  "format": "reel",
+  "engine": 2,
+  "mode": "dark",
+  "badge": "ماذا لو؟",
+  "coverAt": 1.6,
+  "music": "assets/music/leberch-ambient-cinematic-628167.mp3",
+  "musicStart": 0,
+  "voice": true,
+  "voiceId": "fbIG6gEosVIM95R5qOna",
+  "scenes": [
+    {
+      "type": "open",
+      "dur": 3,
+      "art": "earth",
+      "say": "لو قفزت في نفق يخترق الأرض… كم ستحتاج لتصل إلى الجهة الأخرى من الأرض؟"
+    },
+    {
+      "type": "window",
+      "dur": 3,
+      "kreti": "think",
+      "art": "earthcut",
+      "note": "بافتراض نفق بلا هواء",
+      "mover": {
+        "from": [
+          200,
+          30
+        ],
+        "to": [
+          200,
+          92
+        ],
+        "ease": "in",
+        "pose": "jump"
+      },
+      "counters": [
+        {
+          "label": "الوقت",
+          "fmt": "time",
+          "from": 0,
+          "to": 9.5,
+          "pos": "tr"
+        }
+      ],
+      "say": "ستسقط نحو مركز الأرض، وتزداد سرعتك في كل لحظة."
+    },
+    {
+      "type": "window",
+      "dur": 3,
+      "kreti": "jump",
+      "art": "earthcut",
+      "note": "بافتراض نفق بلا هواء",
+      "mover": {
+        "from": [
+          200,
+          92
+        ],
+        "to": [
+          200,
+          150
+        ],
+        "ease": "in",
+        "pose": "jump"
+      },
+      "counters": [
+        {
+          "label": "الوقت",
+          "fmt": "time",
+          "from": 9.5,
+          "to": 19.1,
+          "pos": "tr"
+        },
+        {
+          "label": "السرعة",
+          "unit": "كم/ث",
+          "from": 0,
+          "to": 8,
+          "digits": 1,
+          "pos": "tl",
+          "ease": "in"
+        }
+      ],
+      "say": "حتى تتجاوز ثمانية كيلومترات في الثانية."
+    },
+    {
+      "type": "window",
+      "dur": 3,
+      "kreti": "think",
+      "art": {
+        "items": [
+          {
+            "name": "earthcut"
+          }
+        ],
+        "arrows": [
+          [
+            250,
+            190,
+            250,
+            236,
+            0
+          ],
+          [
+            250,
+            112,
+            250,
+            66,
+            0
+          ]
+        ]
+      },
+      "note": "بافتراض نفق بلا هواء",
+      "mover": {
+        "from": [
+          200,
+          150
+        ],
+        "to": [
+          200,
+          230
+        ],
+        "ease": "out",
+        "pose": "think"
+      },
+      "counters": [
+        {
+          "label": "الوقت",
+          "fmt": "time",
+          "from": 19.1,
+          "to": 30,
+          "pos": "tr"
+        },
+        {
+          "label": "السرعة",
+          "unit": "كم/ث",
+          "from": 8,
+          "to": 2,
+          "digits": 1,
+          "pos": "tl",
+          "ease": "out"
+        }
+      ],
+      "say": "وبعد المركز تعمل الجاذبية ضدك، فتبدأ سرعتك بالتباطؤ."
+    },
+    {
+      "type": "window",
+      "dur": 3,
+      "kreti": "jump",
+      "art": "earthcut",
+      "note": "المصدر: American Journal of Physics (2015) · Live Science",
+      "mover": {
+        "from": [
+          200,
+          230
+        ],
+        "to": [
+          200,
+          270
+        ],
+        "ease": "out",
+        "pose": "wave",
+        "dur": 1.6
+      },
+      "counters": [
+        {
+          "fmt": "time",
+          "from": 30,
+          "to": 38.19,
+          "big": true,
+          "atWord": "ثمان",
+          "dur": 1.6,
+          "ease": "out"
+        }
+      ],
+      "say": "وبعد ثمانٍ وثلاثين دقيقة فقط، تصل إلى الطرف الآخر من الأرض."
+    },
+    {
+      "type": "window",
+      "dur": 3,
+      "kreti": "point",
+      "art": "earthcut",
+      "note": "بافتراض نفق بلا هواء",
+      "mover": {
+        "from": [
+          200,
+          270
+        ],
+        "to": [
+          200,
+          30
+        ],
+        "ease": "pendulum",
+        "period": 2.6,
+        "pose": "jump",
+        "at": 0.6
+      },
+      "say": "لكن إن لم تتمسّك بالحافة، فستسقط من جديد، ذهاباً وإياباً كالبندول."
+    },
+    {
+      "type": "end",
+      "dur": 3,
+      "say": "تمسّك جيداً يا كريتي."
+    }
+  ],
+  "caption": "test"
+}

@@ -30,16 +30,26 @@ const MODEL = 'eleven_v4';
     const prev = old.clips.find(c => c.scene === k);
     if (prev && prev.text === says[k] && prev.voiceId === voiceId && fs.existsSync(path.join(vdir, file))) { clips.push(prev); continue; }
     const body = { text: says[k], model_id: MODEL, previous_text: says.slice(0, k).filter(Boolean).slice(-1)[0] || undefined, next_text: says.slice(k + 1).filter(Boolean)[0] || undefined };
-    let res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`, { method: 'POST', headers: { 'xi-api-key': key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (!res.ok) { // retry without context fields
-      delete body.previous_text; delete body.next_text;
-      res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`, { method: 'POST', headers: { 'xi-api-key': key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    }
+    // with-timestamps returns the audio plus the start time of every character, so captions and actions can follow the words
+    const call = b => fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps?output_format=mp3_44100_128`, { method: 'POST', headers: { 'xi-api-key': key, 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
+    let res = await call(body);
+    if (!res.ok) { delete body.previous_text; delete body.next_text; res = await call(body); }
     if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 300)}`);
-    fs.writeFileSync(path.join(vdir, file), Buffer.from(await res.arrayBuffer()));
+    const j = await res.json();
+    fs.writeFileSync(path.join(vdir, file), Buffer.from(j.audio_base64, 'base64'));
+    const al = j.alignment || j.normalized_alignment;
+    const words = [];
+    if (al && al.characters) {
+      let cur = '', start = null;
+      al.characters.forEach((ch, i) => {
+        if (/\s/.test(ch)) { if (cur) words.push({ w: cur, t: start }); cur = ''; start = null; }
+        else { if (start === null) start = al.character_start_times_seconds[i]; cur += ch; }
+      });
+      if (cur) words.push({ w: cur, t: start });
+    }
     const dur = parseFloat(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path.join(vdir, file)]).toString());
     chars += says[k].length;
-    clips.push({ scene: k, file, text: says[k], voiceId, dur: Math.round(dur * 100) / 100 });
+    clips.push({ scene: k, file, text: says[k], voiceId, dur: Math.round(dur * 100) / 100, words });
   }
   fs.writeFileSync(path.join(vdir, 'voice.json'), JSON.stringify({ model: MODEL, voiceId, clips }, null, 2));
   console.log('voice done', id, clips.length, 'clips,', chars, 'new characters');

@@ -138,6 +138,14 @@ const LIB = {
     parts: ['<path d="M-40 132 C100 110 300 110 440 124 L440 176 C300 164 100 166 -40 190 Z"/>'],
     details: ['<path d="M40 128 C48 146 48 168 40 184 M80 124 C88 140 88 162 80 180 M120 120 C128 138 128 160 120 176 M160 117 C168 136 168 158 160 172 M200 116 C208 134 208 156 200 170 M240 116 C248 134 248 156 240 168 M280 118 C288 136 288 156 280 168 M320 121 C328 138 328 158 320 170" fill="none" stroke="#5A3418" stroke-width="3" stroke-linecap="round" opacity="0.45"/>'],
     gloss: 'M0 136 C140 118 260 118 400 128' },
+  earthcut: { palette: 'orange', box: [70, 20, 330, 280], noShadow: true, // Earth cut in half: crust, mantle, outer core, inner core, with a straight tunnel
+    parts: ['<circle cx="200" cy="150" r="128"/>'],
+    details: [
+      '<circle cx="200" cy="150" r="124" fill="none" stroke="#3E9BE0" stroke-width="9"/><path d="M118 56 C140 44 168 40 180 52 M262 62 C280 70 300 92 306 112 M98 210 C108 232 124 250 140 258" fill="none" stroke="#46C46E" stroke-width="9" stroke-linecap="round"/>',
+      '<circle cx="200" cy="150" r="70" fill="#FFB020"/><circle cx="200" cy="150" r="70" fill="none" stroke="#F07A1E" stroke-width="4" opacity="0.6"/>',
+      '<circle cx="200" cy="150" r="36" fill="#FFF3B0"/><circle cx="200" cy="150" r="46" fill="#FFE27A" opacity="0.35"/>',
+      '<rect x="191" y="22" width="18" height="256" rx="9" fill="#1A0D29" opacity="0.92"/><rect x="191" y="22" width="18" height="256" rx="9" fill="none" stroke="#D09BFF" stroke-width="2" opacity="0.9"/>'],
+    gloss: 'M104 110 C116 78 140 56 168 44' },
   eye: { palette: 'white', box: [80, 80, 320, 200],
     parts: ['<path d="M84 140 C130 84 270 84 316 140 C270 196 130 196 84 140 Z"/>'],
     details: ['<circle cx="200" cy="140" r="44" fill="#5FA4F5"/><circle cx="200" cy="140" r="44" fill="none" stroke="#2C5BC9" stroke-width="5"/><circle cx="200" cy="140" r="20" fill="#14204A"/><circle cx="212" cy="128" r="8" fill="#fff"/>'],
