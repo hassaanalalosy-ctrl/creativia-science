@@ -56,6 +56,7 @@ Reference: `posts/test-tunnel-2/reel.json` (the approved test). Always `"engine"
   - `dot`: a glowing circle that moves (`keys` with `y`/`x` and `ease` in/out/inout/linear; optional `pendulum`). Use it for the moving thing instead of Kreti.
   - `follow`: the camera zooms in and travels with the dot (`from`, `to`, `z`). Zoom is what keeps the reel alive.
   - `camera`: keyframes `{at, d, z, x, y}` (e.g. pull back and lift the picture when a big number appears).
+  - Never zoom so that an item of a `row` is left cut at the window edge (e.g. a cloud half outside the frame). Zoom on a single object, or keep z at 1 for rows; if you zoom into one part of a row, return to z 1 within 1.5 seconds. Check this in the frames.
   - `counters`: glass chips (time `fmt: "time"` in minutes → mm:ss, or numbers with `digits`, `unit`), and `big: true` for the key number.
   - `note`: ONE short line under the window (e.g. an assumption). Sources go in the caption, not on screen.
 - `end` (always last): Kreti, a reaction bubble with a drawn emoji (`👍`, `😱`, `💡`) that appears on a word and disappears, and the card "تابعنا على كريتيفيا ساينس" with @creativia.sci. The narrator says one line to Kreti here and ends with "وتابعنا على كريتيفيا ساينس".
