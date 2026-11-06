@@ -25,7 +25,7 @@ const THEME = {
   dark: { text: '#F3EFF7', muted: '#AEA3B8', bg1: '#170B22', bg2: '#07040A', b1: 'rgba(145,46,232,0.42)', b2: 'rgba(185,16,151,0.30)', b3: 'rgba(208,155,255,0.16)',
     grid: 'rgba(255,255,255,0.045)', glass: 'rgba(255,255,255,0.07)', rim: 'rgba(255,255,255,0.18)', glow: 'rgba(145,46,232,0.30)', accent: '#912EE8', soft: '#D09BFF', chip: 'rgba(23,11,34,0.55)', cut: '#180C22' },
   light: { text: '#100B14', muted: '#504659', bg1: '#EDE2F6', bg2: '#FAF8FC', b1: 'rgba(145,46,232,0.40)', b2: 'rgba(185,16,151,0.22)', b3: 'rgba(255,226,130,0.45)',
-    grid: 'rgba(16,11,20,0.05)', glass: 'rgba(255,255,255,0.45)', rim: 'rgba(255,255,255,0.95)', glow: 'rgba(145,46,232,0.22)', accent: '#741FBF', soft: '#481F6B', chip: 'rgba(255,255,255,0.7)', cut: '#EFE6F7' }
+    grid: 'rgba(16,11,20,0.05)', glass: 'rgba(255,255,255,0.45)', rim: 'rgba(255,255,255,0.95)', glow: 'rgba(145,46,232,0.22)', accent: '#741FBF', soft: '#481F6B', chip: 'rgba(255,255,255,0.7)', cut: '#EFE6F7', speck: '#FFFFFF' }
 };
 
 const strip = s => String(s || '').replace(/[ً-ْٰ]/g, '');
@@ -51,7 +51,7 @@ function bg(t) {
   let specks = '';
   for (let i = 0; i < 14; i++) {
     const x = (i * 83 + 17) % 360, y = 640 - ((t * (8 + (i % 4) * 3) + i * 57) % 700), r = 1.5 + (i % 3);
-    specks += '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + r + 'px;height:' + r + 'px;border-radius:50%;background:' + C.soft + ';opacity:' + (0.25 + 0.25 * s(t * 2 + i)) + '"></div>';
+    specks += '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + r + 'px;height:' + r + 'px;border-radius:50%;background:' + (C.speck || C.soft) + ';opacity:' + (0.25 + 0.25 * s(t * 2 + i)) + '"></div>';
   }
   return '<div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 70% 10%,' + C.bg1 + ',' + C.bg2 + ')"></div>'
     + blob(C.b1, 560, 260 + s(t * 0.21) * 40, 120 + c(t * 0.17) * 30)
