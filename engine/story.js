@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const { kreti, mark } = require('./kreti');
+const { applyArt } = require('./art');
 
 const ROOT = path.join(__dirname, '..');
 const FONT_CSS = ['rubik/400', 'rubik/500', 'rubik/700', 'rubik/800', 'playpen-sans-arabic/400', 'playpen-sans-arabic/600']
@@ -15,6 +16,7 @@ const T = {
 };
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/@[A-Za-z0-9._]+/g, m => '⁦' + m + '⁩');
 async function uri(src) {
+  if (src.startsWith('data:')) return src;
   const local = path.isAbsolute(src) ? src : path.join(ROOT, src);
   if (!/^https?:/.test(src) && fs.existsSync(local)) { const e = path.extname(local).slice(1).toLowerCase(); return `data:image/${e === 'jpg' ? 'jpeg' : e};base64,${fs.readFileSync(local).toString('base64')}`; }
   const r = await fetch(src, { headers: { 'User-Agent': 'Mozilla/5.0 Chrome/126', 'Referer': new URL(src).origin + '/' } });
@@ -54,7 +56,7 @@ function frame(C, body, k) {
       + K('point', 58, 10, 132), k);
   }
   if (spec.fact) {
-    const f = spec.fact, img = f.image ? await uri(f.image) : null;
+    const f = applyArt(Object.assign({}, spec.fact), mode), img = f.image ? await uri(f.image) : null;
     const ih = img ? 170 : 0;
     pages.fact = frame(C,
       `<div style="position:absolute;right:24px;top:70px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};color:${C.ink};font-size:15px;font-weight:800">✦ ${esc(f.tag || 'معلومة سريعة')}</div>`

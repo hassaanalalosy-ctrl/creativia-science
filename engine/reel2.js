@@ -7,6 +7,7 @@ const path = require('path');
 const { spawn, execFileSync } = require('child_process');
 const puppeteer = require('puppeteer');
 const { kreti, mark } = require('./kreti');
+const { applyArt } = require('./art');
 
 const ROOT = path.join(__dirname, '..');
 const FPS = 30;
@@ -155,7 +156,7 @@ const S = {
   point(s, t) {
     const p = spring(seg(t, 0.3, 1.0));
     const inner = s.image
-      ? '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(' + (1.04 + 0.06 * seg(t, 0, s.dur)) + ') translateX(' + (-6 * seg(t, 0, s.dur)) + 'px)">'
+      ? '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:' + (s.fit || 'cover') + ';transform:scale(' + (1.04 + 0.06 * seg(t, 0, s.dur)) + ') translateX(' + (-6 * seg(t, 0, s.dur)) + 'px)">'
         + (s.num ? '<span dir="ltr" style="position:absolute;right:12px;top:12px;width:42px;height:42px;border-radius:14px;background:' + C.accent + ';color:#100B14;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px ' + C.accent + ';transform:scale(' + p + ')">' + esc(s.num) + '</span>' : '')
       : '<div style="position:absolute;right:28px;top:34px;width:130px;height:130px;border-radius:38px;background:linear-gradient(145deg,#D09BFF,#912EE8 50%,#B91097);box-shadow:0 0 40px rgba(145,46,232,0.55);transform:scale(' + p + ') rotate(' + (1 - p) * -14 + 'deg);display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:72px;font-weight:800;color:#100B14">' + esc(s.num) + '</span></div>'
         + (s.icon ? '' : star(t, 60, 50, 20, 0.8) + star(t, 120, 140, 13, 1.0));
@@ -291,7 +292,7 @@ function sfxPlan(spec) {
   const spec = JSON.parse(fs.readFileSync(path.join(dir, 'reel.json'), 'utf8'));
   const mode = spec.mode || 'dark';
   const theme = THEME[mode];
-  for (const sc of spec.scenes) if (sc.image) sc.image = await toDataUri(sc.image);
+  for (const sc of spec.scenes) { applyArt(sc, mode); if (sc.image) sc.image = await toDataUri(sc.image); }
   // voiceover: each scene lasts at least as long as its clip (+ lead-in and breath)
   const VLEAD = 0.35;
   const vjson = path.join(dir, 'voice', 'voice.json');

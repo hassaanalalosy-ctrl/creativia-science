@@ -40,6 +40,7 @@ Always set `"engine": 2`. 18 to 45 seconds, 5 to 8 scenes. Titles under ~35 char
   "caption": "..."
 }
 ```
+- **Illustrate:** every reel explains its idea with at least 2 vector illustrations (`"art"` on `point` or `image` scenes, same rules as CONTENT_GUIDE.md "Explanatory illustrations"). Real photos only for real, specific things.
 - Always start with `hook` and finish with `end`. Use 3 to 5 different scene types per reel.
 - Badges: معلومة علمية · ماذا لو؟ · خرافة أم حقيقة؟ · خبر علمي · كيف يعمل؟
 - Kreti poses: point, jump, think, wave. Use Kreti in 2 to 3 scenes only (he always wears his lab goggles).

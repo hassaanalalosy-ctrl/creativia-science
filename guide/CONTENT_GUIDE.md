@@ -24,7 +24,7 @@ Rotate categories: never the same category three posts in a row (check `log/post
 A topic qualifies only if ALL are true:
 1. Recent science news (last 14 days), OR a timeless surprising fact / question / experiment that most Arab readers do not know (about 1 post in 2 may be timeless).
 2. Verifiable in 2 sources (see above).
-3. Visual: real images exist (see Images), or the idea can be shown well with Kreti, numbers and text slides.
+3. Visual: the idea can be shown with explanatory illustrations (see below) and, for real things, real credited images.
 4. Not already posted: check `log/posted.md`.
 5. Surprising or useful to a general Arab audience.
 Avoid: politics, religion debates, war imagery, gore and graphic medical images, nudity, gossip, pseudoscience, conspiracy theories, and AI-generated images presented as real.
@@ -79,6 +79,7 @@ Handwritten notes (`note`): 2 to 3 words max (انظر هنا! · مدهش! · �
 }
 ```
 Icons: flask, atom, microscope, planet, dna, bolt, rocket, magnet, brain, drop, trend, star, clock, spark.
+Use `"art"` in place of `"image"` for an illustration (see Explanatory illustrations).
 Optional: `"fit": "contain"` on `inner`/`single` to show a whole image without cropping; `"titleSize"` to shrink a long title (cover default 22, text default 25).
 
 ## Caption
@@ -88,11 +89,34 @@ Optional: `"fit": "contain"` on `inner`/`single` to show a whole image without c
 4. Sources in original spelling: "المصادر: NASA · Nature" (journal or institute names, not long URLs).
 5. 5 to 9 hashtags: always #كريتيفيا_ساينس first, plus Arabic tags (#علوم #معلومات #فضاء ...) and 2 to 4 English ones (#science #space ...).
 
+## Explanatory illustrations (owner rule: always)
+Science must be explained and simplified with **vector illustrations** in the Creativia Science dreamy style. Use them in every post and every reel, wherever a picture explains the idea better than words.
+- Real photos stay for real, specific things (a news story, a real discovery, a NASA image, an animal species). Everything else is illustrated.
+- Style (built into `engine/art.js`): soft gradient body, inner light and shade, glossy highlight, gentle glow and a soft ground shadow. Natural colours are welcome: a white cloud, a blue elephant, a red heart. Do not force the brand purple onto illustrations.
+- Put `"art"` instead of `"image"` on `inner`, `single`, `image`, `coverImage` slides, on reel `point` and `image` scenes, and on the story `fact`. It shows the whole drawing (`fit: contain` by default).
+- Library items: cloud, drop, elephant, bolt, sun, earth, moon, planet, rocket, atom, heart, brain, lungs, dna, flask, magnet, can, thermometer, bubble, mountain, tree, fish, cigarette, vape, eye.
+- One item: `"art": "cloud"`.
+- A small explanatory scene (2 to 3 items at most, with arrows and + / = signs):
+```json
+"art": {"items": [{"name": "cloud", "x": -100, "y": -40, "s": 0.62}, {"name": "elephant", "x": 105, "s": 0.55}],
+        "equals": [[205, 140]], "arrows": [[150, 110, 250, 110, -0.25]], "plus": [[200, 150]]}
+```
+  Canvas 400 x 300, ground around y = 262. `x`/`y` move an item from its own place, `s` scales it, `rot` rotates it. Arrow = [x1, y1, x2, y2, bend].
+- Something not in the library: draw it as a custom item with the same treatment, using simple closed shapes:
+```json
+{"parts": ["<path d='M...Z'/>", "<circle cx='200' cy='140' r='40'/>"], "palette": "green", "box": [x0, y0, x1, y1],
+ "details": ["<circle cx='190' cy='130' r='6' fill='#14204A'/>"], "gloss": "M... (a short highlight stroke)"}
+```
+  Palettes: white, blue, sky, yellow, orange, red, pink, green, purple, grey, brown, sand. `box` is the shape's bounding box. Keep shapes simple, rounded and friendly.
+- No text inside illustrations (labels go in the slide text). Leave clear space between items: nothing touches or overlaps, and nothing sits under a chip, badge or number.
+- Credit illustrations as "رسم توضيحي: كريتيفيا ساينس". Never present an illustration as a real photo.
+- Check every illustrated slide and reel frame like any image. If an illustration looks wrong, simplify it rather than adding detail.
+
 ## Images and credit
 - Images must show the real thing, with a known source. Credit the source on every slide that shows an image.
 - Free science image sources: NASA (public domain, credit "NASA" or the mission), ESA (check the licence, usually CC BY-SA 3.0 IGO, credit "ESA/…"), NOAA, Wikimedia Commons (check each file's licence and credit the author as the file page asks), university and journal press images (credit as given).
 - Copy the direct image file URL (ideally 1000 px wide or more). On Wikimedia use the original file URL from upload.wikimedia.org.
 - Pinterest and social media: discovery only. Never use an image whose original source you cannot identify.
-- No gore, graphic medical images or injured people. For body and health topics prefer diagrams, Kreti and text slides.
+- No gore, graphic medical images or injured people. For body and health topics use our illustrations (heart, lungs, brain...) instead of photos.
 - Never present an AI-generated or illustrative image as a real photo. A labelled illustration ("تصوّر فني") from NASA/ESA is fine.
 - Some sites refuse automated fetching. If a page will not fetch, use another reliable outlet covering the same story.

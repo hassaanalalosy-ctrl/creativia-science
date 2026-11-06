@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const { slideHtml } = require('./slides');
+const { applyArt } = require('./art');
 
 const ROOT = path.join(__dirname, '..');
 const POSTS = path.join(ROOT, 'posts');
@@ -39,6 +40,7 @@ async function renderPost(browser, id) {
   const total = spec.slides.length;
   for (let k = 0; k < total; k++) {
     const s = Object.assign({}, spec.slides[k]);
+    applyArt(s, mode);
     if (s.image) s.image = await toDataUri(s.image);
     const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">${FONT_CSS}<style>body{margin:0}</style></head><body>${slideHtml(s, k + 1, total, mode)}</body></html>`;
     const tmp = path.join(__dirname, '_tmp');

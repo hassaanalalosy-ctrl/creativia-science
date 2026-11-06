@@ -12,3 +12,4 @@ Only the elements below are approved. Do not add colours or elements without the
 - Fonts: Rubik for text, Playpen Sans Arabic for handwritten notes.
 - Post style: the "dreamy" glass style (floating glass cards, soft glows, light grid).
 - Profile picture: `brand/profile-dark.png` (main) and `brand/profile-light.png`.
+- Explanatory illustrations: vector drawings in the dreamy style (gradient body, inner light and shade, gloss, soft glow and ground shadow), natural colours allowed, no text inside. Library and rules in `engine/art.js` and `guide/CONTENT_GUIDE.md`.

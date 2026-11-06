@@ -22,6 +22,7 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 - Commit "Post spec: <slug>" and push to main. The GitHub Action "Render slides" renders it.
 - Poll every 15 seconds (`git fetch origin main`) for up to 8 minutes until `posts/<id>/rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
 - If render-error.json appears (usually a bad image URL): replace the failing image URL in the spec with another credited image of the same work, delete render-error.json, push again and wait again. Give up after 2 attempts: delete the post folder, push, and reply with the error.
+- Every post explains its idea with vector illustrations (`art`, see the content guide); real photos only for real, specific things.
 - Open every rendered slide image with the Read tool and check it: text not cut off, no overlapping elements, images loaded, numbers in English digits, credits present. If something is wrong, fix the spec and re-render (delete rendered.json, push).
 
 ## 3R. Make a reel (reel days only)
