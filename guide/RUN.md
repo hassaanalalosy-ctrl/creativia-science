@@ -22,7 +22,7 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 - Research and choose a topic exactly as the content guide says (web search + page fetches; verify facts in 2 sources).
 - Write `posts/<id>/spec.json` (id = `<slot date>-<short-slug>`), following the guide's structure, voice and credit rules. Default 6 to 7 slides.
 - Commit "Post spec: <slug>" and push to main. The GitHub Action "Render slides" renders it.
-- Poll every 15 seconds (`git fetch origin main`) for up to 8 minutes until `posts/<id>/rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
+- Poll every 15 seconds (`git fetch origin main`) for up to 30 minutes (the render job can wait in GitHub's queue) until `posts/<id>/rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
 - If render-error.json appears (usually a bad image URL): replace the failing image URL in the spec with another credited image of the same work, delete render-error.json, push again and wait again. Give up after 2 attempts: delete the post folder, push, and reply with the error.
 - Every post explains its idea with vector illustrations (`art`, see the content guide); real photos only for real, specific things.
 - Open every rendered slide image with the Read tool and check it: text not cut off, no overlapping elements, images loaded, numbers in English digits, credits present. If something is wrong, fix the spec and re-render (delete rendered.json, push).
@@ -31,7 +31,7 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 - Choose a topic as `guide/REELS.md` says, and write `posts/<id>/reel.json` as a **story reel, `"engine": 3`** (see REELS.md, reference `posts/test-tunnel-2/reel.json`), music from the library, `"voice": true`, `"voiceId": "fbIG6gEosVIM95R5qOna"`, and every beat with a fully vowelled `say` and a plain `show`.
 - Also write `posts/<id>/stories.json` (section 3S) in the same commit.
 - Commit "Reel spec: <slug>" and push. The GitHub Action renders `reel.mp4` (with music, sound effects and voice) and `reel-cover.jpg`, then the stories (about 4 to 8 minutes).
-- Poll every 20 seconds for up to 20 minutes until `posts/<id>/reel-rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
+- Poll every 30 seconds for up to 45 minutes (GitHub sometimes queues the render job for 15 to 20 minutes before it starts; a story reel then takes about 8 to 10 minutes) until `posts/<id>/reel-rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
 - Check it: extract 20 frames spread across the video with ffmpeg (`ffmpeg -ss <sec> -i reel.mp4 -frames:v 1 -vf scale=270:480 f.png`) and open them with the Read tool. Text must not overlap, be cut off, or sit in the bottom fifth. Check the audio exists (`ffprobe` shows an audio stream). Fix the spec and re-render if needed (delete reel-rendered.json, push).
 
 ## 3S. Stories (every slot day)
