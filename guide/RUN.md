@@ -3,12 +3,12 @@
 This repository is for **@creativia.sci only**. Never touch the `creativia-content` repository or the @creativia.mag Metricool brand from this task.
 
 Goal: keep the next 7 days filled, **one feed post every day** at **21:00 Asia/Baghdad**, on Instagram AND Facebook.
-Monthly plan (owner, Nov 2026): **about 20 reels + 10 posts (carousels and single posts)**, plus **2 stories every day**, plus an **extra post on the same day for a truly huge trend**.
+Monthly plan (owner, Nov 2026): **about 20 reels (about 15 animated, engine 4 — `guide/ANIMATION.md`; about 5 story reels, engine 3, only for topics that need real photos or direct information) + 10 posts (carousels and single posts)**, plus **2 stories every day**, plus an **extra post on the same day for a truly huge trend**.
 Each run creates **at most one slot post (with its two stories) plus at most one extra post** (see Extra posts). Do not edit or delete anything else in Metricool.
 
 ## 1. Setup
 - Attach `hassaanalalosy-ctrl/creativia-science` with push access (add_repo) and `git clone --depth 1` it to `/home/claude/creativia-science`.
-- Read `guide/CONTENT_GUIDE.md`, `guide/REELS.md`, `log/posted.md` and `log/schedule.json`.
+- Read `guide/CONTENT_GUIDE.md`, `guide/REELS.md`, `guide/ANIMATION.md`, `log/posted.md` and `log/schedule.json`.
 - Load the Metricool tools with ToolSearch (query "metricool"). Brand/blog id: **7909822** (the "Creativia Science" brand: Instagram @creativia.sci + its Facebook Page; never use 7656023, that is @creativia.mag), timezone Asia/Baghdad.
 
 ## 2. Pick the slot (or stop)
@@ -28,6 +28,8 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 - Open every rendered slide image with the Read tool and check it: text not cut off, no overlapping elements, images loaded, numbers in English digits, credits present. If something is wrong, fix the spec and re-render (delete rendered.json, push).
 
 ## 3R. Make a reel (reel days only)
+- **First decide the type** (`guide/ANIMATION.md`, "Which reels are animated"): animated (engine 4) by default, about 15 a month; a story reel (engine 3) only when the topic needs real photos or direct information, about 5 a month. For an animated reel write `posts/<id>/toon.json` as ANIMATION.md says (reference `posts/test-toon-2/toon.json`, narrator Hamida `JjTirzdD7T3GMLkwdd3a`), then continue with the same stories, render, polling, 20-frame check and Metricool steps below. Record `"engine": 4` or `3` in the `log/schedule.json` entry.
+- For a story reel:
 - Choose a topic as `guide/REELS.md` says, and write `posts/<id>/reel.json` as a **story reel, `"engine": 3`** (see REELS.md, reference `posts/test-tunnel-2/reel.json`), music from the library, `"voice": true`, `"voiceId": "fbIG6gEosVIM95R5qOna"`, and every beat with a fully vowelled `say` and a plain `show`.
 - Also write `posts/<id>/stories.json` (section 3S) in the same commit.
 - Commit "Reel spec: <slug>" and push. The GitHub Action renders `reel.mp4` (with music, sound effects and voice) and `reel-cover.jpg`, then the stories (about 4 to 8 minutes).

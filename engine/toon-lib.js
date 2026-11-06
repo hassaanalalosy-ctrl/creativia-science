@@ -201,6 +201,10 @@
         + `<path d="M-30 -62 Q0 -56 30 -62" fill="none" stroke="${OUT}" stroke-width="2" opacity=".5"/>`
         + `<rect x="-2" y="-118" width="24" height="17" rx="4" fill="#5B6178" stroke="${OUT}" stroke-width="2"/><circle cx="4" cy="-109.5" r="2.6" fill="#FF5C7A"/><circle cx="11" cy="-109.5" r="2.6" fill="#FFD166"/><circle cx="17.5" cy="-109.5" r="2.6" fill="#5CE1B8"/>`
         + `<g transform="translate(-15 -106)"><circle r="9" fill="#fff" stroke="${OUT}" stroke-width="1.8"/><g transform="translate(-6.5 -6.5) scale(0.054)">${KRETI.mark}</g></g>`;
+    } else if (look.tee) {
+      s += `<path d="M-19 -131 Q-25 -96 -25 -56 Q0 -50 25 -56 Q25 -96 19 -131 Q0 -137 -19 -131 Z" fill="url(#coat${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+        + `<path d="M-25 -62 Q0 -56 25 -62 L26 -44 Q0 -38 -26 -44 Z" fill="${look.pants}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+        + `<path d="M-8 -133 Q1 -122 10 -133" fill="none" stroke="${OUT}" stroke-width="2.2" stroke-linecap="round"/><circle cx="-6" cy="-100" r="5" fill="${look.shirt}" stroke="${OUT}" stroke-width="1.6"/>`;
     } else {
       s += `<path d="M-19 -131 Q-26 -92 -28 -40 Q0 -34 28 -40 Q26 -92 19 -131 Q0 -137 -19 -131 Z" fill="url(#coat${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
         + `<path d="M-9 -132 L1 -110 L10 -132 Z" fill="${look.shirt}" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
@@ -472,6 +476,250 @@
     fg: (t, id) => `<g filter="url(#fgblur${id})">${cloud(80, 1560, 2.6, 0.95, '')}${cloud(620, 1720, 3, 0.95, 'b')}${cloud(340, 1880, 2.8, 0.95, '')}${cloud(-40, 1230, 2.2, 0.9, 'b')}${cloud(720, 1150, 2.4, 0.9, '')}</g>`
   };
 
+  // ---------------------------------------------------------------- more poses
+  Object.assign(POSES, {
+    run:      { fh: 0, fk: 0, bh: 0, bk: 0, fs: 0, fe: 0, bs: 0, be: 0, lean: 9, tilt: -4, runner: 1 },
+    scared:   { fh: 10, fk: 14, bh: -10, bk: 14, fT: [36, -158], bT: [-30, -158], lean: -4, tilt: 3 },
+    facepalm: { fh: 3, fk: 2, bh: -3, bk: 2, fT: [20, -172], bs: -12, be: -6, lean: 3, tilt: 10 },
+    present:  { fh: 4, fk: 2, bh: -4, bk: 2, fs: 64, fe: 22, bs: -12, be: -6, lean: 2, tilt: -4 },
+    sit:      { fh: 82, fk: 84, bh: 78, bk: 80, fs: 30, fe: 40, bs: -20, be: -30, lean: -2, tilt: 0 },
+    sleep:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 8, fe: 4, bs: -8, be: -4, lean: 2, tilt: 16 },
+    jumpJoy:  { fh: 30, fk: 60, bh: -20, bk: 50, fs: 160, fe: 10, bs: -160, be: -10, lean: 0, tilt: -6 }
+  });
+  const _walk = walkPose;
+  walkPose = function (p, run) {
+    const w = _walk(p);
+    if (!run) return w;
+    const s = Math.sin(p * 2 * Math.PI), c = Math.cos(p * 2 * Math.PI);
+    w.fh = 40 * s; w.bh = -40 * s; w.fk = 10 + Math.max(0, -c) * 60; w.bk = 10 + Math.max(0, c) * 60;
+    w.fs = 20 + 40 * s; w.fe = 80; w.bs = -20 + 40 * s; w.be = -80; w.lean = 9; w.bob = Math.abs(s) * 8;
+    return w;
+  };
+  Object.assign(LOOKS, {
+    kid: { skin: '#F6E3CF', skinLight: '#FFF7EE', skinDark: '#E0C6AC', hair: '#4A2E1E', coat: '#FF8FA3', coatDark: '#E06C84',
+      shirt: '#FFD166', tie: null, pants: '#3E7BFA', pantsDark: '#2F62CC', shoe: '#E0336E', shoeDark: '#B82458',
+      sleeve: '#FF8FA3', sleeveDark: '#E06C84', pen: '#FFD166', glasses: false, mustache: false, badge: false, tee: true },
+    woman: { skin: '#EFD6BF', skinLight: '#FFF3E6', skinDark: '#D8BBA0', hair: '#2B1A14', coat: '#2EC4B6', coatDark: '#21A194',
+      shirt: '#FFFFFF', tie: null, pants: '#3D3A5C', pantsDark: '#2E2B47', shoe: '#7A3B2E', shoeDark: '#5E2C22',
+      sleeve: '#2EC4B6', sleeveDark: '#21A194', pen: '#FFD166', glasses: false, mustache: false, badge: false, hairStyle: 'bun', tee: true },
+    diver: Object.assign({}, { skin: '#F7EDE0', skinLight: '#FFFBF5', skinDark: '#E4D3BF', hair: '#3B2A22', coat: '#FFD166', coatDark: '#E0AE3A',
+      pants: '#2B2F45', pantsDark: '#1F2236', shoe: '#2EC4B6', shoeDark: '#21A194', sleeve: '#2B2F45', sleeveDark: '#1F2236', glasses: false, suit: true })
+  });
+
+  // ---------------------------------------------------------------- props (shot.props: [{type, keys:[{t,x,y,s,rot,op}], front}])
+  const PROPS = {
+    brain: (t) => brainSvg(0, 0, 1, 0.4, t),
+    heart: (t) => { const b = 1 + Math.max(0, Math.sin(t * 7)) * 0.08; return `<g transform="scale(${f(b)})"><path d="M0 22 C-30 2 -30 -22 -14 -24 C-6 -25 -1 -19 0 -14 C1 -19 6 -25 14 -24 C30 -22 30 2 0 22 Z" fill="#FF4F70" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-16 -16 Q-22 -10 -18 -2" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/></g>`; },
+    drop: () => `<path d="M0 -26 Q18 0 14 10 Q10 22 0 22 Q-10 22 -14 10 Q-18 0 0 -26 Z" fill="#5CC3FF" stroke="${OUT}" stroke-width="2.4"/><path d="M-6 0 Q-8 8 -3 13" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".8"/>`,
+    bulb: (t) => `<circle r="30" fill="#FFF3A6" opacity="${f(0.35 + 0.15 * Math.sin(t * 6))}"/><path d="M-14 6 Q-22 -4 -18 -14 Q-12 -28 0 -28 Q12 -28 18 -14 Q22 -4 14 6 Q9 11 9 16 L-9 16 Q-9 11 -14 6 Z" fill="#FFE066" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><rect x="-9" y="16" width="18" height="9" rx="3" fill="#B9B4CC" stroke="${OUT}" stroke-width="2"/><path d="M-6 -2 L-2 -10 L2 -2 L6 -10" stroke="#E0A800" stroke-width="2" fill="none"/>`,
+    apple: () => `<path d="M0 -14 Q-18 -24 -22 -4 Q-24 16 -8 22 Q0 18 8 22 Q24 16 22 -4 Q18 -24 0 -14 Z" fill="#FF5C5C" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M0 -14 Q2 -24 6 -28" stroke="${OUT}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M4 -22 Q14 -30 18 -20 Q10 -16 4 -22 Z" fill="#58BE7E" stroke="${OUT}" stroke-width="1.8"/><path d="M-14 -6 Q-16 2 -12 8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>`,
+    star: (t) => `<g transform="rotate(${f(t * 40)})"><path d="M0 -24 L7 -8 L24 -7 L11 4 L15 21 L0 12 L-15 21 L-11 4 L-24 -7 L-7 -8 Z" fill="#FFD166" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/></g>`,
+    bolt: () => `<path d="M6 -28 L-14 4 L0 4 L-6 28 L16 -6 L2 -6 Z" fill="#FFD166" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`,
+    phone: (t) => `<rect x="-14" y="-26" width="28" height="52" rx="6" fill="#2A2230" stroke="${OUT}" stroke-width="2.2"/><rect x="-11" y="-21" width="22" height="40" rx="3" fill="#7EC8FF"/><circle cx="0" cy="-2" r="${f(6 + Math.sin(t * 5))}" fill="#fff" opacity=".8"/>`,
+    book: () => `<path d="M-26 -14 Q-13 -20 0 -14 Q13 -20 26 -14 L26 16 Q13 10 0 16 Q-13 10 -26 16 Z" fill="#fff" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M0 -14 L0 16" stroke="${OUT}" stroke-width="2"/><path d="M-20 -6 L-6 -9 M-20 0 L-6 -3 M6 -9 L20 -6 M6 -3 L20 0" stroke="#9FB7FF" stroke-width="2" stroke-linecap="round"/>`,
+    cup: (t) => `<path d="M-16 -12 L16 -12 L12 18 Q0 22 -12 18 Z" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M16 -6 Q28 -4 24 6 Q20 12 13 10" fill="none" stroke="${OUT}" stroke-width="2.4"/><path d="M-6 -18 Q${f(-10 + Math.sin(t * 3) * 3)} -28 -4 -36 M4 -18 Q${f(0 + Math.sin(t * 3 + 1) * 3)} -28 6 -36" stroke="#C9CFDB" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
+    cell: (t) => `<g transform="rotate(${f(t * 20)})"><ellipse rx="26" ry="20" fill="#E8344E" stroke="${OUT}" stroke-width="2.4"/><ellipse rx="13" ry="9" fill="#B81E38" opacity=".7"/><path d="M-16 -10 Q-8 -16 4 -15" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/></g>`,
+    fish: (t) => `<g transform="rotate(${f(Math.sin(t * 6) * 4)})"><path d="M-26 0 Q-6 -20 18 -6 L32 -16 L28 0 L32 16 L18 6 Q-6 20 -26 0 Z" fill="#FF9F43" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-4 -12 Q2 0 -4 12" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/><circle cx="-14" cy="-3" r="3" fill="${OUT}"/><circle cx="-13" cy="-4" r="1" fill="#fff"/></g>`,
+    sun: (t) => { let r = ''; for (let i = 0; i < 12; i++) { const a = i * 30 + t * 12; r += `<path d="M${f(34 * Math.cos(a * R))} ${f(34 * Math.sin(a * R))} L${f(46 * Math.cos(a * R))} ${f(46 * Math.sin(a * R))}" stroke="#FFB547" stroke-width="5" stroke-linecap="round"/>`; } return r + `<circle r="27" fill="#FFD166" stroke="${OUT}" stroke-width="2.6"/><path d="M-12 -12 Q-4 -18 6 -16" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>`; },
+    kreti: () => `<g transform="translate(-40 -40)">${KRETI.poster}</g>`
+  };
+  function propsSvg(sh, t, front) {
+    let s = '';
+    for (const p of sh.props || []) {
+      if (!!p.front !== front) continue;
+      if (p.t0 !== undefined && t < p.t0) continue;
+      if (p.t1 !== undefined && t > p.t1) continue;
+      const k = p.keys;
+      const x = track(k, t, 'x'), y = track(k, t, 'y'), sc = track(k, t, 's') || 1, rot = track(k, t, 'rot') || 0;
+      const op = track(k, t, 'op'); const o = op === undefined ? 1 : op;
+      if (o <= 0.01 || !PROPS[p.type]) continue;
+      s += `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${f(sc)})" opacity="${f(o)}">${PROPS[p.type](t)}</g>`;
+    }
+    return s;
+  }
+
+  // ---------------------------------------------------------------- more sets
+  const tree = (x, y, k, t, c1, c2) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-8 0 L-6 -70 Q0 -76 6 -70 L8 0 Z" fill="#8A5A3C" stroke="${OUT}" stroke-width="2.4"/><g transform="rotate(${f(Math.sin(t * 1.1 + x) * 2)} 0 -70)"><circle cx="0" cy="-108" r="40" fill="${c1}" stroke="${OUT}" stroke-width="2.4"/><circle cx="-30" cy="-82" r="26" fill="${c2}" stroke="${OUT}" stroke-width="2.4"/><circle cx="30" cy="-84" r="28" fill="${c2}" stroke="${OUT}" stroke-width="2.4"/><path d="M-20 -128 Q-8 -140 8 -136" stroke="#fff" stroke-width="4" fill="none" opacity=".35" stroke-linecap="round"/></g></g>`;
+  const flower = (x, y, c, t, i) => `<g transform="translate(${x} ${y}) rotate(${f(Math.sin(t * 2 + i) * 6)})"><path d="M0 0 L0 -16" stroke="#3FA36B" stroke-width="2.4"/><g transform="translate(0 -18)"><circle cx="-4" cy="0" r="4" fill="${c}"/><circle cx="4" cy="0" r="4" fill="${c}"/><circle cx="0" cy="-4" r="4" fill="${c}"/><circle cx="0" cy="4" r="4" fill="${c}"/><circle r="2.6" fill="#FFD166"/></g></g>`;
+  const ground = (id, c1, c2, line) => `<rect x="-300" y="520" width="1400" height="260" fill="url(#gr${id})"/><path d="M-300 520 L1100 520" stroke="${OUT}" stroke-width="3"/>`;
+  const grad = (id, n, a, b, x2) => `<linearGradient id="${n}${id}" x1="0" y1="0" x2="${x2 ? 1 : 0}" y2="${x2 ? 0 : 1}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  const blurDef = (id, v) => `<filter id="fgblur${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${v || 3.2}"/></filter>`;
+
+  // home: a cosy living room
+  SETS.home = {
+    defs: id => grad(id, 'hw', '#FBEBD8', '#F1D6B8') + grad(id, 'gr', '#C99A6B', '#A87A50') + grad(id, 'hsky', '#8FD3FF', '#E6F6FF') + grad(id, 'sofa', '#3FB8AF', '#2B8F88') + blurDef(id),
+    far: (t, id) => {
+      let s = `<rect x="-300" y="-120" width="1400" height="660" fill="url(#hw${id})"/>`;
+      for (let x = -300; x < 1100; x += 34) s += `<path d="M${x} -120 L${x} 520" stroke="#E9C9A6" stroke-width="10" opacity=".35"/>`;
+      s += `<rect x="-300" y="470" width="1400" height="50" fill="#E2BC93"/><path d="M-300 470 L1100 470" stroke="${OUT}" stroke-width="2.2"/>`;
+      // window + curtains
+      s += `<rect x="70" y="110" width="170" height="200" rx="8" fill="url(#hsky${id})" stroke="${OUT}" stroke-width="2.6"/><path d="M155 110 L155 310 M70 210 L240 210" stroke="#fff" stroke-width="7"/>`
+        + `<circle cx="${f(120 + Math.sin(t * 0.2) * 4)}" cy="150" r="14" fill="#FFE066" opacity=".9"/>`
+        + `<path d="M48 96 Q78 200 58 330 L94 330 Q110 200 96 96 Z" fill="#E0336E" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M262 96 Q232 200 252 330 L216 330 Q200 200 214 96 Z" fill="#E0336E" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><rect x="36" y="88" width="238" height="10" rx="5" fill="#8A5A3C" stroke="${OUT}" stroke-width="2.2"/>`;
+      // framed pictures: Kreti + a landscape
+      s += `<g transform="rotate(-3 360 170)"><rect x="318" y="120" width="88" height="100" rx="5" fill="#8A5A3C" stroke="${OUT}" stroke-width="2.4"/><rect x="326" y="128" width="72" height="84" fill="#F4E9FF"/><g transform="translate(330 136) scale(.82)">${KRETI.poster}</g></g>`
+        + `<g transform="rotate(2 480 160)"><rect x="440" y="124" width="84" height="66" rx="4" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.4"/><path d="M448 182 L472 150 L488 168 L500 156 L516 182 Z" fill="#58BE7E"/><circle cx="504" cy="140" r="7" fill="#FFD166"/></g>`;
+      s += clock(600, 150, t);
+      // bookshelf
+      s += `<rect x="640" y="220" width="130" height="250" rx="5" fill="#B98A5E" stroke="${OUT}" stroke-width="2.6"/>`;
+      for (const sy of [300, 380]) s += `<path d="M640 ${sy} L770 ${sy}" stroke="${OUT}" stroke-width="2.4"/>`;
+      const B = ['#E0336E', '#3E7BFA', '#FFD166', '#2EC4B6', '#912EE8', '#FF9F43'];
+      for (let i = 0; i < 6; i++) s += `<rect x="${650 + i * 15}" y="${248 + (i % 2) * 6}" width="12" height="${52 - (i % 2) * 6}" rx="2" fill="${B[i]}" stroke="${OUT}" stroke-width="1.6"/>`;
+      s += plant(735, 300, 0.45, t);
+      for (let i = 0; i < 5; i++) s += `<rect x="${652 + i * 18}" y="${330 + (i % 2) * 8}" width="14" height="${50 - (i % 2) * 8}" rx="2" fill="${B[(i + 2) % 6]}" stroke="${OUT}" stroke-width="1.6"/>`;
+      s += `<path d="M70 310 L240 310 L420 640 L120 640 Z" fill="#FFF4C4" opacity=".18"/>`;
+      return s;
+    },
+    air: t => SETS.lab.air(t),
+    mid: (t, id) => {
+      let s = ground(id) + `<ellipse cx="420" cy="572" rx="230" ry="34" fill="#912EE8" opacity=".35"/><ellipse cx="420" cy="572" rx="200" ry="26" fill="none" stroke="#fff" stroke-width="3" opacity=".3" stroke-dasharray="10 8"/>`;
+      for (let i = 0; i < 4; i++) s += `<path d="M-300 ${548 + i * 30} L1100 ${548 + i * 30}" stroke="#8E6440" stroke-width="1.2" opacity=".4"/>`;
+      // sofa
+      s += `<ellipse cx="560" cy="522" rx="150" ry="10" fill="#000" opacity=".14"/><rect x="420" y="380" width="280" height="80" rx="26" fill="url(#sofa${id})" stroke="${OUT}" stroke-width="2.6"/>`
+        + `<rect x="410" y="440" width="300" height="62" rx="18" fill="#3FB8AF" stroke="${OUT}" stroke-width="2.6"/><rect x="396" y="410" width="40" height="96" rx="18" fill="#2B8F88" stroke="${OUT}" stroke-width="2.6"/><rect x="684" y="410" width="40" height="96" rx="18" fill="#2B8F88" stroke="${OUT}" stroke-width="2.6"/>`
+        + `<path d="M560 444 L560 500" stroke="${OUT}" stroke-width="2" opacity=".4"/><rect x="430" y="500" width="10" height="20" fill="#5E4596"/><rect x="680" y="500" width="10" height="20" fill="#5E4596"/>`
+        + `<g transform="rotate(-10 470 420)"><rect x="446" y="400" width="44" height="40" rx="12" fill="#FFD166" stroke="${OUT}" stroke-width="2.4"/></g>`;
+      // floor lamp
+      s += `<path d="M770 520 L770 330" stroke="${OUT}" stroke-width="5"/><path d="M748 330 L792 330 L782 290 L758 290 Z" fill="#FFE8A3" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="770" cy="522" rx="20" ry="5" fill="${OUT}"/><circle cx="770" cy="340" r="60" fill="#FFF3A6" opacity=".18"/>`;
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})">${plant(10, 680, 1.6, t)}<rect x="700" y="560" width="160" height="140" rx="30" fill="#E0336E" stroke="${OUT}" stroke-width="3"/></g>`
+  };
+
+  // street: a sunny city street with a Kreti billboard
+  SETS.street = {
+    depth: { far: 0.55, air: 0.8, fg: 1.35 },
+    defs: id => grad(id, 'ssky', '#7EC8FF', '#E3F4FF') + grad(id, 'gr', '#B9B4CC', '#8E86A6') + grad(id, 'bb', '#A855F7', '#B91097', 1) + blurDef(id),
+    far: (t, id) => {
+      let s = `<rect x="-600" y="-500" width="2000" height="1100" fill="url(#ssky${id})"/><g transform="translate(560 90)">${PROPS.sun(t)}</g>`;
+      const cl = (cx, cy, k) => `<g transform="translate(${f(cx)} ${cy}) scale(${k})"><path d="M-30 8 Q-34 -6 -18 -8 Q-14 -24 4 -20 Q14 -32 28 -18 Q42 -16 38 0 Q40 10 28 10 L-22 10 Q-32 12 -30 8 Z" fill="#fff"/></g>`;
+      s += cl(100 + t * 4, 120, 1.4) + cl(380 + t * 3, 60, 1) + cl(-120 + t * 4, 200, 1.1);
+      for (let i = 0; i < 12; i++) { const x = -260 + i * 90, h = 160 + hash(i) * 180; s += `<rect x="${x}" y="${520 - h}" width="80" height="${h}" fill="#B7CDE6"/>`; }
+      return s;
+    },
+    air: (t) => {
+      let s = '';
+      const C = ['#FFB4A2', '#FFD6A5', '#BDE0FE', '#CDB4DB', '#B5EAD7', '#FFC8DD'];
+      for (let i = 0; i < 9; i++) {
+        const x = -220 + i * 130, w = 116, h = 220 + hash(i + 4) * 120, top = 520 - h;
+        s += `<rect x="${x}" y="${top}" width="${w}" height="${h}" fill="${C[i % 6]}" stroke="${OUT}" stroke-width="2.4"/><rect x="${x - 4}" y="${top - 8}" width="${w + 8}" height="10" fill="#fff" stroke="${OUT}" stroke-width="2"/>`;
+        for (let r = 0; r < Math.floor(h / 56) - 1; r++) for (let c = 0; c < 3; c++) s += `<rect x="${x + 14 + c * 34}" y="${top + 20 + r * 56}" width="22" height="30" rx="3" fill="${(i + r + c) % 4 ? '#E8F6FF' : '#FFE8A3'}" stroke="${OUT}" stroke-width="1.6"/>`;
+      }
+      // Kreti billboard
+      s += `<g transform="translate(400 100)"><rect x="0" y="0" width="190" height="96" rx="10" fill="url(#bbS)" stroke="${OUT}" stroke-width="2.6"/><g transform="translate(118 10) scale(.95)">${KRETI.poster}</g><text x="64" y="44" text-anchor="middle" font-family="Rubik" font-weight="900" font-size="15" fill="#fff" direction="rtl">كريتيفيا</text><text x="64" y="66" text-anchor="middle" font-family="Rubik" font-weight="800" font-size="13" fill="#F4E9FF" direction="rtl">ساينس</text><path d="M60 96 L60 150 M130 96 L130 150" stroke="${OUT}" stroke-width="5"/></g>`;
+      return s;
+    },
+    mid: (t, id, st, sh) => {
+      const ts = t - (sh ? sh.start : 0);
+      let s = `<rect x="-300" y="520" width="1400" height="50" fill="#D9D4E6"/><path d="M-300 520 L1100 520" stroke="${OUT}" stroke-width="3"/>`;
+      for (let x = -300; x < 1100; x += 60) s += `<path d="M${x} 520 L${x - 6} 570" stroke="#B0A9C4" stroke-width="1.6"/>`;
+      s += `<rect x="-300" y="570" width="1400" height="10" fill="#8E86A6" stroke="${OUT}" stroke-width="2"/><rect x="-300" y="580" width="1400" height="200" fill="#4A4558"/>`;
+      for (let x = -300; x < 1100; x += 90) s += `<rect x="${x}" y="628" width="50" height="8" rx="4" fill="#fff" opacity=".8"/>`;
+      // shop with awning
+      s += `<rect x="560" y="330" width="210" height="190" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.6"/><rect x="580" y="390" width="80" height="130" fill="#BDE0FE" stroke="${OUT}" stroke-width="2.4"/><rect x="676" y="390" width="74" height="70" fill="#BDE0FE" stroke="${OUT}" stroke-width="2.4"/>`;
+      for (let i = 0; i < 7; i++) s += `<path d="M${556 + i * 31} 330 L${587 + i * 31} 330 L${582 + i * 31} 362 Q${571 + i * 31} 370 ${561 + i * 31} 362 Z" fill="${i % 2 ? '#fff' : '#E0336E'}" stroke="${OUT}" stroke-width="2"/>`;
+      s += `<rect x="610" y="296" width="110" height="30" rx="6" fill="#2EC4B6" stroke="${OUT}" stroke-width="2.4"/><text x="665" y="318" text-anchor="middle" font-family="Rubik" font-weight="900" font-size="17" fill="#fff" direction="rtl">مقهى</text>`;
+      // street lamp, tree, bench
+      s += `<path d="M120 520 L120 300 Q120 280 140 280 L160 280" fill="none" stroke="${OUT}" stroke-width="6"/><path d="M150 278 L176 278 L170 292 L156 292 Z" fill="#FFE066" stroke="${OUT}" stroke-width="2.2"/>`
+        + tree(300, 520, 1.1, t, '#58BE7E', '#3FA36B')
+        + `<rect x="380" y="476" width="110" height="10" rx="4" fill="#B98A5E" stroke="${OUT}" stroke-width="2.2"/><rect x="380" y="452" width="110" height="10" rx="4" fill="#B98A5E" stroke="${OUT}" stroke-width="2.2"/><path d="M392 486 L392 520 M478 486 L478 520" stroke="${OUT}" stroke-width="4"/>`;
+      // a car driving by on the road
+      const cx = ((ts * 120) % 1500) - 400;
+      s += `<g transform="translate(${f(cx)} 600)"><path d="M-60 0 L-60 -24 Q-58 -32 -46 -34 L-30 -34 L-14 -56 L30 -56 L48 -34 Q66 -32 66 -16 L66 0 Z" fill="#FF9F43" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-8 -50 L26 -50 L38 -34 L-20 -34 Z" fill="#BDE0FE" stroke="${OUT}" stroke-width="2"/><circle cx="-34" cy="2" r="13" fill="${OUT}"/><circle cx="-34" cy="2" r="5" fill="#C9CFDB"/><circle cx="40" cy="2" r="13" fill="${OUT}"/><circle cx="40" cy="2" r="5" fill="#C9CFDB"/></g>`;
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})"><circle cx="-20" cy="640" r="90" fill="#3FA36B"/><circle cx="60" cy="680" r="70" fill="#58BE7E"/><path d="M760 760 L760 380" stroke="${OUT}" stroke-width="14"/></g>`
+  };
+
+  // ocean: under the sea (seabed at y = 520)
+  SETS.ocean = {
+    depth: { far: 0.55, air: 0.85, fg: 1.4 },
+    defs: id => `<linearGradient id="sea${id}" gradientUnits="userSpaceOnUse" x1="0" y1="-300" x2="0" y2="700"><stop offset="0" stop-color="#6FD6F2"/><stop offset=".55" stop-color="#1E7FC2"/><stop offset="1" stop-color="#0B3A78"/></linearGradient>` + grad(id, 'gr', '#F2D49B', '#D9B36F') + `<linearGradient id="ray${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>` + blurDef(id, 4),
+    far: (t, id) => {
+      let s = `<rect x="-600" y="-600" width="2000" height="1500" fill="url(#sea${id})"/>`;
+      for (let i = 0; i < 6; i++) { const x = -100 + i * 160 + Math.sin(t * 0.5 + i) * 20; s += `<path d="M${f(x)} -300 L${f(x + 60)} -300 L${f(x + 160)} 600 L${f(x + 40)} 600 Z" fill="url(#ray${id})" opacity="${f(0.5 + 0.3 * Math.sin(t + i))}"/>`; }
+      s += `<path d="M-300 470 Q-160 380 0 450 Q140 360 300 440 Q460 380 620 450 Q760 390 1000 460 L1000 700 L-300 700 Z" fill="#14558F" opacity=".8"/>`;
+      // a far whale silhouette
+      const wx = 640 - (t * 6) % 900;
+      s += `<path transform="translate(${f(wx)} 170)" d="M-70 0 Q-40 -34 20 -24 Q60 -18 80 -2 L110 -22 L104 4 L112 28 L80 10 Q40 30 -20 22 Q-66 16 -70 0 Z" fill="#0F4A82" opacity=".55"/>`;
+      return s;
+    },
+    air: (t) => {
+      let s = '';
+      for (let i = 0; i < 28; i++) { const x = hash(i) * 760 + Math.sin(t * 2 + i) * 6, y = 560 - ((t * (30 + hash(i + 2) * 40) + hash(i + 5) * 700) % 760); s += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(2 + hash(i + 8) * 4)}" fill="none" stroke="#fff" stroke-width="1.4" opacity=".6"/>`; }
+      return s;
+    },
+    mid: (t, id) => {
+      let s = `<path d="M-300 530 Q-100 510 100 528 Q300 512 500 530 Q700 514 1100 528 L1100 780 L-300 780 Z" fill="url(#gr${id})" stroke="${OUT}" stroke-width="3"/>`;
+      const weed = (x, h, c, i) => `<path d="M${x} 530 Q${f(x - 14 + Math.sin(t * 1.6 + i) * 10)} ${530 - h * 0.5} ${f(x + Math.sin(t * 1.6 + i + 1) * 16)} ${530 - h}" fill="none" stroke="${OUT}" stroke-width="10" stroke-linecap="round"/><path d="M${x} 530 Q${f(x - 14 + Math.sin(t * 1.6 + i) * 10)} ${530 - h * 0.5} ${f(x + Math.sin(t * 1.6 + i + 1) * 16)} ${530 - h}" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>`;
+      [[40, 130, '#3FA36B'], [70, 90, '#58BE7E'], [600, 150, '#3FA36B'], [640, 100, '#58BE7E'], [720, 120, '#3FA36B'], [250, 70, '#58BE7E']].forEach((w, i) => { s += weed(w[0], w[1], w[2], i); });
+      // corals
+      s += `<g transform="translate(470 530)"><path d="M0 0 L-4 -40 Q-20 -60 -16 -78 M-4 -40 Q10 -64 24 -70 M-2 -20 Q-26 -30 -34 -46" fill="none" stroke="${OUT}" stroke-width="12" stroke-linecap="round"/><path d="M0 0 L-4 -40 Q-20 -60 -16 -78 M-4 -40 Q10 -64 24 -70 M-2 -20 Q-26 -30 -34 -46" fill="none" stroke="#FF6F91" stroke-width="7" stroke-linecap="round"/></g>`
+        + `<g transform="translate(160 530)"><ellipse cx="0" cy="-16" rx="40" ry="20" fill="#FF9F43" stroke="${OUT}" stroke-width="2.4"/><path d="M-30 -18 Q0 -30 30 -18 M-24 -8 Q0 -18 24 -8" fill="none" stroke="#D9773A" stroke-width="2"/></g>`;
+      // treasure chest with a Kreti sticker
+      s += `<g transform="translate(360 532)"><rect x="-34" y="-34" width="68" height="34" rx="4" fill="#B5703A" stroke="${OUT}" stroke-width="2.4"/><path d="M-34 -34 Q0 -60 34 -34 Z" fill="#C9813F" stroke="${OUT}" stroke-width="2.4"/><rect x="-6" y="-38" width="12" height="16" rx="2" fill="#FFD166" stroke="${OUT}" stroke-width="2"/><g transform="translate(14 -24)"><circle r="8" fill="#FFFDF7" stroke="${OUT}" stroke-width="1.4"/><g transform="translate(-5.8 -5.8) scale(.048)">${KRETI.mark}</g></g></g>`;
+      // fish school
+      for (let i = 0; i < 5; i++) { const fx = 760 - ((t * 50 + i * 40) % 1100), fy = 260 + i * 22 + Math.sin(t * 2 + i) * 8; s += `<g transform="translate(${f(fx)} ${f(fy)}) scale(.6)">${PROPS.fish(t + i)}</g>`; }
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})"><path d="M-20 780 Q-40 600 ${f(10 + Math.sin(t) * 14)} 470" stroke="#2D7A50" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M760 780 Q790 620 ${f(740 + Math.sin(t + 1) * 14)} 520" stroke="#3FA36B" stroke-width="20" fill="none" stroke-linecap="round"/></g>`
+  };
+
+  // nature: a meadow by the forest
+  SETS.nature = {
+    depth: { far: 0.55, air: 0.8, fg: 1.35 },
+    defs: id => grad(id, 'nsky', '#86CFFF', '#E9F8FF') + grad(id, 'gr', '#7ED389', '#4FAF63') + blurDef(id),
+    far: (t, id) => {
+      let s = `<rect x="-600" y="-500" width="2000" height="1100" fill="url(#nsky${id})"/><g transform="translate(140 100)">${PROPS.sun(t)}</g>`;
+      s += `<path d="M-300 420 L-120 220 L20 360 L180 160 L360 380 L520 200 L700 380 L860 240 L1100 420 L1100 600 L-300 600 Z" fill="#A8B8E6"/><path d="M180 160 L214 200 L196 196 L180 214 L164 196 L148 200 Z M520 200 L552 236 L534 232 L520 248 L506 232 L490 236 Z" fill="#fff"/>`;
+      s += `<path d="M-300 470 Q-100 400 100 450 Q300 390 500 450 Q700 400 1100 450 L1100 600 L-300 600 Z" fill="#8FD19A"/>`;
+      const cl = (cx, cy, k) => `<g transform="translate(${f(cx)} ${cy}) scale(${k})"><path d="M-30 8 Q-34 -6 -18 -8 Q-14 -24 4 -20 Q14 -32 28 -18 Q42 -16 38 0 Q40 10 28 10 L-22 10 Q-32 12 -30 8 Z" fill="#fff"/></g>`;
+      return s + cl(300 + t * 4, 80, 1.3) + cl(560 + t * 3, 140, 0.9);
+    },
+    air: (t) => {
+      let s = '';
+      for (let i = 0; i < 4; i++) { const x = 100 + i * 170 + Math.sin(t * 0.8 + i) * 40, y = 300 + Math.cos(t * 1.1 + i) * 30, w = Math.abs(Math.sin(t * 12 + i)); s += `<g transform="translate(${f(x)} ${f(y)})"><ellipse cx="-5" cy="0" rx="${f(6 * w + 1)}" ry="7" fill="${['#FF8FA3', '#FFD166', '#C49BFF', '#7DE2D1'][i]}" stroke="${OUT}" stroke-width="1.4"/><ellipse cx="5" cy="0" rx="${f(6 * w + 1)}" ry="7" fill="${['#FF8FA3', '#FFD166', '#C49BFF', '#7DE2D1'][i]}" stroke="${OUT}" stroke-width="1.4"/><path d="M0 -6 L0 6" stroke="${OUT}" stroke-width="2"/></g>`; }
+      return s + tree(170, 520, 1.3, t, '#3FA36B', '#2D7A50') + tree(640, 520, 1.5, t, '#3FA36B', '#2D7A50');
+    },
+    mid: (t, id) => {
+      let s = ground(id);
+      for (let i = 0; i < 40; i++) { const x = -200 + i * 30 + hash(i) * 20, y = 540 + hash(i + 3) * 200; s += `<path d="M${f(x)} ${f(y)} q3 -10 6 0 q3 -12 6 0" fill="none" stroke="#3E9A52" stroke-width="2" stroke-linecap="round"/>`; }
+      const FC = ['#FF8FA3', '#FFD166', '#fff', '#C49BFF'];
+      for (let i = 0; i < 16; i++) s += flower(f(-100 + hash(i + 20) * 900), f(560 + hash(i + 30) * 160), FC[i % 4], t, i);
+      // rock, mushroom, a birdhouse with Kreti
+      s += `<path d="M120 522 Q110 488 150 480 Q190 474 196 506 Q200 522 186 522 Z" fill="#B9B4CC" stroke="${OUT}" stroke-width="2.4"/>`
+        + `<g transform="translate(560 522)"><path d="M-6 0 L-5 -24 L5 -24 L6 0 Z" fill="#FFFDF7" stroke="${OUT}" stroke-width="2"/><path d="M-22 -22 Q0 -46 22 -22 Z" fill="#E0336E" stroke="${OUT}" stroke-width="2.2"/><circle cx="-8" cy="-30" r="3" fill="#fff"/><circle cx="8" cy="-28" r="2.4" fill="#fff"/></g>`
+        + `<g transform="translate(640 380)"><path d="M0 140 L0 30" stroke="#8A5A3C" stroke-width="6"/><path d="M-30 30 L0 0 L30 30 Z" fill="#E0336E" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><rect x="-22" y="30" width="44" height="40" rx="3" fill="#FFD6A5" stroke="${OUT}" stroke-width="2.4"/><circle cx="0" cy="50" r="9" fill="${OUT}"/><g transform="translate(-20 32) scale(.05)">${KRETI.mark}</g></g>`;
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})">${flower(20, 700, '#FF8FA3', t, 1).replace('<g transform="translate(20 700)', '<g transform="translate(20 700) scale(4)')}<path d="M700 780 Q720 600 760 520 Q770 640 790 780 Z" fill="#3E9A52"/></g>`
+  };
+
+  // body: inside a blood vessel (no floor; characters float)
+  SETS.body = {
+    depth: { far: 0.6, air: 0.85, fg: 1.4 },
+    defs: id => `<radialGradient id="ves${id}" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#FF8FA3"/><stop offset=".6" stop-color="#D93A5C"/><stop offset="1" stop-color="#7A1230"/></radialGradient>` + blurDef(id, 4.5),
+    far: (t, id) => {
+      let s = `<rect x="-600" y="-500" width="2000" height="1500" fill="url(#ves${id})"/>`;
+      for (let i = 0; i < 6; i++) { const r = 120 + i * 90 + ((t * 40) % 90); s += `<ellipse cx="360" cy="320" rx="${f(r * 1.3)}" ry="${f(r)}" fill="none" stroke="#FFB3C1" stroke-width="${f(3 + i)}" opacity="${f(0.25 - i * 0.03)}"/>`; }
+      return s;
+    },
+    air: (t) => {
+      let s = '';
+      for (let i = 0; i < 10; i++) { const x = 760 - ((t * (40 + hash(i) * 30) + hash(i + 1) * 900) % 1000), y = hash(i + 3) * 640; s += `<g transform="translate(${f(x)} ${f(y)}) scale(${f(0.4 + hash(i + 6) * 0.3)})" opacity=".7">${PROPS.cell(t + i)}</g>`; }
+      return s;
+    },
+    mid: (t) => {
+      let s = '';
+      for (let i = 0; i < 8; i++) { const x = 800 - ((t * (70 + hash(i + 9) * 40) + hash(i + 11) * 1000) % 1100), y = 80 + hash(i + 13) * 520; s += `<g transform="translate(${f(x)} ${f(y)}) scale(${f(0.9 + hash(i + 2) * 0.5)})">${PROPS.cell(t + i * 2)}</g>`; }
+      // a friendly white blood cell with Kreti glasses vibe
+      const wx = 560 + Math.sin(t * 0.8) * 20, wy = 200 + Math.cos(t * 1.1) * 12;
+      s += `<g transform="translate(${f(wx)} ${f(wy)})"><path d="M-40 0 Q-46 -30 -16 -38 Q8 -50 30 -32 Q50 -18 42 8 Q40 36 10 40 Q-24 46 -38 24 Q-48 14 -40 0 Z" fill="#F4F0FF" stroke="${OUT}" stroke-width="2.6"/><circle cx="-8" cy="-6" r="10" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="14" cy="-8" r="10" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="-6" cy="-4" r="4" fill="${OUT}"/><circle cx="16" cy="-6" r="4" fill="${OUT}"/><path d="M-6 14 Q4 22 14 13" stroke="${OUT}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
+      return s;
+    },
+    fg: (t, id) => { let s = ''; for (let i = 0; i < 3; i++) { const x = 900 - ((t * 160 + i * 400) % 1300); s += `<g transform="translate(${f(x)} ${f(120 + i * 220)}) scale(3)">${PROPS.cell(t)}</g>`; } return `<g filter="url(#fgblur${id})">${s}</g>`; }
+  };
+
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
@@ -498,7 +746,7 @@
     let cur = pk[0], prev = null;
     for (const q of pk) if (q.t <= t && q !== cur) { prev = cur; cur = q; }
     const poseOf = q => {
-      let P = q.pose === 'walk' ? walkPose((x / (a.stride || 70)) % 1) : Object.assign({}, POSES[q.pose]);
+      let P = q.pose === 'walk' || q.pose === 'run' ? walkPose((x / (a.stride || (q.pose === 'run' ? 110 : 70))) % 1, q.pose === 'run') : Object.assign({}, POSES[q.pose]);
       if (P.drift) { P.fs += Math.sin(t * 1.6) * 7; P.bs -= Math.sin(t * 1.6 + 1) * 7; P.fh += Math.sin(t * 1.2) * 6; P.bh += Math.sin(t * 1.2 + 2) * 6; }
       if (P.waveF) P.fe += Math.sin(t * 9) * 30;
       return P;
@@ -566,8 +814,9 @@
     for (const a of sh.actors || []) defs += charDefs(Object.assign({}, LOOKS[a.look] || LOOKS.scientist, a.lookOverride || {}), a.id);
     let world = layer(c, dep.far, set.far(t, id, sh)) + layer(c, dep.air, set.air(t, sh));
     let mid = set.mid(t, id, st, sh);
+    mid += propsSvg(sh, t, false);
     for (const { a, s } of actors) mid += drawActor(a, s, t);
-    mid += bursts(sh, t) + pops(sh, t);
+    mid += propsSvg(sh, t, true) + bursts(sh, t) + pops(sh, t);
     world += layer(c, 1, mid) + layer(c, dep.fg, set.fg(t, id, sh));
     const mb = sh.mblur ? track(sh.mblur, t, 'v') || 0 : 0;
     if (mb > 0.3) { defs += `<filter id="mb" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="0 ${f(mb)}"/></filter>`; world = `<g filter="url(#mb)">${world}</g>`; }

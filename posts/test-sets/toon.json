@@ -1,0 +1,21 @@
+{"engine": 4, "duration": 6, "lines": [],
+ "shots": [
+  {"start": 0, "set": "home", "camera": [{"t": 0, "x": 440, "y": 330, "z": 1.0}],
+   "props": [{"type": "cup", "keys": [{"t": 0, "x": 470, "y": 430, "s": 0.8}]}],
+   "actors": [{"id": "w", "look": "woman", "keys": [{"t": 0, "x": 380, "y": 520, "pose": "present", "expr": {"mouth": "smile", "lookX": 0.5}}]},
+              {"id": "k", "look": "kid", "keys": [{"t": 0, "x": 540, "y": 520, "s": 0.72, "face": -1, "pose": "jumpJoy", "expr": {"mouth": "grin", "eyes": "happy"}}]}]},
+  {"start": 1, "set": "street", "camera": [{"t": 1, "x": 420, "y": 300, "z": 1.0}],
+   "actors": [{"id": "s", "look": "professor", "stride": 110, "keys": [{"t": 1, "x": 300, "y": 520, "pose": "run", "expr": {"mouth": "o", "eyes": "wide", "brows": "up", "sweat": true}}, {"t": 2, "x": 420}]}]},
+  {"start": 2, "set": "ocean", "camera": [{"t": 2, "x": 380, "y": 330, "z": 1.0}],
+   "props": [{"type": "fish", "keys": [{"t": 2, "x": 480, "y": 300, "s": 1}]}],
+   "actors": [{"id": "d", "look": "diver", "float": true, "keys": [{"t": 2, "x": 330, "y": 420, "pose": "float", "rot": 6, "expr": {"mouth": "smile"}}]}]},
+  {"start": 3, "set": "nature", "camera": [{"t": 3, "x": 400, "y": 330, "z": 1.0}],
+   "props": [{"type": "apple", "keys": [{"t": 3, "x": 430, "y": 250, "s": 1}]}],
+   "actors": [{"id": "k2", "look": "kid", "keys": [{"t": 3, "x": 360, "y": 520, "s": 0.75, "pose": "think", "expr": {"lookX": 0.6, "lookY": -0.8, "brows": "up", "mouth": "o"}}]}]},
+  {"start": 4, "set": "body", "camera": [{"t": 4, "x": 360, "y": 320, "z": 1.0}],
+   "props": [{"type": "heart", "keys": [{"t": 4, "x": 200, "y": 160, "s": 1.2}]}],
+   "actors": [{"id": "a", "look": "astronaut", "float": true, "keys": [{"t": 4, "x": 300, "y": 470, "s": 0.8, "pose": "wave", "rot": -8, "expr": {"mouth": "grin"}}]}]},
+  {"start": 5, "set": "lab", "camera": [{"t": 5, "x": 420, "y": 330, "z": 1.0}],
+   "props": [{"type": "bulb", "keys": [{"t": 5, "x": 400, "y": 250, "s": 1}]}],
+   "actors": [{"id": "p", "look": "scientist", "keys": [{"t": 5, "x": 360, "y": 520, "pose": "scared", "expr": {"eyes": "wide", "mouth": "o", "brows": "worried", "sweat": true}}]}]}
+ ]}

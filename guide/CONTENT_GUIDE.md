@@ -40,7 +40,7 @@ Avoid: politics, religion debates, war imagery, gore and graphic medical images,
 - Names of scientists, institutes and journals: Arabic in slide text, original spelling in the caption sources.
 
 ## Format rotation (keeps the feed varied)
-Post days only (reels follow REELS.md). Count the post-day entries already in `log/schedule.json` (ignore reels and `-extra` keys; call it N), then N mod 5 — this gives 8 carousels and 2 single posts a month:
+Post days only (reels follow REELS.md and ANIMATION.md: about 15 animated + 5 story reels a month). Count the post-day entries already in `log/schedule.json` (ignore reels and `-extra` keys; call it N), then N mod 5 — this gives 8 carousels and 2 single posts a month:
 - **0 · News carousel** — `cover` (Kreti) → `inner` slides (what happened, how it works, what is next) → one `text` slide with the key takeaway → `end`.
 - **1 · "What happens if…" carousel** — `cover` (Kreti `think`) → steps in order (`inner` or `text` slides, with numbers and times) → `text` summary → `end`.
 - **2 · Single post** — one `single` slide: one stunning real image (space, nature, microscope) with a short surprising fact.
