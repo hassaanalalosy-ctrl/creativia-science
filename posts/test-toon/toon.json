@@ -1,0 +1,254 @@
+{
+ "engine": 4,
+ "set": "lab",
+ "duration": 11.2,
+ "coverAt": 7.6,
+ "camera": [
+  {
+   "t": 0,
+   "x": 190,
+   "y": 330,
+   "z": 1.02
+  },
+  {
+   "t": 4.2,
+   "x": 455,
+   "y": 330,
+   "z": 1.02
+  },
+  {
+   "t": 4.6,
+   "x": 470,
+   "y": 334,
+   "z": 1.05
+  },
+  {
+   "t": 6.2,
+   "x": 532,
+   "y": 352,
+   "z": 1.42
+  },
+  {
+   "t": 6.6,
+   "x": 532,
+   "y": 352,
+   "z": 1.45
+  },
+  {
+   "t": 6.95,
+   "x": 522,
+   "y": 346,
+   "z": 2.05,
+   "ease": "out"
+  },
+  {
+   "t": 9.1,
+   "x": 520,
+   "y": 344,
+   "z": 2.15
+  },
+  {
+   "t": 9.6,
+   "x": 345,
+   "y": 150,
+   "z": 1.72
+  },
+  {
+   "t": 11.2,
+   "x": 345,
+   "y": 152,
+   "z": 1.86
+  }
+ ],
+ "shake": [
+  {
+   "t0": 6.6,
+   "t1": 7.15,
+   "amp": 4
+  }
+ ],
+ "glow": [
+  {
+   "t": 0,
+   "v": 0.12
+  },
+  {
+   "t": 6.0,
+   "v": 0.18
+  },
+  {
+   "t": 6.5,
+   "v": 1,
+   "ease": "in"
+  },
+  {
+   "t": 8,
+   "v": 0.75
+  },
+  {
+   "t": 11.2,
+   "v": 0.85
+  }
+ ],
+ "flash": [
+  {
+   "t": 6.4,
+   "v": 0
+  },
+  {
+   "t": 6.52,
+   "v": 0.5,
+   "ease": "out"
+  },
+  {
+   "t": 6.9,
+   "v": 0
+  }
+ ],
+ "bursts": [
+  {
+   "t0": 6.5,
+   "x": 600,
+   "y": 340
+  }
+ ],
+ "pops": [
+  {
+   "t0": 6.8,
+   "t1": 8.6,
+   "x": 505,
+   "y": 252,
+   "text": "مذهل!",
+   "size": 24,
+   "rot": -9
+  }
+ ],
+ "captions": [
+  {
+   "t0": 0.4,
+   "t1": 3.9,
+   "text": "ماذا يخفي هذا المختبر؟"
+  }
+ ],
+ "actors": [
+  {
+   "id": "sci",
+   "look": "scientist",
+   "stride": 72,
+   "seed": 0.7,
+   "jumps": [
+    {
+     "t0": 6.6,
+     "t1": 7.05,
+     "h": 30
+    }
+   ],
+   "tremble": [
+    {
+     "t0": 7.1,
+     "t1": 8.9,
+     "amp": 1.1
+    }
+   ],
+   "keys": [
+    {
+     "t": 0,
+     "x": -50,
+     "face": 1,
+     "pose": "walk",
+     "expr": {
+      "eyes": "open",
+      "mouth": "smile",
+      "brows": "neutral",
+      "lookX": 0.6,
+      "lookY": 0
+     }
+    },
+    {
+     "t": 4.2,
+     "x": 470,
+     "pose": "stand",
+     "ease": "out"
+    },
+    {
+     "t": 4.5,
+     "expr": {
+      "lookX": 1,
+      "lookY": 0.6
+     }
+    },
+    {
+     "t": 5.0,
+     "pose": "point",
+     "expr": {
+      "brows": "up",
+      "mouth": "o"
+     }
+    },
+    {
+     "t": 5.6,
+     "expr": {
+      "mouth": "smile",
+      "brows": "neutral"
+     }
+    },
+    {
+     "t": 6.6,
+     "pose": "surprise",
+     "blend": 0.12,
+     "expr": {
+      "eyes": "wide",
+      "brows": "up",
+      "mouth": "o",
+      "sweat": true,
+      "lookX": 0.9,
+      "lookY": 0.2
+     }
+    },
+    {
+     "t": 8.7,
+     "pose": "think",
+     "expr": {
+      "eyes": "open",
+      "mouth": "flat",
+      "brows": "worried",
+      "lookX": 1,
+      "lookY": 0.4
+     }
+    }
+   ]
+  }
+ ],
+ "music": {
+  "file": "kulakovka-lofi-upbeat-611601.mp3",
+  "volume": 0.22
+ },
+ "sfx": [
+  {
+   "file": "11325622-clock-ticking-sound-effect-240503.mp3",
+   "at": 0,
+   "vol": 0.22,
+   "loop": true
+  },
+  {
+   "file": "humordome-fairy-sparkle-451414.mp3",
+   "at": 6.3,
+   "vol": 1.1
+  },
+  {
+   "file": "47313572-ui-pop-sound-316482.mp3",
+   "at": 6.62,
+   "vol": 1
+  },
+  {
+   "file": "asproductionmusic-whoosh-1-588295.mp3",
+   "at": 9.05,
+   "vol": 1
+  },
+  {
+   "file": "universfield-soft-bell-ding-485895.mp3",
+   "at": 9.6,
+   "vol": 0.8
+  }
+ ]
+}
