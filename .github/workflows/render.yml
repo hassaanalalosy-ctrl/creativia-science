@@ -43,7 +43,13 @@ jobs:
             [ -e "$f" ] || continue
             d=$(dirname "$f"); id=$(basename "$d")
             [ -e "$d/reel-rendered.json" ] && continue
-            if [ "$(jq -r '.engine // 1' "$f")" = "2" ]; then
+            eng=$(jq -r '.engine // 1' "$f")
+            if [ "$eng" = "3" ]; then
+              if [ "$(jq -r '.voice // false' "$f")" = "true" ]; then
+                node engine/voice.js "$id" || { echo "{\"error\": \"voice failed\"}" > "$d/render-error.json"; continue; }
+              fi
+              node engine/reel3.js "$id" || echo "{\"error\": \"reel v3 render failed\"}" > "$d/render-error.json"
+            elif [ "$eng" = "2" ]; then
               if [ "$(jq -r '.voice // false' "$f")" = "true" ]; then
                 node engine/voice.js "$id" || { echo "{\"error\": \"voice failed\"}" > "$d/render-error.json"; continue; }
               fi

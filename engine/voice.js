@@ -21,7 +21,8 @@ const MODEL = 'eleven_v4';
   const old = fs.existsSync(path.join(vdir, 'voice.json')) ? JSON.parse(fs.readFileSync(path.join(vdir, 'voice.json'), 'utf8')) : { clips: [] };
   const voiceId = spec.voiceId || DEFAULT_VOICE;
   if (!voiceId) throw new Error('No voice chosen yet: add voiceId to reel.json or set DEFAULT_VOICE in engine/voice.js');
-  const says = spec.scenes.map(s => s.say || '');
+  // engine 3 reels keep their lines in shots[].beats[]; older reels in scenes[]
+  const says = spec.shots ? spec.shots.flatMap(sh => sh.beats.map(b => b.say || '')) : spec.scenes.map(s => s.say || '');
   const clips = [];
   let chars = 0;
   for (let k = 0; k < says.length; k++) {
