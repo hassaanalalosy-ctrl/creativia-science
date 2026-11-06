@@ -66,6 +66,14 @@ Reference: `posts/test-tunnel-2/reel.json` (the approved test). Always `"engine"
 - Voice: `"voiceId": "fbIG6gEosVIM95R5qOna"` (the owner's chosen deep narrator). Mode dark for space and dramatic topics.
 - Check before scheduling: extract about 20 frames across the video and look at every one: no cut that resets the same picture, no stretched or distorted shapes, no overlaps, nothing in the bottom fifth, captions readable; `ffprobe` shows an audio stream.
 
+### Motion variety and audio (owner rules, Nov 2026)
+- **Vary the motion with the story**; never reuse the same structure reel after reel. Choose per story:
+  - **Opening scene**: `"scene": "meadow"` (sky, sun, clouds, hill, grass, flowers; for weather, nature, plants, the sky) or `"scene": "space"` (stars and nebula; for space and astronomy) behind the `open` shot's subject. When the story moves to the subject, the scene melts away (fade + blur) and the subject flies into the glass window while the grid background appears. Without a fitting scene, open on the subject alone.
+  - **Window frame**: `"frame": "wide"` (default), `"square"` or `"tall"` (4:5). `frameKeys` (`[{"at": "b1", "frame": "tall"}]`) grow or shrink the window during a shot when the content needs it (a tall `stack`, a falling object, a tall body diagram). Use tall with tall content only (rows look small in it), and keep the beats under a tall frame short (2 caption lines at most).
+  - **Camera**: zoom into a detail, follow a moving dot, pull back to reveal, lift for a big number. At least two kinds of camera move per reel.
+  - **Lens** (`lens` in `art`) to zoom into tiny things; `counters` for numbers that climb; `labels` to name parts.
+- **Music sits far under the narrator** (the engine sets it low and ducks it hard under the voice). Never raise `musicVolume`; the narrator and the sound effects must always be clearly heard.
+
 ## Storytelling (owner's reference reels, Nov 2026)
 The owner shared reference reels (space without a suit, laughing-gas balloons, how far is the Sun, why zombies are green, two grapes in a microwave). What to take from them, done in OUR 2D dreamy style (never copy their 3D or presenters):
 - **Hook = one or two short sentences (2 to 4 seconds at most), then straight into the information** (owner rule). No long intros, no long jokes: humour only works in the references because of rich 3D characters, which we do not have. Examples: "كم تزن هذه الغيمة؟", "ماذا لو…؟", "لماذا…؟".

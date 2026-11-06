@@ -39,7 +39,7 @@ Write `posts/<id>/stories.json` together with the post spec:
 ```json
 {"mode": "dark",
  "alert": {"title": "the post's hook in under 60 characters"},
- "fact": {"tag": "معلومة سريعة", "icon": "؟", "title": "a surprising science fact, under 40 characters", "lines": 2, "body": "1 to 2 short sentences explaining it", "image": "optional credited image URL", "credit": "optional"}}
+ "fact": {"tag": "معلومة سريعة", "icon": "bolt", "title": "a surprising science fact, under 40 characters", "lines": 2, "body": "1 to 2 short sentences explaining it", "image": "optional credited image URL", "credit": "optional"}}
 ```
 - The fact is a DIFFERENT short science fact (not the day's post), verified in 2 sources, not already in `log/posted.md` (log it there too). `lines` = number of lines the title takes (1 or 2).
 - `mode`: same as the post.

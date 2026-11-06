@@ -105,8 +105,14 @@ function keyed(keys, lt, f, def) {
 }
 
 // ---- window geometry ----
-const WIN = { x: 24, y: 72, w: 312, h: 300, r: 30 }, PAD = 8;
-const IW = WIN.w - PAD * 2, IH = WIN.h - PAD * 2, S0 = Math.min(IW / 400, IH / 300);
+// window frames: wide (about 1:1, the default), square, tall (4:5). A shot can change frame over time (frameKeys).
+const FR = { wide: { x: 24, y: 72, w: 312, h: 300 }, square: { x: 24, y: 72, w: 312, h: 312 }, tall: { x: 40, y: 72, w: 280, h: 350 } }, PAD = 8;
+function geom(sh, lt) {
+  const f = FR[sh.frame] || FR.wide, k = sh.frameKeys;
+  const x = keyed(k, lt, 'x', f.x), y = keyed(k, lt, 'y', f.y), w = keyed(k, lt, 'w', f.w), h = keyed(k, lt, 'h', f.h);
+  const IW = w - PAD * 2, IH = h - PAD * 2;
+  return { x, y, w, h, r: 30, IW, IH, S0: Math.min(IW / 400, IH / 300) };
+}
 function cam(sh, lt) {
   const c = { z: keyed(sh.camera, lt, 'z', 1), x: keyed(sh.camera, lt, 'x', 200), y: keyed(sh.camera, lt, 'y', 150) };
   const f = sh.follow;
@@ -116,7 +122,7 @@ function cam(sh, lt) {
   }
   return c;
 }
-function toScreen(c, ax, ay) { return [IW / 2 + (ax - c.x) * S0 * c.z, IH / 2 + (ay - c.y) * S0 * c.z]; }
+function toScreen(c, ax, ay, g) { return [g.IW / 2 + (ax - c.x) * g.S0 * c.z, g.IH / 2 + (ay - c.y) * g.S0 * c.z]; }
 
 function dotPos(sh, lt) {
   const d = sh.dot; if (!d) return null;
@@ -126,30 +132,30 @@ function dotPos(sh, lt) {
   }
   return [keyed(d.keys, lt, 'x', 200), keyed(d.keys, lt, 'y', 30)];
 }
-function dotSvg(sh, lt, c) {
+function dotSvg(sh, lt, c, g) {
   if (!sh.dot) return '';
   const op = clamp(seg(lt, sh.dot.keys[0].t - 0.3, sh.dot.keys[0].t));
   let out = '';
   for (let i = 6; i >= 0; i--) {
     const p = dotPos(sh, lt - i * 0.05); if (!p) continue;
-    const [sx, sy] = toScreen(c, p[0], p[1]);
+    const [sx, sy] = toScreen(c, p[0], p[1], g);
     const r = i ? 5 - i * 0.55 : 6.5;
     out += '<circle cx="' + sx + '" cy="' + sy + '" r="' + r + '" fill="' + (i ? C.soft : '#FFFFFF') + '" opacity="' + (i ? 0.5 - i * 0.06 : 1) + '"/>';
   }
-  const p = dotPos(sh, lt), [sx, sy] = toScreen(c, p[0], p[1]);
-  return '<svg width="' + IW + '" height="' + IH + '" style="position:absolute;left:0;top:0;overflow:visible;opacity:' + op + '"><circle cx="' + sx + '" cy="' + sy + '" r="16" fill="' + C.soft + '" opacity="0.35" filter="url(#dg)"/><defs><filter id="dg" x="-2" y="-2" width="5" height="5"><feGaussianBlur stdDeviation="5"/></filter></defs>' + out + '</svg>';
+  const p = dotPos(sh, lt), [sx, sy] = toScreen(c, p[0], p[1], g);
+  return '<svg width="' + g.IW + '" height="' + g.IH + '" style="position:absolute;left:0;top:0;overflow:visible;opacity:' + op + '"><circle cx="' + sx + '" cy="' + sy + '" r="16" fill="' + C.soft + '" opacity="0.35" filter="url(#dg)"/><defs><filter id="dg" x="-2" y="-2" width="5" height="5"><feGaussianBlur stdDeviation="5"/></filter></defs>' + out + '</svg>';
 }
 // glass label chips pinned to points of the picture (follow the camera)
-function labels(sh, lt, c) {
+function labels(sh, lt, c, g) {
   return (sh.labels || []).map(l => {
     const pin = clamp(seg(lt, l.in, l.in + 0.45)) * (l.out != null ? 1 - clamp(seg(lt, l.out, l.out + 0.35)) : 1);
     if (pin <= 0.01) return '';
-    const [px, py] = toScreen(c, l.ax, l.ay);
+    const [px, py] = toScreen(c, l.ax, l.ay, g);
     const right = l.side !== 'l', len = l.len || 22;
     const cx = right ? px + len : px - len;
     const sp = spring(seg(lt, l.in, l.in + 0.7));
-    return '<svg width="' + IW + '" height="' + IH + '" style="position:absolute;left:0;top:0;overflow:visible;opacity:' + pin + '"><path d="M' + px + ' ' + py + ' L' + cx + ' ' + py + '" stroke="' + C.soft + '" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="' + px + '" cy="' + py + '" r="3.5" fill="#fff"/></svg>'
-      + '<div style="position:absolute;top:' + (py - 14) + 'px;' + (right ? 'left:' + cx : 'right:' + (IW - cx)) + 'px;opacity:' + pin + ';transform:scale(' + clamp(sp, 0, 1.15) + ');transform-origin:' + (right ? '0' : '100%') + ' 50%;white-space:nowrap;padding:5px 10px;border-radius:12px;background:' + C.chip + ';backdrop-filter:blur(10px);border:1px solid ' + C.rim + ';color:' + C.text + ';font-size:11px;font-weight:700">' + esc(l.text) + '</div>';
+    return '<svg width="' + g.IW + '" height="' + g.IH + '" style="position:absolute;left:0;top:0;overflow:visible;opacity:' + pin + '"><path d="M' + px + ' ' + py + ' L' + cx + ' ' + py + '" stroke="' + C.soft + '" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="' + px + '" cy="' + py + '" r="3.5" fill="#fff"/></svg>'
+      + '<div style="position:absolute;top:' + (py - 14) + 'px;' + (right ? 'left:' + cx : 'right:' + (g.IW - cx)) + 'px;opacity:' + pin + ';transform:scale(' + clamp(sp, 0, 1.15) + ');transform-origin:' + (right ? '0' : '100%') + ' 50%;white-space:nowrap;padding:5px 10px;border-radius:12px;background:' + C.chip + ';backdrop-filter:blur(10px);border:1px solid ' + C.rim + ';color:' + C.text + ';font-size:11px;font-weight:700">' + esc(l.text) + '</div>';
   }).join('');
 }
 function counters(sh, lt) {
@@ -174,6 +180,41 @@ function overlay(sh, lt) {
   }).join('');
 }
 
+// ---- drawn scenes behind the opening shot (full screen; they melt away when the window appears) ----
+function grassTuft(x, y, sc, t, k) {
+  const sw = Math.sin(t * 1.5 + k) * 2.5; let g = '';
+  [[-7, -16, -3], [0, -24, 0], [7, -17, 3], [-3, -19, -1], [4, -21, 2]].forEach(([dx, h, lean]) => {
+    const tx = x + dx * sc + (lean + sw) * sc, ty = y + h * sc;
+    g += '<path d="M' + (x + dx * sc - 3 * sc) + ' ' + y + ' Q' + (x + dx * sc) + ' ' + (y + h * 0.5 * sc) + ' ' + tx + ' ' + ty + ' Q' + (x + dx * sc + sc) + ' ' + (y + h * 0.45 * sc) + ' ' + (x + dx * sc + 3 * sc) + ' ' + y + ' Z" fill="url(#gb)"/>';
+  });
+  return g;
+}
+function flower(x, y, c, t, k) {
+  const b = Math.sin(t * 1.3 + k) * 1.5;
+  return '<g transform="translate(' + (x + b) + ' ' + y + ')"><path d="M0 0 Q1 8 0 16" stroke="#3FBF6A" stroke-width="2" fill="none"/>' + [0, 72, 144, 216, 288].map(a => '<ellipse cx="0" cy="-5" rx="3.2" ry="5" fill="' + c + '" transform="rotate(' + a + ')"/>').join('') + '<circle r="2.6" fill="#FFD23F"/></g>';
+}
+const SCENES = {
+  meadow(t) {
+    const cl = (x, y, w, op) => '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + (w * 0.75) + 'px;opacity:' + op + '">' + D.cloud + '</div>';
+    let g = '';
+    [[24, 520, 1.1], [90, 504, 0.9], [300, 512, 1.2], [250, 540, 1], [150, 556, 1.1], [40, 600, 1.2], [330, 596, 1], [200, 620, 0.9]].forEach(([x, y, sc], k) => g += grassTuft(x, y, sc, t, k));
+    g += flower(60, 506, '#FFFFFF', t, 1) + flower(272, 522, '#FFB3CF', t, 2) + flower(318, 570, '#FFFFFF', t, 3) + flower(26, 572, '#FFB3CF', t, 4) + flower(186, 590, '#FFFFFF', t, 5);
+    return '<div style="position:absolute;inset:0;background:linear-gradient(180deg,#B9A4F2 0%,#D9CCFA 40%,#F6E9F7 70%,#FFF1E2 100%)"></div>'
+      + '<div style="position:absolute;width:420px;height:420px;left:-130px;top:-150px;background:radial-gradient(circle,rgba(255,236,190,0.95),rgba(255,236,190,0) 60%)"></div>'
+      + cl(250 - t * 5, 96 + Math.sin(t) * 3, 110, 0.75) + cl(-30 - t * 3, 360 + Math.sin(t * 0.8) * 3, 120, 0.6)
+      + '<svg style="position:absolute;left:0;top:0" width="360" height="640" viewBox="0 0 360 640"><defs><linearGradient id="h1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FE3A6"/><stop offset="1" stop-color="#3FBF6A"/></linearGradient><linearGradient id="h2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7F0C6"/><stop offset="1" stop-color="#5ACD7E"/></linearGradient><linearGradient id="gb" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2FAE5C"/><stop offset="1" stop-color="#A8F0BC"/></linearGradient></defs>'
+      + '<path d="M-40 470 C80 425 220 440 400 460 L400 640 L-40 640 Z" fill="url(#h2)" opacity="0.9"/><path d="M-40 510 C60 455 260 462 400 492 L400 640 L-40 640 Z" fill="url(#h1)"/>' + g + '</svg>';
+  },
+  space(t) {
+    let st = '';
+    for (let i = 0; i < 46; i++) { const x = (i * 97 + 13) % 360, y = (i * 61 + 29) % 640, r = 0.8 + (i % 3) * 0.7; st += '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#fff" opacity="' + (0.35 + 0.5 * Math.abs(Math.sin(t * 1.4 + i))) + '"/>'; }
+    return '<div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 30% 20%,#2A1145,#0A0614 70%)"></div>'
+      + '<div style="position:absolute;width:520px;height:520px;left:-120px;top:240px;background:radial-gradient(circle,rgba(185,16,151,0.28),rgba(185,16,151,0) 62%)"></div>'
+      + '<div style="position:absolute;width:420px;height:420px;left:150px;top:-120px;background:radial-gradient(circle,rgba(91,108,255,0.25),rgba(91,108,255,0) 62%)"></div>'
+      + '<svg style="position:absolute;inset:0" width="360" height="640">' + st + '</svg>';
+  }
+};
+
 // ---- shots ----
 const SHOT = {
   // full-screen picture, no glass; the camera drifts in
@@ -182,6 +223,7 @@ const SHOT = {
     const b = beatAt(sh, lt);
     return {
       shape: sh.morphFrom, glassOp: 0,
+      scene: sh.scene && SCENES[sh.scene] ? SCENES[sh.scene](lt) : '',
       stage: '<div style="position:absolute;left:-20px;top:60px;width:400px;height:360px;transform:scale(' + z + ');transform-origin:' + (sh.focus ? (sh.focus[0] - 20) + 'px ' + (sh.focus[1] - 60) + 'px' : '50% 50%') + '">'
         + '<div style="position:absolute;inset:0">' + artFrame(sh.artSvg, sh.artMeta, lt) + '</div>'
         + '<svg viewBox="0 0 400 300" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">' + overlay(sh, lt) + '</svg></div>'
@@ -192,14 +234,15 @@ const SHOT = {
   },
   // the glass window: one picture, a camera that zooms and follows, labels, counters, a glowing dot
   window(sh, lt) {
-    const c = cam(sh, lt), b = beatAt(sh, lt);
+    const c = cam(sh, lt), b = beatAt(sh, lt), g = geom(sh, lt);
+    const { IW, IH, S0 } = g;
     const layer = '<div style="position:absolute;left:0;top:0;width:' + (400 * S0) + 'px;height:' + (300 * S0) + 'px;transform-origin:0 0;transform:translate(' + (IW / 2 - c.x * S0 * c.z) + 'px,' + (IH / 2 - c.y * S0 * c.z) + 'px) scale(' + c.z + ')">'
       + artFrame(sh.artSvg, sh.artMeta, lt) + '</div>';
     return {
-      shape: WIN, glassOp: 1, stage: '',
-      inner: '<div style="position:absolute;left:' + PAD + 'px;top:' + PAD + 'px;width:' + IW + 'px;height:' + IH + 'px;overflow:hidden;border-radius:' + (WIN.r - PAD) + 'px">' + layer + dotSvg(sh, lt, c) + labels(sh, lt, c) + '</div>' + counters(sh, lt),
-      over: (sh.note ? '<div style="position:absolute;right:28px;left:28px;top:' + (WIN.y + WIN.h + 6) + 'px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + C.muted + '">' + cred(sh.note) + '</div>' : '')
-        + caption(sh.beats[b].words, lt - sh.beats[b].start, 'right:26px;left:26px;top:' + (WIN.y + WIN.h + 26) + 'px;font-size:20px')
+      shape: { x: g.x, y: g.y, w: g.w, h: g.h, r: g.r }, glassOp: 1, stage: '',
+      inner: '<div style="position:absolute;left:' + PAD + 'px;top:' + PAD + 'px;width:' + IW + 'px;height:' + IH + 'px;overflow:hidden;border-radius:' + (g.r - PAD) + 'px">' + layer + dotSvg(sh, lt, c, g) + labels(sh, lt, c, g) + '</div>' + counters(sh, lt),
+      over: (sh.note ? '<div style="position:absolute;right:28px;left:28px;top:' + (g.y + g.h + 6) + 'px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + C.muted + '">' + cred(sh.note) + '</div>' : '')
+        + caption(sh.beats[b].words, lt - sh.beats[b].start, 'right:26px;left:26px;top:' + (g.y + g.h + 26) + 'px;font-size:' + (g.h > 320 ? 18 : 20) + 'px')
     };
   },
   // closing card: Kreti, a reaction bubble with an emoji, and "follow us"
@@ -227,7 +270,7 @@ window.drawFrame = function (t) {
   while (k < D.shots.length - 1 && t >= starts[k + 1]) k++;
   const sh = D.shots[k], lt = t - starts[k];
   const cur = SHOT[sh.type](sh, lt);
-  let shape = cur.shape, gop = cur.glassOp, stage = cur.stage, inner = cur.inner, over = cur.over;
+  let shape = cur.shape, gop = cur.glassOp, stage = cur.stage, inner = cur.inner, over = cur.over, scene = cur.scene || '';
   if (k > 0 && lt < TR) {
     // morph: the glass shape travels from the previous shot's shape to this one; pictures cross over inside it
     const ps = D.shots[k - 1], prev = SHOT[ps.type](ps, ps.dur + lt), p = inout(lt / TR);
@@ -240,12 +283,14 @@ window.drawFrame = function (t) {
       const f = ps.handoff || { from: [180, 225], to: [180, 218], s: 1 };
       const sc = lerp(1, f.s, p), dx = lerp(0, f.to[0] - f.from[0], p), dy = lerp(0, f.to[1] - f.from[1], p);
       stage = '<div style="position:absolute;inset:0;opacity:' + pin + ';transform-origin:' + f.from[0] + 'px ' + f.from[1] + 'px;transform:translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')">' + prev.stage + '</div>';
+      // the drawn scene melts away (fade + blur + slight pull-back) and the grid background shows through
+      if (prev.scene) scene = '<div style="position:absolute;inset:0;opacity:' + (1 - inout(seg(lt, 0, TR))) + ';filter:blur(' + (6 * p) + 'px);transform:scale(' + lerp(1, 1.06, p) + ')">' + prev.scene + '</div>';
     } else stage = '<div style="position:absolute;inset:0;opacity:' + pin + '">' + prev.stage + '</div>' + '<div style="position:absolute;inset:0;opacity:' + cin + '">' + cur.stage + '</div>';
     inner = '<div style="position:absolute;inset:0;opacity:' + pin + ';transform:scale(' + lerp(1, 0.92, p) + ')">' + prev.inner + '</div><div style="position:absolute;inset:0;opacity:' + cin + ';transform:scale(' + lerp(1.08, 1, p) + ')">' + cur.inner + '</div>';
     over = '<div style="position:absolute;inset:0;opacity:' + (1 - seg(lt, 0, TR * 0.4)) + '">' + prev.over + '</div><div style="position:absolute;inset:0;opacity:' + seg(lt, TR * 0.5, TR) + '">' + cur.over + '</div>';
   }
   const tiltY = Math.sin(t * 0.45) * 2.2, tiltX = Math.cos(t * 0.37) * 1.3, push = 1 + 0.02 * Math.sin(t * 0.3);
-  document.getElementById('stage').innerHTML = bg(t)
+  document.getElementById('stage').innerHTML = bg(t) + scene
     + '<div style="position:absolute;top:22px;right:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:' + C.muted + ';z-index:3"><span style="width:7px;height:7px;border-radius:50%;background:' + C.accent + ';opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا ساينس') + '</div>'
     + '<div style="position:absolute;top:20px;left:22px;z-index:3">' + D.mark + '</div>'
     + '<div style="position:absolute;inset:0;perspective:900px"><div style="position:absolute;inset:0;transform:scale(' + push + ') rotateY(' + tiltY + 'deg) rotateX(' + tiltX + 'deg);transform-style:preserve-3d">'
@@ -318,6 +363,8 @@ function anchor(sh, a) {
     if (sh.bubble) { sh.bubble.in = A(sh.bubble.in); sh.bubble.out = sh.bubble.out != null ? A(sh.bubble.out) : sh.bubble.in + 1.5; }
     if (sh.type === 'end') sh.followAt = A(sh.followAt || 0.3);
     if (sh.follow) { sh.follow.from = A(sh.follow.from); sh.follow.to = A(sh.follow.to); }
+    if (sh.frameKeys) { const FRm = { wide: { x: 24, y: 72, w: 312, h: 300 }, square: { x: 24, y: 72, w: 312, h: 312 }, tall: { x: 40, y: 72, w: 280, h: 350 } };
+      sh.frameKeys = sh.frameKeys.map(k => Object.assign({}, FRm[k.frame] || FRm.wide, { t: A(k.at), d: k.d || 0.7, ease: 'inout' })); }
     if (sh.art) { const r = artSvg(sh.art, mode, { w: '100%', h: '100%' }, { anim: true }); sh.artSvg = r.svg; sh.artMeta = r.meta; }
     if (sh.type === 'open' && !sh.morphFrom) sh.morphFrom = { x: 100, y: 145, w: 160, h: 160, r: 80 };
   }
@@ -327,7 +374,7 @@ function anchor(sh, a) {
   const poses = {};
   for (const p of ['wave', 'point', 'jump', 'think']) poses[p] = kreti({ pose: p, size: 240, mode, cut: theme.cut, look: 'dream' });
   const grain = 'data:image/svg+xml;base64,' + Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>').toString('base64');
-  const data = { TR, badge: spec.badge, theme, kreti: poses, mark: mark({ size: 24 }), grain,
+  const data = { TR, cloud: artSvg({ items: [{ name: 'cloud' }], sparkles: false }, 'light', { w: '100%', h: '100%' }), badge: spec.badge, theme, kreti: poses, mark: mark({ size: 24 }), grain,
     shots: spec.shots.map(s => { const o = Object.assign({}, s); delete o.art; o.beats = s.beats.map(b => ({ start: b.start, dur: b.dur, words: b.words })); return o; }) };
   const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">${FONT_CSS}
 <style>body{margin:0;background:#000}#stage{position:relative;width:360px;height:640px;overflow:hidden;font-family:'Rubik',sans-serif;color:${theme.text};direction:rtl}</style></head>
@@ -382,7 +429,7 @@ function anchor(sh, a) {
   const parts = [], vo = [], sfx = []; let idx = 1, mus = null;
   if (spec.music) {
     args.push('-ss', String(spec.musicStart || 0), '-i', path.join(ROOT, spec.music));
-    parts.push(`[${idx}:a]atrim=0:${total},asetpts=PTS-STARTPTS,volume=${spec.musicVolume || (audio.length ? 0.4 : 0.55)},afade=t=in:d=0.6,afade=t=out:st=${(total - 1.6).toFixed(2)}:d=1.6[m]`);
+    parts.push(`[${idx}:a]atrim=0:${total},asetpts=PTS-STARTPTS,volume=${Math.min(spec.musicVolume || 1, 1) * (audio.length ? 0.14 : 0.45)},afade=t=in:d=0.6,afade=t=out:st=${(total - 1.6).toFixed(2)}:d=1.6[m]`);
     mus = '[m]'; idx++;
   }
   spec.shots.forEach((sh, i) => sh.beats.forEach(b => {
@@ -393,12 +440,12 @@ function anchor(sh, a) {
   }));
   for (const c of fx) {
     args.push('-i', c.file); const ms = Math.round(c.t * 1000);
-    parts.push(`[${idx}:a]atrim=0:${c.max},afade=t=out:st=${Math.max(0, c.max - 0.3)}:d=0.3,volume=${vo.length ? c.vol * 0.7 : c.vol},adelay=${ms}|${ms}[s${idx}]`); sfx.push(`[s${idx}]`); idx++;
+    parts.push(`[${idx}:a]atrim=0:${c.max},afade=t=out:st=${Math.max(0, c.max - 0.3)}:d=0.3,volume=${c.vol * 1.25},adelay=${ms}|${ms}[s${idx}]`); sfx.push(`[s${idx}]`); idx++;
   }
   const out = path.join(dir, 'reel.mp4'), layers = [];
   if (vo.length) {
     parts.push(`${vo.join('')}amix=inputs=${vo.length}:normalize=0,apad,atrim=0:${total}${mus ? ',asplit=2[vo][sc]' : '[vo]'}`);
-    if (mus) { parts.push(`${mus}[sc]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[md]`); layers.push('[md]'); }
+    if (mus) { parts.push(`${mus}[sc]sidechaincompress=threshold=0.015:ratio=12:attack=15:release=500[md]`); layers.push('[md]'); }
     layers.push('[vo]');
   } else if (mus) layers.push(mus);
   layers.push(...sfx);

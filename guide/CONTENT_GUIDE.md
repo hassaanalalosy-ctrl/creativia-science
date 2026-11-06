@@ -122,7 +122,9 @@ Science must be explained and simplified with **vector illustrations** in the Cr
 - Credit illustrations as "رسم توضيحي: كريتيفيا ساينس". Never present an illustration as a real photo.
 - Check every illustrated slide and reel frame like any image. If an illustration looks wrong, simplify it rather than adding detail.
 
-## Images and credit
+## Stories (owner rule)
+Both daily stories use the same guideline style as everything else (built into `engine/story.js`): the grid background, glass cards, the science icon tiles and a glass category chip. In `stories.json` the fact's `icon` must be one of the identity icon names (flask, atom, microscope, planet, dna, bolt, rocket, magnet, brain, drop), not an emoji; `icon2` may pick the second decorative tile. A fact can use `art` (an illustration) instead of an image.
+
 - Images must show the real thing, with a known source. Credit the source on every slide that shows an image.
 - Free science image sources: NASA (public domain, credit "NASA" or the mission), ESA (check the licence, usually CC BY-SA 3.0 IGO, credit "ESA/…"), NOAA, Wikimedia Commons (check each file's licence and credit the author as the file page asks), university and journal press images (credit as given).
 - Copy the direct image file URL (ideally 1000 px wide or more). On Wikimedia use the original file URL from upload.wikimedia.org.
