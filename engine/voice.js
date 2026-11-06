@@ -6,7 +6,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const DEFAULT_VOICE = process.env.VOICE_ID || ''; // Creativia Science voice: not chosen yet — set it here once the owner picks one
+const DEFAULT_VOICE = process.env.VOICE_ID || 'fbIG6gEosVIM95R5qOna'; // Creativia Science narrator chosen by the owner (deep storyteller)
 const MODEL = 'eleven_v4';
 
 (async () => {

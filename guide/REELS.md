@@ -12,7 +12,7 @@
 - A recent science news story in 3 facts, using credited real images exactly like posts.
 Facts must be confirmed in 2 reliable sources (see CONTENT_GUIDE.md). No invented statistics. Health topics: calm, factual, no medical advice. Do not repeat a topic already in `log/posted.md`.
 
-## Spec (posts/<id>/reel.json) — engine 2 (liquid glass), the ONLY engine for new reels
+## Older spec — engine 2 (kept for reference; new reels use engine 3 above)
 Always set `"engine": 2`. 18 to 45 seconds, 5 to 8 scenes. Titles under ~35 characters, bodies under ~90.
 ```json
 {
@@ -47,6 +47,24 @@ Always set `"engine": 2`. 18 to 45 seconds, 5 to 8 scenes. Titles under ~35 char
 - Sound effects are added automatically per scene type; set `"sfx": [[sec, "role", volume], ...]` on a scene only to override.
 - Caption: same rules as posts (hook line ✦, the facts written out, sources, a question 👇, 5 to 9 hashtags starting with #كريتيفيا_ساينس).
 
+## Story reels — engine 3 (APPROVED by the owner, Nov 2026; use it for every reel)
+Reference: `posts/test-tunnel-2/reel.json` (the approved test). Always `"engine": 3`.
+- A reel is a few **shots**. A shot keeps ONE picture on screen for several spoken **beats**: no cuts inside a shot, only captions, counters, labels and the camera change. A new picture = a new shot, reached by a morph of the glass shape. Usually: `open` → 1 or 2 `window` shots → `end`.
+- `open`: the picture full screen (no glass), with optional `lines` drawn on it; its `handoff` makes it shrink exactly into the next window's picture.
+- `window`: the liquid-glass window with one illustration (`art`), and:
+  - `labels`: glass chips pinned to parts of the picture (`ax`, `ay` in the 400 x 300 art space, `side`, `in`, `out`). Keep chips inside the window: a left chip needs its point at x ≥ 162, a right chip at x ≤ 238 (at zoom 1). Never let two chips overlap.
+  - `dot`: a glowing circle that moves (`keys` with `y`/`x` and `ease` in/out/inout/linear; optional `pendulum`). Use it for the moving thing instead of Kreti.
+  - `follow`: the camera zooms in and travels with the dot (`from`, `to`, `z`). Zoom is what keeps the reel alive.
+  - `camera`: keyframes `{at, d, z, x, y}` (e.g. pull back and lift the picture when a big number appears).
+  - `counters`: glass chips (time `fmt: "time"` in minutes → mm:ss, or numbers with `digits`, `unit`), and `big: true` for the key number.
+  - `note`: ONE short line under the window (e.g. an assumption). Sources go in the caption, not on screen.
+- `end` (always last): Kreti, a reaction bubble with a drawn emoji (`👍`, `😱`, `💡`) that appears on a word and disappears, and the card "تابعنا على كريتيفيا ساينس" with @creativia.sci. The narrator says one line to Kreti here and ends with "وتابعنا على كريتيفيا ساينس".
+- **Anchors** (all times): a number of seconds in the shot, `"b1"` (start of beat 1), `"b1:end"`, `"b1:word"` (when that word is spoken), plus an offset like `"b3:ثمان-0.5"`. Tie every action to the word that announces it.
+- **Every beat has `say` and `show`**: `say` is the line FULLY VOWELLED (تشكيل كامل) so the voice pronounces every word correctly (e.g. "كَالبَنْدُولِ"); `show` is the same words without vowels for the captions. Same number of words in both. Check the Arabic grammar and wording of every line.
+- **Hook**: the opening beat is at most 8 to 10 words (this deep voice speaks slowly; 14 words took 9 seconds).
+- Voice: `"voiceId": "fbIG6gEosVIM95R5qOna"` (the owner's chosen deep narrator). Mode dark for space and dramatic topics.
+- Check before scheduling: extract about 20 frames across the video and look at every one: no cut that resets the same picture, no stretched or distorted shapes, no overlaps, nothing in the bottom fifth, captions readable; `ffprobe` shows an audio stream.
+
 ## Storytelling (owner's reference reels, Nov 2026)
 The owner shared reference reels (space without a suit, laughing-gas balloons, how far is the Sun, why zombies are green, two grapes in a microwave). What to take from them, done in OUR 2D dreamy style (never copy their 3D or presenters):
 - **Hook = one or two short sentences (2 to 4 seconds at most), then straight into the information** (owner rule). No long intros, no long jokes: humour only works in the references because of rich 3D characters, which we do not have. Examples: "كم تزن هذه الغيمة؟", "ماذا لو…؟", "لماذا…؟".
@@ -66,7 +84,7 @@ Music is mixed INTO the video from `assets/music/library.json`. Pick by mood: up
 
 ## Voice reels — every reel
 Set `"voice": true` on every reel and give every scene a `"say"` line.
-**Voice: NOT CHOSEN YET.** The owner will pick a voice for this account (different from @creativia.mag's). Until `DEFAULT_VOICE` is set in `engine/voice.js`, voice generation stops with an error: do not make a reel; make a normal post for that day instead and say so in the reply. Model `eleven_v4`.
+**Voice:** the owner's chosen deep narrator, `fbIG6gEosVIM95R5qOna` (set `voiceId` in every reel). Model `eleven_v4`.
 Rules:
 - **Simple Modern Standard Arabic** (فصحى مبسطة), warm and clear, for every Arab. No dialect, no English words in the voice line.
 - The on-screen text uses the same simple standard Arabic.
