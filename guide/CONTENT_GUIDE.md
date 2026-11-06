@@ -102,12 +102,14 @@ Science must be explained and simplified with **vector illustrations** in the Cr
   - Before / after, cause → effect, bigger / smaller: use `=`, `+`, `>`, `<`, `→` between items.
 - **Layout: always use `row` or `stack`** so everything is aligned automatically: all items and signs sit on one shared centre line, evenly spaced, nothing touching. The row reads right to left: the first entry is on the right.
 ```json
-"art": {"row": [{"name": "cloud"}, "=", {"name": "elephant", "count": 8, "cols": 4}]}
-"art": {"row": [{"lens": {"stack": [{"name": "hair", "h": 76}, {"name": "drop", "h": 22}], "gap": 34}, "d": 250}]}
+"art": {"row": [{"name": "cloud"}, "=", {"name": "elephant", "count": 8}]}
+"art": {"row": [{"lens": {"stack": [{"name": "hair", "h": 76}, {"name": "drop", "h": 52}], "gap": 26}, "d": 250}]}
 "art": {"row": [{"name": "can"}, "→", {"name": "heart"}]}
 "art": {"stack": [{"name": "sun", "h": 90}, {"name": "earth", "h": 110}]}
 ```
-  Entries: a library item `{"name": ...}` (optional `h` = height, to keep true relative sizes), a herd `{"name": ..., "count": n, "cols": c}`, a magnifier `{"lens": {...a row or stack...}, "d": diameter, "handle": true}`, or a sign `"="`, `"+"`, `">"`, `"<"`, `"→"`. Use 1 to 3 entries plus signs.
+  Entries: a library item `{"name": ...}` (optional `h` = height), a herd `{"name": ..., "count": n, "cols": c}`, a magnifier `{"lens": {...a row or stack...}, "d": diameter, "handle": true}`, or a sign `"="`, `"+"`, `">"`, `"<"`, `"→"`. Use 1 to 3 entries plus signs.
+- **Size balance (owner rule):** keep the real order of sizes (next to a herd, the single item is drawn as tall as the herd) (the small thing is clearly smaller) but soften extreme gaps so everything stays readable and the composition feels balanced. The engine never draws an item shorter than about 45% of the tallest one in the same row or stack; for very different sizes use a magnifier lens instead of a dot-sized item. Example: in the hair lens the droplet is about half the hair's thickness, not a speck.
+- Signs read in Arabic order (right to left): in `[A, ">", B]` A is on the right and bigger, and the sign opens toward A.
 - In reels the drawing moves: items pop in one by one from right to left, a herd appears animal by animal, clouds float, animals bob. This happens automatically for `art` on `point` and `image` scenes.
 - Free placement (`"items"` with x/y offsets, `"arrows"`) still exists for special cases, but prefer `row` / `stack`.
 - Something not in the library: draw it as a custom item with the same treatment, using simple closed shapes:

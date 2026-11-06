@@ -163,7 +163,7 @@ function item(def, n, mode, opt = {}) {
 <filter id="b${id}" ${big}><feGaussianBlur stdDeviation="${Math.max(6, w / 22)}"/></filter>
 <filter id="l${id}" ${big}><feGaussianBlur stdDeviation="${Math.max(10, w / 12)}"/></filter>
 ${clip}</defs>`;
-  const shadow = def.noShadow ? '' : `<ellipse cx="${cx}" cy="${G + 6}" rx="${w * 0.46}" ry="${Math.max(8, w * 0.05)}" fill="url(#s${id})"/>`;
+  const shadow = def.noShadow ? '' : `<ellipse cx="${cx}" cy="${y1 + 8}" rx="${w * 0.46}" ry="${Math.max(8, w * 0.05)}" fill="url(#s${id})"/>`;
   const glow = `<g filter="url(#l${id})" opacity="${mode === 'dark' ? 0.55 : 0.4}">${parts.map(p => fill(p, pal.glow)).join('')}</g>`;
   const rays = def.rays ? Array.from({ length: def.rays.n }, (_, k) => {
     const a = k / def.rays.n * Math.PI * 2, r = def.rays;
@@ -191,8 +191,8 @@ function sym(t, [x, y], mode) {
   const d = {
     '+': `M${x - 14} ${y} H${x + 14} M${x} ${y - 14} V${y + 14}`,
     '=': `M${x - 14} ${y - 7} H${x + 14} M${x - 14} ${y + 7} H${x + 14}`,
-    '>': `M${x - 10} ${y - 14} L${x + 10} ${y} L${x - 10} ${y + 14}`,
-    '<': `M${x + 10} ${y - 14} L${x - 10} ${y} L${x + 10} ${y + 14}`,
+    '>': `M${x + 10} ${y - 14} L${x - 10} ${y} L${x + 10} ${y + 14}`, // RTL: right item is bigger, open side faces right
+    '<': `M${x - 10} ${y - 14} L${x + 10} ${y} L${x - 10} ${y + 14}`,
     '→': `M${x + 18} ${y} H${x - 16} M${x - 6} ${y - 10} L${x - 16} ${y} L${x - 6} ${y + 10}`
   }[t] || '';
   return `<path d="${d}" ${st}/>`;
@@ -215,13 +215,21 @@ function ctx(anim) {
   };
 }
 
+// Visual balance (owner rule): sizes keep their real order (small stays smaller) but are softened so the
+// small thing is still clearly readable: no item is drawn shorter than MIN_RATIO of the tallest one.
+const MIN_RATIO = 0.45;
+function balance(heights, ratio = MIN_RATIO) {
+  const max = Math.max(...heights.filter(h => h > 0));
+  return heights.map(h => h > 0 ? Math.max(h, max * ratio) : h);
+}
+
 // natural size of a row entry (canvas units, before scaling)
 function measure(e) {
   if (typeof e === 'string') return { w: 34, h: 34, sym: true };
   if (e.lens) { const D = e.d || 170; return { w: D + (e.handle === false ? 0 : 30), h: D + (e.handle === false ? 0 : 30) }; }
   const b = boxOf(defOf(e));
   if (e.count > 1) {
-    const cols = e.cols || Math.ceil(Math.sqrt(e.count * 1.4)), rows = Math.ceil(e.count / cols);
+    const cols = e.cols || Math.ceil(Math.sqrt(e.count)), rows = Math.ceil(e.count / cols);
     const cw = b.w * 1.18, ch = b.h * 1.14;
     return { w: cw * cols + (rows > 1 ? cw / 2 : 0), h: ch * rows, cols, rows, cw, ch, b };
   }
@@ -240,6 +248,13 @@ function rowSvg(spec, mode, c, t0 = 0.4) {
   const gap = spec.gap || 20, cy = spec.cy || 150, maxW = spec.width || 384, defH = spec.h || 140;
   const m = entries.map(measure);
   let sc = entries.map((e, i) => m[i].sym ? 1 : (typeof e === 'object' && e.h ? e.h : e.lens ? m[i].h : (m[i].rows > 1 ? Math.min(200, defH * 1.35) : defH * 1.1)) / m[i].h);
+  { // soften extreme size gaps between single items (herds, lenses and signs keep their size)
+    const single = entries.map((e, i) => !m[i].sym && !e.lens && !(e.count > 1));
+    const tallest = Math.max(...sc.map((v, i) => m[i].sym ? 0 : v * m[i].h));
+    // next to a herd, the single item must hold its own (a cloud = many elephants reads only if the cloud is big)
+    const ratio = spec.minRatio || (entries.some(e => e.count > 1) ? 1 : MIN_RATIO);
+    sc = sc.map((v, i) => single[i] ? Math.max(v * m[i].h, tallest * ratio) / m[i].h : v);
+  }
   let widths = m.map((mm, i) => mm.w * sc[i]);
   const total = widths.reduce((a, b) => a + b, 0) + gap * (entries.length - 1);
   const k = total > maxW ? maxW / total : 1;
@@ -295,7 +310,8 @@ ${handle}<circle cx="${cx}" cy="${cyy}" r="${r}" fill="url(#b${id})"/>
 
 function stackSvg(spec, mode, c) {
   const gap = spec.gap || 24, defH = spec.h || 90;
-  const ent = spec.stack.map(e => { const d = defOf(e), b = boxOf(d), sc = (e.h || defH) / b.h; return { e, b, sc, h: b.h * sc, w: b.w * sc }; });
+  const hs = balance(spec.stack.map(e => e.h || defH), spec.minRatio || MIN_RATIO);
+  const ent = spec.stack.map((e, i) => { const d = defOf(e), b = boxOf(d), sc = hs[i] / b.h; return { e, b, sc, h: b.h * sc, w: b.w * sc }; });
   const H = ent.reduce((a, x) => a + x.h, 0) + gap * (ent.length - 1);
   let y = (spec.cy || 150) - H / 2, out = '', delay = 0.4;
   ent.forEach((x, i) => { out += drawItemAt(x.e, i, mode, 200 - x.w / 2, y, x.sc, c, delay); y += x.h + gap; delay += 0.4; });
