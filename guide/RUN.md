@@ -2,7 +2,8 @@
 
 This repository is for **@creativia.sci only**. Never touch the `creativia-content` repository or the @creativia.mag Metricool brand from this task.
 
-Goal: keep the next 7 days filled, **one post every day** at **21:00 Asia/Baghdad** (Metricool paid plan, no monthly cap). Instagram + Facebook.
+Goal: keep the next 7 days filled, **one feed post every day** at **21:00 Asia/Baghdad**, on Instagram AND Facebook.
+Monthly plan (owner, Nov 2026): **about 20 reels + 10 posts (carousels and single posts)**, plus **2 stories every day**, plus an **extra post on the same day for a truly huge trend**.
 Each run creates **at most one slot post (with its two stories) plus at most one extra post** (see Extra posts). Do not edit or delete anything else in Metricool.
 
 ## 1. Setup
@@ -14,7 +15,8 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 - Slot days: every day.
 - Starting from tomorrow (Baghdad date), walk forward up to 7 days and take the first date that is not already a key in `log/schedule.json`.
 - If there is no such slot, stop: reply in one Arabic line "الجدول مكتمل حتى <last filled date>، لا جديد اليوم" and end the run without changes.
-- If the slot's day-of-month is 1, 4, 7, 10, 13, 16, 19, 22, 25 or 28 it is a **reel day**: follow section 3R instead of 3, and in section 4 use the reel settings.
+- **Post days**: day-of-month 3, 6, 9, 12, 15, 18, 21, 24, 27, 30 (10 per month). **Every other day is a reel day** (about 20 per month). On a reel day follow section 3R instead of 3, and in section 4 use the reel settings.
+- On a post day, the format comes from the content guide's rotation (8 carousels + 2 single posts per month).
 
 ## 3. Make the post
 - Research and choose a topic exactly as the content guide says (web search + page fetches; verify facts in 2 sources).
@@ -26,11 +28,11 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 - Open every rendered slide image with the Read tool and check it: text not cut off, no overlapping elements, images loaded, numbers in English digits, credits present. If something is wrong, fix the spec and re-render (delete rendered.json, push).
 
 ## 3R. Make a reel (reel days only)
-- Choose a topic as `guide/REELS.md` says, and write `posts/<id>/reel.json` with `"engine": 2`, music from the library, and `"voice": true` with a `say` line per scene (every reel). If no voice is chosen yet (see REELS.md), make a normal post instead.
+- Choose a topic as `guide/REELS.md` says, and write `posts/<id>/reel.json` as a **story reel, `"engine": 3`** (see REELS.md, reference `posts/test-tunnel-2/reel.json`), music from the library, `"voice": true`, `"voiceId": "fbIG6gEosVIM95R5qOna"`, and every beat with a fully vowelled `say` and a plain `show`.
 - Also write `posts/<id>/stories.json` (section 3S) in the same commit.
 - Commit "Reel spec: <slug>" and push. The GitHub Action renders `reel.mp4` (with music, sound effects and voice) and `reel-cover.jpg`, then the stories (about 4 to 8 minutes).
-- Poll every 20 seconds for up to 15 minutes until `posts/<id>/reel-rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
-- Check it: extract 8 frames spread across the video with ffmpeg (`ffmpeg -ss <sec> -i reel.mp4 -frames:v 1 -vf scale=270:480 f.png`) and open them with the Read tool. Text must not overlap, be cut off, or sit in the bottom fifth. Check the audio exists (`ffprobe` shows an audio stream). Fix the spec and re-render if needed (delete reel-rendered.json, push).
+- Poll every 20 seconds for up to 20 minutes until `posts/<id>/reel-rendered.json` or `posts/<id>/render-error.json` exists on origin/main, then `git reset --hard origin/main`.
+- Check it: extract 20 frames spread across the video with ffmpeg (`ffmpeg -ss <sec> -i reel.mp4 -frames:v 1 -vf scale=270:480 f.png`) and open them with the Read tool. Text must not overlap, be cut off, or sit in the bottom fifth. Check the audio exists (`ffprobe` shows an audio stream). Fix the spec and re-render if needed (delete reel-rendered.json, push).
 
 ## 3S. Stories (every slot day)
 Write `posts/<id>/stories.json` together with the post spec:
@@ -70,8 +72,8 @@ GitHub's raw links on `main` are cached for a few minutes, so after a re-render 
 ## 6. Reply (this is what the owner sees in the notification)
 Two or three lines in Arabic: the slot date, the topic, number of slides (or "ريل" and its length, music and whether it has voice), that the two stories are scheduled, and the Metricool planner link of the main post.
 
-## Extra posts (breaking news, at most 3 per week)
-After the slot is handled, if a truly major science story broke in the last 48 hours (a landmark discovery, a major space mission event, a Nobel science prize, a big breakthrough confirmed by reliable sources) and fewer than 3 extra posts exist in the last 7 days of `log/schedule.json` (keys ending in `-extra`), make ONE extra post: usually a `single` or short story carousel, scheduled today at 15:00 (or tomorrow 15:00 if that time has passed). Log it with key `<date>-extra`. Skip if nothing is clearly big.
+## Extra posts (huge trends, same day)
+Every run, before the slot work, check the last 24 hours of science and tech news. If something is a truly HUGE trend that everyone is talking about (owner's example: a flying car shown by a big company; also a landmark discovery, a major space mission moment, a Nobel science prize) and it is confirmed by reliable outlets, make ONE extra post about it **for today**: a `single` post or a short carousel (fast to make), scheduled today at 15:00 Asia/Baghdad, or at the next full hour if 15:00 has passed (never later than 19:00, to keep distance from the 21:00 post). On Instagram and Facebook like every post, no stories. Log it with key `<date>-extra`. Say clearly what is confirmed and what is only a claim or a prototype. At most 3 extra posts in any 7 days; skip if nothing is clearly huge (most days nothing is).
 
 ## Weekly review
 The weekly analytics task writes `log/insights.md`. Read it before choosing topics and formats, and follow its "Do more / Do less" lines.
