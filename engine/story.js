@@ -74,8 +74,8 @@ function frame(C, body, k, noHandle) {
       `<div style="position:absolute;right:24px;top:70px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};color:${C.ink};font-size:15px;font-weight:800">✦ ${esc(f.tag || 'معلومة سريعة')}</div>`
       + glass(C, 24, 130, 312, 352, 30,
         (img ? `<img src="${img}" style="position:absolute;left:12px;right:12px;top:12px;width:288px;height:${ih}px;border-radius:20px;object-fit:cover">` : `<div style="position:absolute;right:22px;top:26px;width:64px;height:64px;border-radius:20px;background:linear-gradient(145deg,#D09BFF,#912EE8 50%,#B91097);box-shadow:0 0 30px rgba(145,46,232,0.5);display:flex;align-items:center;justify-content:center;font-size:34px;color:#100B14;font-weight:800">${ICONS[f.icon] ? icon(f.icon, '#FFFFFF', 34) : esc(f.icon || '!')}</div>`)
-        + `<div style="position:absolute;right:22px;left:22px;top:${img ? ih + 30 : 110}px;font-size:${f.size || 25}px;font-weight:800;line-height:1.35;color:${C.text}">${esc(f.title)}</div>`
-        + `<div style="position:absolute;right:22px;left:22px;top:${img ? ih + 30 : 110}px;margin-top:${(f.size || 25) * 1.35 * (f.lines || 2) + 12}px;font-size:16px;line-height:1.65;color:${C.muted}">${esc(f.body)}</div>`
+        // title and body share one column, so a title that wraps pushes the body down (never over it)
+        + `<div style="position:absolute;right:22px;left:22px;top:${img ? ih + 30 : 110}px;display:flex;flex-direction:column;gap:12px"><div style="font-size:${f.size || 25}px;font-weight:800;line-height:1.35;color:${C.text}">${esc(f.title)}</div><div style="font-size:16px;line-height:1.65;color:${C.muted}">${esc(f.body)}</div></div>`
         + (f.credit ? `<div style="position:absolute;right:22px;left:22px;bottom:16px;font-size:11px;color:${C.muted}">${esc(f.credit)}</div>` : ''))
       + star(C, 304, 118, 20) + star(C, 30, 500, 14)
       + (cat ? chip(C, catIcon(cat), cat, 'right:26px;top:500px', 3) : '') + tile(C, f.icon2 || 'flask', 104, 500, -7)
