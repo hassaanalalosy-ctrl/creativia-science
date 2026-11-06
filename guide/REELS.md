@@ -49,7 +49,7 @@ Always set `"engine": 2`. 18 to 45 seconds, 5 to 8 scenes. Titles under ~35 char
 
 ## Storytelling (owner's reference reels, Nov 2026)
 The owner shared reference reels (space without a suit, laughing-gas balloons, how far is the Sun, why zombies are green, two grapes in a microwave). What to take from them, done in OUR 2D dreamy style (never copy their 3D or presenters):
-- **Hook in the first 2 seconds** with a question, a dare or a "what if": "خمّن كم…", "ماذا لو…", "لماذا…؟".
+- **Hook = ONE short line (1 to 2 seconds), then straight into the information** (owner rule). No long intros, no long jokes: humour only works in the references because of rich 3D characters, which we do not have. Examples: "كم تزن هذه الغيمة؟", "ماذا لو…؟", "لماذا…؟".
 - **Tell it as a short story**, not a list: a situation → what happens step by step (with a running timer or counter on screen) → the surprising twist → a light, funny ending.
 - **Bust a myth** when there is one ("لا، لن تنفجر").
 - **Zoom in**: from the object to its inside (a lens circle, skin layers, blood cells, molecules), then back out to the result.
@@ -57,7 +57,8 @@ The owner shared reference reels (space without a suit, laughing-gas balloons, h
 - **Counters and meters**: numbers that climb (1 → 100), timers (0:15 → 1:30), simple gauges.
 - **Experiments**: show the real experiment when a real, credited photo or frame of it exists; explain what happens inside with our illustrations (energy, particles, forces), then return to the real result.
 - **Narrator**: a deep, warm storyteller voice in simple Modern Standard Arabic. It may address Kreti directly, but at most ONE line per reel (e.g. "لا تحاول يا كريتي"). Kreti never speaks; he reacts (points, jumps, thinks) beside the glass window, never inside a drawn scene.
-- **Scenes**: a simple drawn scene (sky, hill, clouds, flowers...) is allowed only INSIDE the glass window, in the approved soft gradient style; then the window transitions (blur and fade) into the explanatory animated illustrations. No complex drawn environments (rooms, streets).
+- **Scenes**: a simple drawn scene (sky, hill, clouds, flowers...) may open the reel full screen; the camera then pulls back and the scene shrinks into the liquid-glass window, Kreti appears beside it, and the same window morphs into the explanatory animated illustrations. Kreti is never drawn inside a scene. No complex drawn environments (rooms, streets).
+- **Always the approved style**: drifting blurred colour blobs with light grain, liquid glass with the glowing rotating rim, ONE glass shape that morphs between scenes, slow camera push with a slight 3D tilt, words appearing one by one, every move right to left. A story reel must look like the same family as every other reel.
 - **Length**: 45 to 70 seconds is fine as long as it never feels slow; every 2 to 3 seconds something new happens on screen.
 
 ## Music (own library)
