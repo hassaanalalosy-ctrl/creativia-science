@@ -47,6 +47,19 @@ Always set `"engine": 2`. 18 to 45 seconds, 5 to 8 scenes. Titles under ~35 char
 - Sound effects are added automatically per scene type; set `"sfx": [[sec, "role", volume], ...]` on a scene only to override.
 - Caption: same rules as posts (hook line ✦, the facts written out, sources, a question 👇, 5 to 9 hashtags starting with #كريتيفيا_ساينس).
 
+## Storytelling (owner's reference reels, Nov 2026)
+The owner shared reference reels (space without a suit, laughing-gas balloons, how far is the Sun, why zombies are green, two grapes in a microwave). What to take from them, done in OUR 2D dreamy style (never copy their 3D or presenters):
+- **Hook in the first 2 seconds** with a question, a dare or a "what if": "خمّن كم…", "ماذا لو…", "لماذا…؟".
+- **Tell it as a short story**, not a list: a situation → what happens step by step (with a running timer or counter on screen) → the surprising twist → a light, funny ending.
+- **Bust a myth** when there is one ("لا، لن تنفجر").
+- **Zoom in**: from the object to its inside (a lens circle, skin layers, blood cells, molecules), then back out to the result.
+- **Scale analogies**: compare with something familiar (a cloud = many elephants, the Sun as a ball, a hair under a lens).
+- **Counters and meters**: numbers that climb (1 → 100), timers (0:15 → 1:30), simple gauges.
+- **Experiments**: show the real experiment when a real, credited photo or frame of it exists; explain what happens inside with our illustrations (energy, particles, forces), then return to the real result.
+- **Narrator**: a deep, warm storyteller voice in simple Modern Standard Arabic. It may address Kreti directly, but at most ONE line per reel (e.g. "لا تحاول يا كريتي"). Kreti never speaks; he reacts (points, jumps, thinks) beside the glass window, never inside a drawn scene.
+- **Scenes**: a simple drawn scene (sky, hill, clouds, flowers...) is allowed only INSIDE the glass window, in the approved soft gradient style; then the window transitions (blur and fade) into the explanatory animated illustrations. No complex drawn environments (rooms, streets).
+- **Length**: 45 to 70 seconds is fine as long as it never feels slow; every 2 to 3 seconds something new happens on screen.
+
 ## Music (own library)
 Music is mixed INTO the video from `assets/music/library.json`. Pick by mood: upbeat for facts and news (owner's favourite); lofi for calm explainers; ambient for space and nature; emotional for serious topics. Never the same track as the previous reel (check the last reel.json in `log/schedule.json`). Do NOT send Instagram `audioConfiguration` for engine 2 reels.
 
