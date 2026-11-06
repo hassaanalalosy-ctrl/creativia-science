@@ -8,7 +8,7 @@ Each run creates **at most one slot post (with its two stories) plus at most one
 ## 1. Setup
 - Attach `hassaanalalosy-ctrl/creativia-science` with push access (add_repo) and `git clone --depth 1` it to `/home/claude/creativia-science`.
 - Read `guide/CONTENT_GUIDE.md`, `guide/REELS.md`, `log/posted.md` and `log/schedule.json`.
-- Load the Metricool tools with ToolSearch (query "metricool"). Brand/blog id: **SCIENCE_BRAND_ID** (the Creativia Science brand; get it with getBrandSettings and replace this placeholder once the brand is connected; never use 7656023, that is @creativia.mag), timezone Asia/Baghdad.
+- Load the Metricool tools with ToolSearch (query "metricool"). Brand/blog id: **7909822** (the "Creativia Science" brand: Instagram @creativia.sci + its Facebook Page; never use 7656023, that is @creativia.mag), timezone Asia/Baghdad.
 
 ## 2. Pick the slot (or stop)
 - Slot days: every day.
@@ -47,7 +47,7 @@ Write `posts/<id>/stories.json` together with the post spec:
 Nothing may sit on top of anything else in any slide, reel frame or story: no text over text, no Kreti over text, cards or images, no element over the handle or the badge, nothing cut off. Check every image/frame you open for this. If anything overlaps, shorten the text or fix the spec and re-render BEFORE scheduling. Story alert titles must be under 60 characters; fact titles under 40.
 
 ## 4. Put it in Metricool
-Call createScheduledPost with blogId SCIENCE_BRAND_ID, date `<slot>T21:00:00+03:00`, and info:
+Call createScheduledPost with blogId 7909822, date `<slot>T21:00:00+03:00`, and info:
 - `media`: raw URLs pinned to the commit that holds the rendered files (`sha=$(git log -1 --format=%H -- posts/<id>)`): `https://raw.githubusercontent.com/hassaanalalosy-ctrl/creativia-science/<sha>/posts/<id>/slides/NN.png` in order. Never use `main` in these URLs (it is cached and can serve an old version).
 - `providers`: `[{"network":"instagram"},{"network":"facebook"}]` — the same post goes to both.
 - `instagramData`: `{"type":"POST"}`; `facebookData`: `{"type":"POST"}`
