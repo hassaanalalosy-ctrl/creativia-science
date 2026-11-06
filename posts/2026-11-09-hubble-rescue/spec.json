@@ -1,0 +1,140 @@
+{
+  "id": "2026-11-09-hubble-rescue",
+  "topic": "NASA asks industry for ways to reboost or service Hubble before it reenters around 2033-2034",
+  "category": "فضاء",
+  "mode": "dark",
+  "sources": [
+    "https://www.sciencedaily.com/releases/2026/11/261104012254.htm",
+    "https://www.space.com/astronomy/hubble-space-telescope/nasa-asks-industry-for-ideas-about-saving-hubble-space-telescope",
+    "https://science.nasa.gov/missions/hubble/nasa-explores-potential-commercial-servicing-for-hubble-telescope/"
+  ],
+  "slides": [
+    {
+      "type": "cover",
+      "badge": "خبر علمي",
+      "title": "ناسا تبحث عن طريقة لإنقاذ هابل",
+      "note": "هل تصدق؟",
+      "pose": "point",
+      "chips": [
+        {
+          "icon": "planet",
+          "label": "فضاء"
+        },
+        {
+          "icon": "rocket",
+          "label": "خبر جديد"
+        }
+      ]
+    },
+    {
+      "type": "inner",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg",
+      "title": "تلسكوب هابل في خطر",
+      "body": "يدور هابل حول الأرض منذ 1990، وأصلحه رواد الفضاء 5 مرات، آخرها عام 2009.",
+      "credit": "الصورة: NASA",
+      "chip": {
+        "icon": "star",
+        "label": "منذ 1990"
+      },
+      "kreti": false
+    },
+    {
+      "type": "inner",
+      "art": {
+        "row": [
+          {
+            "parts": [
+              "<rect x='160' y='70' width='80' height='170' rx='22'/>"
+            ],
+            "palette": "grey",
+            "box": [
+              60,
+              70,
+              340,
+              240
+            ],
+            "back": [
+              "<rect x='64' y='126' width='82' height='58' rx='8' fill='#3E7BE0'/><path d='M91 126 V184 M118 126 V184 M64 155 H146' stroke='#A9CCFF' stroke-width='3'/>",
+              "<rect x='254' y='126' width='82' height='58' rx='8' fill='#3E7BE0'/><path d='M281 126 V184 M308 126 V184 M254 155 H336' stroke='#A9CCFF' stroke-width='3'/>",
+              "<rect x='146' y='150' width='14' height='10' fill='#9AA0B4'/><rect x='240' y='150' width='14' height='10' fill='#9AA0B4'/>"
+            ],
+            "details": [
+              "<ellipse cx='200' cy='84' rx='30' ry='8' fill='#5E6478'/>",
+              "<rect x='160' y='196' width='80' height='6' fill='#9AA0B4'/>"
+            ],
+            "gloss": "M176 96 C174 130 174 170 176 210"
+          },
+          "→",
+          {
+            "name": "earth"
+          }
+        ]
+      },
+      "title": "لماذا سيسقط؟",
+      "body": "الهواء الخفيف جداً في مداره يخفضه ببطء، وليس فيه محرك يرفعه. قد يسقط بين 2033 و2034.",
+      "credit": "رسم توضيحي: كريتيفيا ساينس",
+      "chip": {
+        "icon": "clock",
+        "label": "بين 2033 و2034"
+      },
+      "kreti": false
+    },
+    {
+      "type": "inner",
+      "art": {
+        "row": [
+          {
+            "name": "rocket"
+          },
+          "→",
+          {
+            "parts": [
+              "<rect x='160' y='70' width='80' height='170' rx='22'/>"
+            ],
+            "palette": "grey",
+            "box": [
+              60,
+              70,
+              340,
+              240
+            ],
+            "back": [
+              "<rect x='64' y='126' width='82' height='58' rx='8' fill='#3E7BE0'/><path d='M91 126 V184 M118 126 V184 M64 155 H146' stroke='#A9CCFF' stroke-width='3'/>",
+              "<rect x='254' y='126' width='82' height='58' rx='8' fill='#3E7BE0'/><path d='M281 126 V184 M308 126 V184 M254 155 H336' stroke='#A9CCFF' stroke-width='3'/>",
+              "<rect x='146' y='150' width='14' height='10' fill='#9AA0B4'/><rect x='240' y='150' width='14' height='10' fill='#9AA0B4'/>"
+            ],
+            "details": [
+              "<ellipse cx='200' cy='84' rx='30' ry='8' fill='#5E6478'/>",
+              "<rect x='160' y='196' width='80' height='6' fill='#9AA0B4'/>"
+            ],
+            "gloss": "M176 96 C174 130 174 170 176 210"
+          }
+        ]
+      },
+      "title": "ما الحل المقترح؟",
+      "body": "طلبت ناسا أفكاراً من الشركات، منها مركبة ترفعه إلى مدار أعلى، على أن تنطلق قبل 2032.",
+      "credit": "رسم توضيحي: كريتيفيا ساينس",
+      "chip": {
+        "icon": "rocket",
+        "label": "قبل 2032"
+      },
+      "kreti": false
+    },
+    {
+      "type": "text",
+      "tag": "الخلاصة",
+      "tagIcon": "flask",
+      "title": "ماذا نعرف حتى الآن؟",
+      "points": [
+        "هابل يعمل منذ 1990 ويفقد ارتفاعه ببطء",
+        "بلا مساعدة قد يسقط بين 2033 و2034",
+        "الخيارات: رفعه أو تطويره أو إنزاله بأمان، ولا خطة معتمدة بعد"
+      ],
+      "note": "احفظها!"
+    },
+    {
+      "type": "end"
+    }
+  ],
+  "caption": "ناسا تبحث عن طريقة لإنقاذ تلسكوب هابل ✦\n\nيدور تلسكوب هابل الفضائي حول الأرض منذ عام 1990، وأصلحه رواد الفضاء 5 مرات على متن مكوك الفضاء، آخرها عام 2009. لكن احتكاكه بالهواء الخفيف جداً في مداره يخفض ارتفاعه ببطء، وليس فيه محرك يرفعه.\n\nتقدّر ناسا أنه سيدخل الغلاف الجوي بين عامي 2033 و2034 إن لم يساعده أحد، لذلك يجب أن تنطلق أي مهمة لرفعه قبل 2032. وفي 29 أكتوبر طلبت ناسا من الشركات الخاصة أفكاراً: رفعه إلى مدار أعلى، أو تطوير قدراته، أو إنزاله بأمان في نهاية عمره.\n\nمهم: هذه خيارات قيد الدراسة فقط، ولم تُعتمد أي خطة أو مهمة حتى الآن.\n\nهل تتمنى أن يبقى هابل يعمل سنوات أخرى؟ 👇\n\nالمصادر: NASA · Space.com · ScienceDaily\n\n#كريتيفيا_ساينس #علوم #فضاء #ناسا #هابل #science #space #NASA #Hubble"
+}
