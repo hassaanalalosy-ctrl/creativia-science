@@ -17,7 +17,7 @@ jobs:
         run: |
           mkdir -p test/voice/out
           for ep in "shared-voices?search=Hamida&page_size=20" "voices" "user/subscription"; do
-            f=test/voice/out/raw-$(echo "$ep" | cut -d'?' -f1 | tr '/' '-')$(echo "$ep" | grep -q search && echo -search).json
+            f=test/voice/out/raw-$(echo "$ep" | cut -d'?' -f1 | tr '/' '-')$(case "$ep" in *search*) echo -search;; esac).json
             code=$(curl -sS -o "$f" -w "%{http_code}" "https://api.elevenlabs.io/v1/$ep" -H "xi-api-key: $XI_KEY")
             echo "$ep -> $code"
             echo "$ep $code" >> test/voice/out/status.txt
