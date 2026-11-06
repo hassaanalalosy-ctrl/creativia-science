@@ -6,7 +6,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const DEFAULT_VOICE = '7N1xLmvR6jQolMXWRhvT'; // Arafat Almnshid (Iraqi) — the Creativia voice chosen by the owner
+const DEFAULT_VOICE = process.env.VOICE_ID || ''; // Creativia Science voice: not chosen yet — set it here once the owner picks one
 const MODEL = 'eleven_v4';
 
 (async () => {
@@ -20,6 +20,7 @@ const MODEL = 'eleven_v4';
   fs.mkdirSync(vdir, { recursive: true });
   const old = fs.existsSync(path.join(vdir, 'voice.json')) ? JSON.parse(fs.readFileSync(path.join(vdir, 'voice.json'), 'utf8')) : { clips: [] };
   const voiceId = spec.voiceId || DEFAULT_VOICE;
+  if (!voiceId) throw new Error('No voice chosen yet: add voiceId to reel.json or set DEFAULT_VOICE in engine/voice.js');
   const says = spec.scenes.map(s => s.say || '');
   const clips = [];
   let chars = 0;

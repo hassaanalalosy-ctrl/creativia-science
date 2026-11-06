@@ -60,8 +60,8 @@ jobs:
           done
       - name: Commit slides
         run: |
-          git config user.name "creativia-bot"
-          git config user.email "creativia-bot@users.noreply.github.com"
+          git config user.name "creativia-sci-bot"
+          git config user.email "creativia-sci-bot@users.noreply.github.com"
           git add posts
           git diff --cached --quiet && exit 0
           git commit -m "Render slides"

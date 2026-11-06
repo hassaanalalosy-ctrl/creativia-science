@@ -1,8 +1,8 @@
 {
-  "name": "creativia-content",
+  "name": "creativia-science",
   "private": true,
   "version": "1.0.0",
-  "description": "Slide renderer for @creativia.mag",
+  "description": "Slide renderer for @creativia.sci",
   "scripts": { "render": "node engine/render.js" },
   "dependencies": {
     "@fontsource/playpen-sans-arabic": "^5.0.0",

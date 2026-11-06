@@ -25,10 +25,10 @@ async function toDataUri(src) {
 }
 
 const THEME = {
-  dark: { text: '#EFF7F1', muted: '#A3B8AB', bg1: '#0B2219', bg2: '#040A07', b1: 'rgba(46,232,107,0.42)', b2: 'rgba(16,185,166,0.30)', b3: 'rgba(155,255,194,0.16)',
-    glass: 'rgba(255,255,255,0.07)', rim: 'rgba(255,255,255,0.16)', glow: 'rgba(46,232,107,0.28)', accent: '#2EE86B', soft: '#9BFFC2', cut: '#0C2219', ink: '#9BFFC2' },
-  light: { text: '#0B1410', muted: '#46594D', bg1: '#E2F6E9', bg2: '#F8FCF9', b1: 'rgba(46,232,107,0.40)', b2: 'rgba(16,185,166,0.22)', b3: 'rgba(255,226,130,0.45)',
-    glass: 'rgba(255,255,255,0.45)', rim: 'rgba(255,255,255,0.95)', glow: 'rgba(46,232,107,0.22)', accent: '#1FBF57', soft: '#1F6B49', cut: '#E6F7EC', ink: '#1F6B49' }
+  dark: { text: '#F3EFF7', muted: '#AEA3B8', bg1: '#170B22', bg2: '#07040A', b1: 'rgba(145,46,232,0.42)', b2: 'rgba(185,16,151,0.30)', b3: 'rgba(208,155,255,0.16)',
+    glass: 'rgba(255,255,255,0.07)', rim: 'rgba(255,255,255,0.16)', glow: 'rgba(145,46,232,0.28)', accent: '#912EE8', soft: '#D09BFF', cut: '#180C22', ink: '#D09BFF' },
+  light: { text: '#100B14', muted: '#504659', bg1: '#EDE2F6', bg2: '#FAF8FC', b1: 'rgba(145,46,232,0.40)', b2: 'rgba(185,16,151,0.22)', b3: 'rgba(255,226,130,0.45)',
+    glass: 'rgba(255,255,255,0.45)', rim: 'rgba(255,255,255,0.95)', glow: 'rgba(145,46,232,0.22)', accent: '#741FBF', soft: '#481F6B', cut: '#EFE6F7', ink: '#481F6B' }
 };
 
 // Sound cue plan per scene type (seconds from scene start). Roles map to assets/sfx/library.json.
@@ -156,8 +156,8 @@ const S = {
     const p = spring(seg(t, 0.3, 1.0));
     const inner = s.image
       ? '<img src="' + s.image + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(' + (1.04 + 0.06 * seg(t, 0, s.dur)) + ') translateX(' + (-6 * seg(t, 0, s.dur)) + 'px)">'
-        + (s.num ? '<span dir="ltr" style="position:absolute;right:12px;top:12px;width:42px;height:42px;border-radius:14px;background:' + C.accent + ';color:#0B1410;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px ' + C.accent + ';transform:scale(' + p + ')">' + esc(s.num) + '</span>' : '')
-      : '<div style="position:absolute;right:28px;top:34px;width:130px;height:130px;border-radius:38px;background:linear-gradient(145deg,#9BFFC2,#2EE86B 50%,#10B9A6);box-shadow:0 0 40px rgba(46,232,107,0.55);transform:scale(' + p + ') rotate(' + (1 - p) * -14 + 'deg);display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:72px;font-weight:800;color:#0B1410">' + esc(s.num) + '</span></div>'
+        + (s.num ? '<span dir="ltr" style="position:absolute;right:12px;top:12px;width:42px;height:42px;border-radius:14px;background:' + C.accent + ';color:#100B14;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px ' + C.accent + ';transform:scale(' + p + ')">' + esc(s.num) + '</span>' : '')
+      : '<div style="position:absolute;right:28px;top:34px;width:130px;height:130px;border-radius:38px;background:linear-gradient(145deg,#D09BFF,#912EE8 50%,#B91097);box-shadow:0 0 40px rgba(145,46,232,0.55);transform:scale(' + p + ') rotate(' + (1 - p) * -14 + 'deg);display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:72px;font-weight:800;color:#100B14">' + esc(s.num) + '</span></div>'
         + (s.icon ? '' : star(t, 60, 50, 20, 0.8) + star(t, 120, 140, 13, 1.0));
     return {
       shape: s.image ? { x: 24, y: 84, w: 312, h: 250, r: 28 } : { x: 24, y: 92, w: 312, h: 200, r: 30 }, shapeOp: 1,
@@ -172,7 +172,7 @@ const S = {
     const pts = s.points || [];
     const row = (x, i) => {
       const p = spring(seg(t, 0.6 + i * 0.4, 1.4 + i * 0.4));
-      return glass(24 + (1 - p) * 110, 170 + i * 70, 312, 58, 19, t + i, '<div style="position:absolute;inset:0;display:flex;align-items:center;gap:12px;padding:0 14px"><span dir="ltr" style="flex:none;width:32px;height:32px;border-radius:11px;background:' + C.accent + ';color:#0B1410;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px ' + C.accent + '">' + (i + 1) + '</span><span style="font-size:15.5px;line-height:1.4">' + esc(x) + '</span></div>', 'opacity:' + clamp(p * 1.4) + ';filter:blur(' + (1 - clamp(p)) * 6 + 'px);');
+      return glass(24 + (1 - p) * 110, 170 + i * 70, 312, 58, 19, t + i, '<div style="position:absolute;inset:0;display:flex;align-items:center;gap:12px;padding:0 14px"><span dir="ltr" style="flex:none;width:32px;height:32px;border-radius:11px;background:' + C.accent + ';color:#100B14;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px ' + C.accent + '">' + (i + 1) + '</span><span style="font-size:15.5px;line-height:1.4">' + esc(x) + '</span></div>', 'opacity:' + clamp(p * 1.4) + ';filter:blur(' + (1 - clamp(p)) * 6 + 'px);');
     };
     return {
       shape: { x: 24, y: 170, w: 312, h: 58, r: 19 }, shapeOp: clamp(1 - seg(t, 0.35, 0.65)), inner: '',
@@ -186,9 +186,9 @@ const S = {
   compare(s, t) {
     const box = (o, good, at, y) => {
       const p = spring(seg(t, at, at + 0.8));
-      const col = good ? '#2EE86B' : '#FF6B6B';
+      const col = good ? '#912EE8' : '#FF6B6B';
       return glass(24 + (1 - p) * 110, y, 312, 130, 24, t + at, '<div style="position:absolute;inset:0;padding:16px">'
-        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="width:30px;height:30px;border-radius:50%;background:' + col + ';color:#0B1410;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px ' + col + '">' + (good ? '✓' : '✕') + '</span><span style="font-size:19px;font-weight:800">' + esc(o.label) + '</span></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="width:30px;height:30px;border-radius:50%;background:' + col + ';color:#100B14;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px ' + col + '">' + (good ? '✓' : '✕') + '</span><span style="font-size:19px;font-weight:800">' + esc(o.label) + '</span></div>'
         + '<div style="font-size:15.5px;line-height:1.6;color:' + C.muted + '">' + esc(o.text) + '</div></div>', 'opacity:' + clamp(p * 1.4) + ';filter:blur(' + (1 - clamp(p)) * 6 + 'px);border:1px solid ' + col + '55;');
     };
     return {
@@ -226,10 +226,10 @@ const S = {
   end(s, t) {
     return {
       shape: { x: 40, y: 336, w: 280, h: 62, r: 31 }, shapeOp: 1,
-      inner: '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;' + fadeIn(t, 0.45, 0.5) + '">تابع كريتيفيا</div>',
+      inner: '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;' + fadeIn(t, 0.45, 0.5) + '">تابع كريتيفيا ساينس</div>',
       over: kretiAt('wave', 170, t, 0.05, 95, 96)
-        + '<div dir="ltr" style="position:absolute;left:0;right:0;top:410px;text-align:center;font-size:17px;font-weight:700;color:' + C.muted + ';' + fadeIn(t, 0.8, 0.5) + '">@creativia.mag</div>'
-        + '<div style="position:absolute;left:0;right:0;top:446px;text-align:center;font-family:Playpen Sans Arabic,sans-serif;font-size:17px;color:' + C.ink + ';' + fadeIn(t, 1.1, 0.6) + '">' + esc(s.note || 'كل يوم شي مبدع، الساعة 9 بالليل') + '</div>'
+        + '<div dir="ltr" style="position:absolute;left:0;right:0;top:410px;text-align:center;font-size:17px;font-weight:700;color:' + C.muted + ';' + fadeIn(t, 0.8, 0.5) + '">@creativia.sci</div>'
+        + '<div style="position:absolute;left:0;right:0;top:446px;text-align:center;font-family:Playpen Sans Arabic,sans-serif;font-size:17px;color:' + C.ink + ';' + fadeIn(t, 1.1, 0.6) + '">' + esc(s.note || 'كل يوم علم يدهشك، الساعة 9 مساءً') + '</div>'
         + star(t, 70, 100, 18, 0.4) + star(t, 280, 270, 14, 0.6) + dot(t, 300, 120, 6, 0.5)
     };
   }
@@ -259,7 +259,7 @@ window.drawFrame = function (t) {
   // camera: slow push + slight 3D tilt
   const push = 1 + 0.035 * seg(lt, 0, sc.dur), tiltY = Math.sin(t * 0.45) * 3.5, tiltX = Math.cos(t * 0.37) * 2;
   document.getElementById('stage').innerHTML = bg(t)
-    + '<div style="position:absolute;top:22px;right:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:' + C.muted + '"><span style="width:7px;height:7px;border-radius:50%;background:' + C.accent + ';opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا') + '</div>'
+    + '<div style="position:absolute;top:22px;right:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:' + C.muted + '"><span style="width:7px;height:7px;border-radius:50%;background:' + C.accent + ';opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا ساينس') + '</div>'
     + '<div style="position:absolute;top:20px;left:22px">' + D.mark + '</div>'
     + '<div style="position:absolute;inset:0;perspective:900px"><div style="position:absolute;inset:0;transform:scale(' + push + ') rotateY(' + tiltY + 'deg) rotateX(' + tiltX + 'deg);transform-style:preserve-3d">'
     + (op > 0.01 ? glass(shape.x, shape.y, shape.w, shape.h, shape.r, t, '<div style="position:absolute;inset:0;opacity:' + innerOp + '">' + cur.inner + '</div>', 'opacity:' + op + ';') : '')

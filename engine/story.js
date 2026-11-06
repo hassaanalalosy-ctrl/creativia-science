@@ -10,8 +10,8 @@ const ROOT = path.join(__dirname, '..');
 const FONT_CSS = ['rubik/400', 'rubik/500', 'rubik/700', 'rubik/800', 'playpen-sans-arabic/400', 'playpen-sans-arabic/600']
   .map(f => `<link rel="stylesheet" href="file://${path.join(ROOT, 'node_modules/@fontsource', f)}.css">`).join('');
 const T = {
-  dark: { text: '#EFF7F1', muted: '#A3B8AB', bg1: '#0B2219', bg2: '#040A07', b1: 'rgba(46,232,107,0.42)', b2: 'rgba(16,185,166,0.30)', b3: 'rgba(155,255,194,0.16)', glass: 'rgba(255,255,255,0.07)', rim: 'rgba(255,255,255,0.22)', glow: 'rgba(46,232,107,0.30)', accent: '#2EE86B', ink: '#9BFFC2', cut: '#0C2219', pill: '#2EE86B', pillText: '#0B1410' },
-  light: { text: '#0B1410', muted: '#46594D', bg1: '#E2F6E9', bg2: '#F8FCF9', b1: 'rgba(46,232,107,0.40)', b2: 'rgba(16,185,166,0.22)', b3: 'rgba(255,226,130,0.45)', glass: 'rgba(255,255,255,0.5)', rim: 'rgba(255,255,255,0.95)', glow: 'rgba(46,232,107,0.22)', accent: '#1FBF57', ink: '#1F6B49', cut: '#E6F7EC', pill: '#0B1410', pillText: '#FFFFFF' }
+  dark: { text: '#F3EFF7', muted: '#AEA3B8', bg1: '#170B22', bg2: '#07040A', b1: 'rgba(145,46,232,0.42)', b2: 'rgba(185,16,151,0.30)', b3: 'rgba(208,155,255,0.16)', glass: 'rgba(255,255,255,0.07)', rim: 'rgba(255,255,255,0.22)', glow: 'rgba(145,46,232,0.30)', accent: '#912EE8', ink: '#D09BFF', cut: '#180C22', pill: '#912EE8', pillText: '#100B14' },
+  light: { text: '#100B14', muted: '#504659', bg1: '#EDE2F6', bg2: '#FAF8FC', b1: 'rgba(145,46,232,0.40)', b2: 'rgba(185,16,151,0.22)', b3: 'rgba(255,226,130,0.45)', glass: 'rgba(255,255,255,0.5)', rim: 'rgba(255,255,255,0.95)', glow: 'rgba(145,46,232,0.22)', accent: '#741FBF', ink: '#481F6B', cut: '#EFE6F7', pill: '#100B14', pillText: '#FFFFFF' }
 };
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/@[A-Za-z0-9._]+/g, m => '⁦' + m + '⁩');
 async function uri(src) {
@@ -30,7 +30,7 @@ function frame(C, body, k) {
     + `<div style="position:absolute;left:-140px;top:-330px;width:640px;height:640px;border-radius:50%;border:26px solid ${C.b3};filter:blur(26px)"></div>`
     + `<div style="position:absolute;top:70px;left:24px">${k.mark}</div>`
     + body
-    + `<div dir="ltr" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-size:14px;font-weight:700;color:${C.muted}">@creativia.mag</div>`;
+    + `<div dir="ltr" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-size:14px;font-weight:700;color:${C.muted}">@creativia.sci</div>`;
 }
 (async () => {
   const id = process.argv[2];
@@ -50,7 +50,7 @@ function frame(C, body, k) {
       `<div style="position:absolute;right:24px;top:70px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:${C.pill};color:${C.pillText};font-size:15px;font-weight:800;box-shadow:0 0 24px ${C.glow}">✦ ${spec.alert.label || 'منشور جديد'}</div>`
       + glass(C, (360 - w - 20) / 2, 128, w + 20, h + 20, 26, `<img src="${img}" style="position:absolute;left:10px;top:10px;width:${w}px;height:${h}px;border-radius:18px;object-fit:cover">`, 'transform:rotate(-3deg)')
       + star(C, 300, 140, 22) + star(C, 34, 330, 15)
-      + `<div style="position:absolute;right:28px;left:28px;top:${128 + h + 44}px;display:flex;flex-direction:column;align-items:center;gap:14px"><div style="text-align:center;font-size:${spec.alert.size || 20}px;font-weight:800;line-height:1.35;color:${C.text};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(spec.alert.title)}</div><span style="padding:10px 20px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};font-size:15px;font-weight:700;color:${C.text}">${esc(spec.alert.cta || 'شوفه هسه بالصفحة ←')}</span></div>`
+      + `<div style="position:absolute;right:28px;left:28px;top:${128 + h + 44}px;display:flex;flex-direction:column;align-items:center;gap:14px"><div style="text-align:center;font-size:${spec.alert.size || 20}px;font-weight:800;line-height:1.35;color:${C.text};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(spec.alert.title)}</div><span style="padding:10px 20px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};font-size:15px;font-weight:700;color:${C.text}">${esc(spec.alert.cta || 'شاهده الآن في الصفحة ←')}</span></div>`
       + K('point', 58, 10, 132), k);
   }
   if (spec.fact) {
@@ -59,7 +59,7 @@ function frame(C, body, k) {
     pages.fact = frame(C,
       `<div style="position:absolute;right:24px;top:70px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:${C.glass};border:1.5px solid ${C.rim};color:${C.ink};font-size:15px;font-weight:800">✦ ${esc(f.tag || 'معلومة سريعة')}</div>`
       + glass(C, 24, 130, 312, 352, 30,
-        (img ? `<img src="${img}" style="position:absolute;left:12px;right:12px;top:12px;width:288px;height:${ih}px;border-radius:20px;object-fit:cover">` : `<div style="position:absolute;right:22px;top:26px;width:64px;height:64px;border-radius:20px;background:linear-gradient(145deg,#9BFFC2,#2EE86B 50%,#10B9A6);box-shadow:0 0 30px rgba(46,232,107,0.5);display:flex;align-items:center;justify-content:center;font-size:34px;color:#0B1410;font-weight:800">${esc(f.icon || '!')}</div>`)
+        (img ? `<img src="${img}" style="position:absolute;left:12px;right:12px;top:12px;width:288px;height:${ih}px;border-radius:20px;object-fit:cover">` : `<div style="position:absolute;right:22px;top:26px;width:64px;height:64px;border-radius:20px;background:linear-gradient(145deg,#D09BFF,#912EE8 50%,#B91097);box-shadow:0 0 30px rgba(145,46,232,0.5);display:flex;align-items:center;justify-content:center;font-size:34px;color:#100B14;font-weight:800">${esc(f.icon || '!')}</div>`)
         + `<div style="position:absolute;right:22px;left:22px;top:${img ? ih + 30 : 110}px;font-size:${f.size || 25}px;font-weight:800;line-height:1.35;color:${C.text}">${esc(f.title)}</div>`
         + `<div style="position:absolute;right:22px;left:22px;top:${img ? ih + 30 : 110}px;margin-top:${(f.size || 25) * 1.35 * (f.lines || 2) + 12}px;font-size:16px;line-height:1.65;color:${C.muted}">${esc(f.body)}</div>`
         + (f.credit ? `<div style="position:absolute;right:22px;left:22px;bottom:16px;font-size:11px;color:${C.muted}">${esc(f.credit)}</div>` : ''))

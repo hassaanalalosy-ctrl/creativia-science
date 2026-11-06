@@ -72,7 +72,7 @@ function bg(t) {
 }
 function header(t) {
   return '<div style="position:absolute;top:22px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center">'
-    + '<span style="display:flex;align-items:center;gap:7px;background:' + C.glass + ';border:1px solid ' + C.glassBorder + ';border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#2EE86B;opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا') + '</span>' + D.mark + '</div>';
+    + '<span style="display:flex;align-items:center;gap:7px;background:' + C.glass + ';border:1px solid ' + C.glassBorder + ';border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#912EE8;opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا ساينس') + '</span>' + D.mark + '</div>';
 }
 function card(inner, p, pos) {
   return '<div style="position:absolute;' + pos + ';opacity:' + clamp(p * 1.3) + ';transform:translateY(' + (1 - p) * 40 + 'px);background:' + C.glass + ';border:1px solid ' + C.glassBorder + ';box-shadow:' + C.chipShadow + ';border-radius:24px;padding:20px">' + inner + '</div>';
@@ -138,13 +138,13 @@ const S = {
         + (s.credit ? '<div style="position:absolute;left:30px;top:318px;font-size:12px;color:' + C.muted + ';opacity:' + p + '">' + cred(s.credit) + '</div>' : '');
     } else {
       const p = back(seg(t, 0.05, 0.55));
-      top = '<div style="position:absolute;right:24px;top:96px;width:150px;height:150px;border-radius:44px;background:linear-gradient(145deg,#9BFFC2,#2EE86B 50%,#10B9A6);box-shadow:0 18px 40px rgba(46,232,107,0.35);transform:scale(' + p + ') rotate(' + (1 - p) * -12 + 'deg);display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:84px;font-weight:800;color:#0B1410">' + esc(s.num) + '</span></div>'
+      top = '<div style="position:absolute;right:24px;top:96px;width:150px;height:150px;border-radius:44px;background:linear-gradient(145deg,#D09BFF,#912EE8 50%,#B91097);box-shadow:0 18px 40px rgba(145,46,232,0.35);transform:scale(' + p + ') rotate(' + (1 - p) * -12 + 'deg);display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:84px;font-weight:800;color:#100B14">' + esc(s.num) + '</span></div>'
         + (s.kreti ? kreti(s.kreti, 130, t, 0.4, 'left:30px;top:120px') : '')
         + (s.note ? hand(s.note, t, 0.9, 'left:40px;top:96px', -6, 18) : '');
     }
     const y = s.image ? 342 : 290;
     return top
-      + (s.image && s.num ? '<span dir="ltr" style="position:absolute;right:24px;top:' + (y - 2) + 'px;width:40px;height:40px;border-radius:13px;background:#2EE86B;color:#0B1410;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;transform:scale(' + back(seg(t, 0.3, 0.7)) + ')">' + esc(s.num) + '</span>' : '')
+      + (s.image && s.num ? '<span dir="ltr" style="position:absolute;right:24px;top:' + (y - 2) + 'px;width:40px;height:40px;border-radius:13px;background:#912EE8;color:#100B14;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;transform:scale(' + back(seg(t, 0.3, 0.7)) + ')">' + esc(s.num) + '</span>' : '')
       + '<div style="position:absolute;right:' + (s.image && s.num ? 74 : 24) + 'px;left:24px;top:' + y + 'px;font-size:' + (s.size || 26) + 'px;font-weight:800;line-height:1.3">' + words(s.title, t, 0.3, 0.09) + '</div>'
       + '<div style="position:absolute;right:24px;left:24px;top:' + (y + (s.image ? 52 : 80)) + 'px;font-size:16.5px;line-height:1.65;color:' + C.muted + ';opacity:' + ease(seg(t, 0.9, 1.4)) + ';transform:translateY(' + (1 - ease(seg(t, 0.9, 1.4))) * 10 + 'px)">' + esc(s.body) + '</div>';
   },
@@ -152,7 +152,7 @@ const S = {
   list(s, t, T) {
     const pts = (s.points || []).map((x, i) => {
       const p = ease(seg(t, 0.7 + i * 0.35, 1.1 + i * 0.35));
-      return '<div style="opacity:' + p + ';transform:translateX(' + (1 - p) * -30 + 'px);display:flex;align-items:center;gap:12px;background:' + C.glass + ';border:1px solid ' + C.glassBorder + ';box-shadow:' + C.chipShadow + ';border-radius:16px;padding:11px 14px"><span dir="ltr" style="flex:none;width:30px;height:30px;border-radius:10px;background:#2EE86B;color:#0B1410;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center">' + (i + 1) + '</span><span style="font-size:16px;line-height:1.45">' + esc(x) + '</span></div>';
+      return '<div style="opacity:' + p + ';transform:translateX(' + (1 - p) * -30 + 'px);display:flex;align-items:center;gap:12px;background:' + C.glass + ';border:1px solid ' + C.glassBorder + ';box-shadow:' + C.chipShadow + ';border-radius:16px;padding:11px 14px"><span dir="ltr" style="flex:none;width:30px;height:30px;border-radius:10px;background:#912EE8;color:#100B14;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center">' + (i + 1) + '</span><span style="font-size:16px;line-height:1.45">' + esc(x) + '</span></div>';
     }).join('');
     return (s.tag ? chip({ icon: s.tagIcon || 'spark', label: s.tag }, t, 0.05, -4, 'right:24px;top:84px') : '')
       + '<div style="position:absolute;right:24px;left:24px;top:132px;font-size:' + (s.size || 28) + 'px;font-weight:800;line-height:1.3">' + words(s.title, t, 0.2, 0.09) + '</div>'
@@ -164,7 +164,7 @@ const S = {
   compare(s, t, T) {
     const box = (o, good, at, top) => {
       const p = back(seg(t, at, at + 0.5));
-      const col = good ? '#2EE86B' : '#FF6B6B';
+      const col = good ? '#912EE8' : '#FF6B6B';
       return '<div style="position:absolute;right:24px;left:24px;top:' + top + 'px;opacity:' + clamp(p) + ';transform:scale(' + (0.85 + 0.15 * p) + ');background:' + C.glass + ';border:2px solid ' + col + ';box-shadow:' + C.chipShadow + ';border-radius:20px;padding:16px">'
         + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="width:30px;height:30px;border-radius:50%;background:' + col + ';color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center">' + (good ? '✓' : '✕') + '</span><span style="font-size:19px;font-weight:800">' + esc(o.label) + '</span></div>'
         + '<div style="font-size:16px;line-height:1.6;color:' + C.muted + '">' + esc(o.text) + '</div></div>';
@@ -188,9 +188,9 @@ const S = {
       + hand(s.note || 'احفظ الريل!', t, 0.6, 'right:24px;top:84px', 8, 19)
       + star(t, 70, 70, 20, 0.3) + star(t, 300, 260, 14, 0.5)
       + '<div style="position:absolute;left:20px;right:20px;top:300px;text-align:center;opacity:' + p + ';transform:translateY(' + (1 - p) * 20 + 'px)">'
-      + '<div style="font-size:34px;font-weight:800">تابع كريتيفيا</div>'
-      + '<div dir="ltr" style="font-size:17px;font-weight:700;color:' + C.muted + ';margin-top:6px">@creativia.mag</div>'
-      + '<div style="font-family:Playpen Sans Arabic,sans-serif;font-size:18px;color:' + C.ink + ';margin-top:10px">' + esc(s.line || 'كل يوم شي مبدع، الساعة 9 بالليل') + '</div>'
+      + '<div style="font-size:34px;font-weight:800">تابع كريتيفيا ساينس</div>'
+      + '<div dir="ltr" style="font-size:17px;font-weight:700;color:' + C.muted + ';margin-top:6px">@creativia.sci</div>'
+      + '<div style="font-family:Playpen Sans Arabic,sans-serif;font-size:18px;color:' + C.ink + ';margin-top:10px">' + esc(s.line || 'كل يوم علم يدهشك، الساعة 9 مساءً') + '</div>'
       + '<div style="display:flex;justify-content:center;gap:12px;margin-top:22px"><span style="background:' + C.pillBg + ';color:' + C.pillText + ';font-size:16px;font-weight:700;padding:11px 22px;border-radius:999px">احفظ الريل</span><span style="background:' + C.glass + ';border:1px solid ' + C.glassBorder + ';font-size:16px;font-weight:700;padding:10px 20px;border-radius:999px">شاركه</span></div></div>';
   }
 };

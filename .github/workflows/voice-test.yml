@@ -57,8 +57,8 @@ jobs:
           rm -rf posts/_voice-test
       - name: Commit
         run: |
-          git config user.name "creativia-bot"
-          git config user.email "creativia-bot@users.noreply.github.com"
+          git config user.name "creativia-sci-bot"
+          git config user.email "creativia-sci-bot@users.noreply.github.com"
           git checkout -- test/voice/script.txt 2>/dev/null || true
           git add test/voice/out
           git commit -m "Voice test output"
