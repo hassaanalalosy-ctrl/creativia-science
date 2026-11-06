@@ -12,7 +12,9 @@ const MODEL = 'eleven_v4';
 (async () => {
   const id = process.argv[2];
   const dir = path.join(ROOT, 'posts', id);
-  const spec = JSON.parse(fs.readFileSync(path.join(dir, 'reel.json'), 'utf8'));
+  // story reels keep their spec in reel.json; animated (engine 4) reels in toon.json
+  const specFile = fs.existsSync(path.join(dir, 'reel.json')) ? 'reel.json' : 'toon.json';
+  const spec = JSON.parse(fs.readFileSync(path.join(dir, specFile), 'utf8'));
   if (!spec.voice) { console.log('no voice for', id); return; }
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) throw new Error('ELEVENLABS_API_KEY missing');
@@ -22,7 +24,7 @@ const MODEL = 'eleven_v4';
   const voiceId = spec.voiceId || DEFAULT_VOICE;
   if (!voiceId) throw new Error('No voice chosen yet: add voiceId to reel.json or set DEFAULT_VOICE in engine/voice.js');
   // engine 3 reels keep their lines in shots[].beats[]; older reels in scenes[]
-  const says = spec.shots ? spec.shots.flatMap(sh => sh.beats.map(b => b.say || '')) : spec.scenes.map(s => s.say || '');
+  const says = spec.lines ? spec.lines.map(l => l.say || '') : spec.shots ? spec.shots.flatMap(sh => sh.beats.map(b => b.say || '')) : spec.scenes.map(s => s.say || '');
   const clips = [];
   let chars = 0;
   for (let k = 0; k < says.length; k++) {

@@ -3,7 +3,7 @@ name: Render slides
 on:
   push:
     branches: [main]
-    paths: ['posts/**/spec.json', 'posts/**/reel.json', 'posts/**/stories.json']
+    paths: ['posts/**/spec.json', 'posts/**/reel.json', 'posts/**/toon.json', 'posts/**/stories.json']
   workflow_dispatch:
     inputs:
       post:
@@ -57,6 +57,19 @@ jobs:
             else
               node engine/reel.js "$id" || echo "{\"error\": \"reel render failed\"}" > "$d/render-error.json"
             fi
+          done
+      - name: Render animated reels (engine 4)
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          for f in posts/*/toon.json; do
+            [ -e "$f" ] || continue
+            d=$(dirname "$f"); id=$(basename "$d")
+            [ -e "$d/reel-rendered.json" ] && continue
+            if [ "$(jq -r '.voice // false' "$f")" = "true" ]; then
+              node engine/voice.js "$id" || { echo "{\"error\": \"voice failed\"}" > "$d/render-error.json"; continue; }
+            fi
+            node engine/toon.js "$id" || echo "{\"error\": \"toon render failed\"}" > "$d/render-error.json"
           done
       - name: Render stories
         run: |

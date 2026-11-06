@@ -42,33 +42,56 @@
   const hash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
 
   // ---------------------------------------------------------------- character rig
-  // Angles are degrees from straight down; positive = towards the facing side. Legs: hip angle + knee bend (backwards).
-  // Arms: shoulder angle + elbow bend (forwards). lean/tilt rotate the upper body / head.
+  // The body faces the camera; the head turns 3/4 to the facing side. Arms hang from the shoulders at both sides of the body:
+  // "f" = right arm (shoulder x +19), "b" = left arm (shoulder x -19). Angles are degrees from straight down, positive = +x.
+  // An arm is set by angles (fs/fe, bs/be = shoulder angle + elbow bend) or by a hand target (fT/bT = [x, y] in body space,
+  // solved with IK, elbows pointing outwards). Legs: hip angle + knee bend. lean / tilt rotate the upper body / the head.
+  const SH = { f: [19, -126], b: [-19, -126] }, UA = 27, FA = 25, CUT = -195;
   const POSES = {
-    stand:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 10, fe: 14, bs: -8, be: 12, lean: 0, tilt: 0 },
-    point:    { fh: 4, fk: 2, bh: -4, bk: 2, fs: 84, fe: 4, bs: -10, be: 16, lean: 4, tilt: -3 },
-    surprise: { fh: 16, fk: 26, bh: -16, bk: 26, fs: 96, fe: 42, bs: -96, be: -42, lean: -6, tilt: 6 },
-    think:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 70, fe: 130, bs: -6, be: 30, lean: 2, tilt: 7 },
-    shrug:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 62, fe: -70, bs: -62, be: 70, lean: 0, tilt: -6 },
-    carry:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 52, fe: 52, bs: 40, be: 60, lean: -3, tilt: 0 },
-    cheer:    { fh: 4, fk: 4, bh: -4, bk: 4, fs: 165, fe: 10, bs: 170, be: -10, lean: -2, tilt: -4 },
-    lookup:   { fh: 3, fk: 2, bh: -3, bk: 2, fs: 14, fe: 18, bs: -10, be: 14, lean: -5, tilt: -14 }
+    stand:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 12, fe: 6, bs: -12, be: -6, lean: 0, tilt: 0 },
+    point:    { fh: 4, fk: 2, bh: -4, bk: 2, fs: 86, fe: -4, bs: -26, be: 96, lean: 3, tilt: -3 },
+    tap:      { fh: 3, fk: 2, bh: -3, bk: 2, fT: [43, -178], bs: -12, be: -6, lean: -2, tilt: 6 },
+    surprise: { fh: 16, fk: 26, bh: -16, bk: 26, fs: 142, fe: 22, bs: -142, be: -22, lean: 0, tilt: 4 },
+    think:    { fh: 3, fk: 2, bh: -3, bk: 2, fT: [17, -142], bs: 24, be: 92, lean: 2, tilt: 7 },
+    shrug:    { fh: 3, fk: 2, bh: -3, bk: 2, fs: 52, fe: 78, bs: -52, be: -78, lean: 0, tilt: -6 },
+    carry:    { fh: 3, fk: 2, bh: -3, bk: 2, fT: [10, -100], bT: [-6, -100], lean: -2, tilt: 0 },
+    cheer:    { fh: 4, fk: 4, bh: -4, bk: 4, fs: 166, fe: 6, bs: -166, be: -6, lean: 0, tilt: -4 },
+    holdUp:   { fh: 3, fk: 2, bh: -3, bk: 2, fT: [60, -206], bs: -30, be: 96, lean: -3, tilt: -8, stretch: 1.75 },
+    float:    { fh: 22, fk: 34, bh: -12, bk: 24, fs: 64, fe: 30, bs: -68, be: -30, lean: 0, tilt: -4, drift: 1 },
+    wave:     { fh: 22, fk: 34, bh: -12, bk: 24, fs: 150, fe: 20, bs: -64, be: -30, lean: 0, tilt: -6, drift: 1, waveF: 1 }
   };
-  function walkPose(p, base) {
+  function walkPose(p) {
     const s = Math.sin(p * 2 * Math.PI), c = Math.cos(p * 2 * Math.PI);
-    const w = Object.assign({}, POSES.stand, base || {});
+    const w = Object.assign({}, POSES.stand);
     w.fh = 26 * s; w.bh = -26 * s;
     w.fk = 6 + Math.max(0, -c) * 34; w.bk = 6 + Math.max(0, c) * 34;
-    if (!base || !base.keepArms) { w.fs = -24 * s; w.bs = 24 * s; w.fe = 18 + 10 * Math.max(0, s); w.be = 18 + 10 * Math.max(0, -s); }
-    w.lean = 4; w.bob = Math.abs(Math.sin(p * 2 * Math.PI)) * 4;
+    w.fs = 12 + 13 * s; w.bs = -12 + 13 * s; w.fe = 8 + 8 * s; w.be = -8 + 8 * s;
+    w.lean = 2; w.bob = Math.abs(s) * 4;
     return w;
   }
+  const pt = (o, len, ang) => [o[0] + len * Math.sin(ang * R), o[1] + len * Math.cos(ang * R)];
+  let SW = 19, ST = 1; // shoulder half-width and arm stretch of the character being drawn
+  const shoulder = side => [side === 'f' ? SW : -SW, -126];
+  function fk(side, sa, eb) { const S0 = shoulder(side), E = pt(S0, UA * ST, sa); return [S0, E, pt(E, FA * ST, sa + eb)]; }
+  function ik(side, H) {
+    const S0 = shoulder(side), UA_ = UA * ST, FA_ = FA * ST;
+    let dx = H[0] - S0[0], dy = H[1] - S0[1], d = Math.hypot(dx, dy);
+    const dm = UA_ + FA_ - 0.5;
+    if (d > dm) { H = [S0[0] + dx / d * dm, S0[1] + dy / d * dm]; dx = H[0] - S0[0]; dy = H[1] - S0[1]; d = dm; }
+    d = Math.max(d, Math.abs(UA_ - FA_) + 0.5);
+    const a = (UA_ * UA_ - FA_ * FA_ + d * d) / (2 * d), h = Math.sqrt(Math.max(0, UA_ * UA_ - a * a));
+    const px = S0[0] + a * dx / d, py = S0[1] + a * dy / d, nx = -dy / d, ny = dx / d;
+    const e1 = [px + h * nx, py + h * ny], e2 = [px - h * nx, py - h * ny];
+    const E = side === 'f' ? (e1[0] > e2[0] ? e1 : e2) : (e1[0] < e2[0] ? e1 : e2);
+    return [S0, E, H];
+  }
+  const handOf = (P, s) => P[s + 'T'] || fk(s, P[s + 's'], P[s + 'e'])[2];
   function mixPose(a, b, u) {
     const o = {};
-    for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) o[k] = lerp(a[k] || 0, b[k] || 0, u);
+    for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (!Array.isArray(a[k]) && !Array.isArray(b[k])) o[k] = lerp(a[k] || 0, b[k] || 0, u);
+    for (const s of ['f', 'b']) if (a[s + 'T'] || b[s + 'T']) { const A = handOf(a, s), B = handOf(b, s); o[s + 'T'] = [lerp(A[0], B[0], u), lerp(A[1], B[1], u)]; }
     return o;
   }
-  const pt = (o, len, ang) => [o[0] + len * Math.sin(ang * R), o[1] + len * Math.cos(ang * R)];
   // rubber-hose limb through the joint: quadratic curve whose control point makes it pass the joint
   function hose(a, j, e, color, w) {
     const c = [2 * j[0] - (a[0] + e[0]) / 2, 2 * j[1] - (a[1] + e[1]) / 2];
@@ -78,22 +101,33 @@
   function leg(hip, ha, kb, look, shade) {
     const k = pt(hip, 31, ha), ft = pt(k, 31, ha - kb);
     const shoeAng = clamp(ha - kb, -30, 30) * 0.5;
-    return hose(hip, k, ft, shade ? look.pantsDark : look.pants, 8)
-      + `<g transform="translate(${f(ft[0])} ${f(ft[1])}) rotate(${f(-shoeAng)})"><path d="M-6 -4 Q-7 4 0 4 L13 4 Q17 4 16 -1 Q14 -7 5 -6 Z" fill="${shade ? look.shoeDark : look.shoe}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M1 -3 Q8 -5 12 -2" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.6" stroke-linecap="round"/></g>`;
+    const big = look.suit;
+    return hose(hip, k, ft, shade ? look.pantsDark : look.pants, big ? 11 : 8)
+      + `<g transform="translate(${f(ft[0])} ${f(ft[1])}) rotate(${f(-shoeAng)})${big ? ' scale(1.25)' : ''}"><path d="M-6 -4 Q-7 4 0 4 L13 4 Q17 4 16 -1 Q14 -7 5 -6 Z" fill="${shade ? look.shoeDark : look.shoe}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M1 -3 Q8 -5 12 -2" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.6" stroke-linecap="round"/></g>`;
   }
-  function arm(sh, sa, eb, look, shade, hand) {
-    const el = pt(sh, 27, sa), h = pt(el, 25, sa + eb);
-    return hose(sh, el, h, shade ? look.sleeveDark : look.sleeve, 7.5)
-      + `<circle cx="${f(h[0])}" cy="${f(h[1])}" r="6.6" fill="${shade ? look.skinDark : look.skin}" stroke="${OUT}" stroke-width="2.4"/>`
-      + (hand ? hand(h) : '');
+  function arm(side, P, look) {
+    const [S0, E, H] = P[side + 'T'] ? ik(side, P[side + 'T']) : fk(side, P[side + 's'], P[side + 'e']);
+    const shade = side === 'b';
+    const big = look.suit;
+    return hose(S0, E, H, shade ? look.sleeveDark : look.sleeve, big ? 10.5 : 7.5)
+      + (big ? `<circle cx="${f(E[0])}" cy="${f(E[1])}" r="6.5" fill="none" stroke="${OUT}" stroke-width="1.4" opacity=".35"/>` : '')
+      + `<circle cx="${f(H[0])}" cy="${f(H[1])}" r="${big ? 8.2 : 6.6}" fill="${big ? (shade ? '#C9CFDB' : '#E6EAF2') : (shade ? look.skinDark : look.skin)}" stroke="${OUT}" stroke-width="2.4"/>`;
   }
-  function face(look, ex, t, id) {
+  function brainSvg(x, y, s, glow, t) {
+    const wob = Math.sin(t * 5) * 0.03;
+    return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(s * (1 + wob))} ${f(s * (1 - wob))})">`
+      + (glow > 0.02 ? `<circle r="${f(40 + glow * 14)}" fill="url(#bglow)" opacity="${f(glow)}"/>` : '')
+      + `<path d="M-24 4 Q-30 -6 -22 -14 Q-20 -24 -8 -22 Q0 -30 10 -23 Q22 -26 25 -14 Q32 -6 26 4 Q28 14 16 15 Q8 20 0 15 Q-8 20 -16 15 Q-28 14 -24 4 Z" fill="#FF9DB8" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M-24 4 Q-28 12 -16 15 Q-8 20 0 15 Q8 20 16 15 Q28 14 26 4 Q12 12 0 8 Q-12 12 -24 4 Z" fill="#E77B98" opacity=".6"/>`
+      + `<path d="M-14 -15 Q-7 -9 -13 -2 Q-18 4 -10 9 M0 -21 Q-4 -12 3 -6 Q9 0 2 9 M13 -19 Q17 -11 11 -4 M19 -3 Q12 4 18 10 M-21 -2 Q-14 1 -17 8" fill="none" stroke="#C94F70" stroke-width="2.1" stroke-linecap="round"/>`
+      + `<path d="M-12 -18 Q-6 -22 0 -20" stroke="#fff" stroke-opacity=".75" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
+  }
+  function face(look, ex, t) {
     const eyes = ex.eyes || 'open', brows = ex.brows || 'neutral', mouth = ex.mouth || 'smile';
     const lx = clamp((ex.lookX || 0), -1, 1) * 3, ly = clamp((ex.lookY || 0), -1, 1) * 2.6;
     const blink = (eyes === 'open' || eyes === 'wide') && ((t + (ex.seed || 0)) % 3.4) < 0.13;
     const E = [[-1, -174], [23, -174]];
     let s = '';
-    // eyes
     for (const [x, y] of E) {
       if (blink || eyes === 'closed') s += `<path d="M${x - 5} ${y} Q${x} ${y + 3} ${x + 5} ${y}" fill="none" stroke="${OUT}" stroke-width="2.4" stroke-linecap="round"/>`;
       else if (eyes === 'happy') s += `<path d="M${x - 5} ${y + 2} Q${x} ${y - 4} ${x + 5} ${y + 2}" fill="none" stroke="${OUT}" stroke-width="2.6" stroke-linecap="round"/>`;
@@ -104,14 +138,12 @@
         s += `<circle cx="${f(x + lx)}" cy="${f(y + ly)}" r="${r}" fill="${OUT}"/><circle cx="${f(x + lx + 1.4)}" cy="${f(y + ly - 1.5)}" r="1.35" fill="#fff"/>`;
       }
     }
-    // glasses (round lenses + bridge, like Kreti's)
     if (look.glasses) {
       s += `<g fill="#fff" fill-opacity=".22" stroke="${OUT}" stroke-width="2.2"><circle cx="-1" cy="-174" r="10.5"/><circle cx="23" cy="-174" r="10.5"/></g>`
         + `<path d="M9.5 -175 Q11 -178 12.5 -175 M-11.5 -176 L-30 -171" fill="none" stroke="${OUT}" stroke-width="2.2" stroke-linecap="round"/>`
         + `<path d="M-6 -180 Q-3 -183 1 -182 M18 -180 Q21 -183 25 -182" stroke="#fff" stroke-opacity=".8" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
     }
-    // brows
-    const by = brows === 'up' ? -194 : -189;
+    const by = brows === 'up' ? -193 : -189;
     const bd = {
       neutral: [[-8, by, -1, by - 2, 6, by], [16, by, 23, by - 2, 30, by]],
       up: [[-8, by, -1, by - 4, 6, by - 1], [16, by - 1, 23, by - 4, 30, by]],
@@ -119,60 +151,80 @@
       angry: [[-8, by - 4, -1, by - 1, 6, by + 1], [16, by + 1, 23, by - 1, 30, by - 4]]
     }[brows] || [];
     for (const b of bd) s += `<path d="M${b[0]} ${b[1]} Q${b[2]} ${b[3]} ${b[4]} ${b[5]}" fill="none" stroke="${look.hair}" stroke-width="3.4" stroke-linecap="round"/>`;
-    // nose
     s += `<path d="M13 -166 Q18 -161 12 -158" fill="none" stroke="${OUT}" stroke-width="2.2" stroke-linecap="round"/>`;
-    // mustache
     if (look.mustache) s += `<path d="M2 -153 Q8 -159 13 -154 Q18 -159 24 -153 Q18 -150 13 -152 Q8 -150 2 -153 Z" fill="${look.hair}" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/>`;
-    // mouth
     const my = look.mustache ? -146 : -149;
     if (mouth === 'smile') s += `<path d="M5 ${my} Q13 ${my + 6} 21 ${my - 1}" fill="none" stroke="${OUT}" stroke-width="2.4" stroke-linecap="round"/>`;
     else if (mouth === 'flat') s += `<path d="M6 ${my + 1} L20 ${my}" fill="none" stroke="${OUT}" stroke-width="2.4" stroke-linecap="round"/>`;
     else if (mouth === 'frown') s += `<path d="M6 ${my + 3} Q13 ${my - 3} 20 ${my + 3}" fill="none" stroke="${OUT}" stroke-width="2.4" stroke-linecap="round"/>`;
     else if (mouth === 'o') s += `<ellipse cx="13" cy="${my + 2}" rx="5" ry="6.5" fill="#4A1E2C" stroke="${OUT}" stroke-width="2.2"/><ellipse cx="13" cy="${my + 5.5}" rx="3" ry="2" fill="#E5677A"/>`;
     else if (mouth === 'grin') s += `<path d="M3 ${my - 2} Q13 ${my - 1} 23 ${my - 3} Q20 ${my + 9} 12 ${my + 9} Q5 ${my + 8} 3 ${my - 2} Z" fill="#4A1E2C" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 ${my - 1.5} Q13 ${my - 0.5} 21 ${my - 2.5} L20 ${my + 1} Q13 ${my + 2} 6 ${my + 1.5} Z" fill="#fff"/>`;
-    // blush
+    // talking: the mouth opens and closes while the line is spoken
+    else if (mouth === 'talk') { const o = Math.abs(Math.sin(t * 15)) * 5 + 1; s += `<path d="M5 ${my - 1} Q13 ${f(my + 1 + o)} 21 ${my - 2} Q13 ${my + 1} 5 ${my - 1} Z" fill="#4A1E2C" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/>`; }
     if (ex.blush !== false) s += `<ellipse cx="-6" cy="-160" rx="5" ry="2.6" fill="#FF8FA3" opacity=".35"/><ellipse cx="29" cy="-161" rx="4" ry="2.4" fill="#FF8FA3" opacity=".35"/>`;
-    // sweat drop, sliding down
     if (ex.sweat) {
       const sy = -200 + ((t * 18) % 16);
       s += `<path d="M38 ${f(sy)} Q44 ${f(sy + 9)} 38 ${f(sy + 12)} Q32 ${f(sy + 9)} 38 ${f(sy)} Z" fill="#8FD3FF" stroke="${OUT}" stroke-width="1.8"/><path d="M37 ${f(sy + 5)} Q36 ${f(sy + 8)} 37.5 ${f(sy + 9.5)}" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
     }
     return s;
   }
-  function character(look, P, ex, t, id) {
-    const hip = [0, -64 - (P.bob || 0)];
+  // head with a hinged skull cap: lid 0 = closed, 1 = open; brain = how far the brain rises out of the head
+  function head(look, ex, t, id, lid, rise, bglow) {
+    const skull = `<circle cx="2" cy="-172" r="37" fill="url(#skin${id})" stroke="${OUT}" stroke-width="2.6"/>`;
+    const top = look.hairStyle === 'bun'
+      ? `<circle cx="-14" cy="-210" r="11" fill="${look.hair}" stroke="${OUT}" stroke-width="2.4"/><path d="M-34 -168 Q-40 -206 -6 -209 Q22 -210 36 -186 Q14 -198 -6 -196 Q-24 -194 -26 -172 Z" fill="${look.hair}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      : `<path d="M-3 -208 Q0 -218 7 -214 Q5 -210 9 -208" fill="none" stroke="${OUT}" stroke-width="2.4" stroke-linecap="round"/>`;
+    const side = look.hairStyle === 'bun' ? '' : `<path d="M-35 -162 Q-41 -190 -24 -200 Q-26 -190 -22 -184 Q-26 -174 -30 -160 Z" fill="${look.hair}" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    const shade = `<path d="M-30 -158 Q-20 -138 6 -136 Q-28 -140 -33 -170 Z" fill="#000" opacity=".05"/>`;
+    let s = `<ellipse cx="-32" cy="-168" rx="6.5" ry="8.5" fill="${look.skinDark}" stroke="${OUT}" stroke-width="2.4"/>`;
+    if (lid < 0.002 && rise < 0.5) return s + skull + shade + top + side + face(look, ex, t);
+    s += `<g clip-path="url(#below${id})">${skull}${shade}</g>`
+      + `<ellipse cx="2" cy="${CUT}" rx="27.5" ry="6.5" fill="#6E1F3A" stroke="${OUT}" stroke-width="2.4"/><ellipse cx="2" cy="${CUT + 1.5}" rx="20" ry="3.4" fill="#4A1226"/>`;
+    s += `<g clip-path="url(#brainclip${id})">${brainSvg(2, CUT + 4 - rise, 0.88, bglow, t)}</g>`
+      + `<path d="M-25.5 ${CUT} A27.5 6.5 0 0 0 29.5 ${CUT}" fill="none" stroke="${OUT}" stroke-width="2.4"/>`;
+    s += side + face(look, ex, t);
+    const a = -lid * 104;
+    s += `<g transform="rotate(${f(a)} -26 ${CUT})"><g clip-path="url(#above${id})">${skull}</g><path d="M-26 ${CUT} Q2 ${CUT + 5} 30 ${CUT}" fill="none" stroke="${OUT}" stroke-width="2.4"/>${look.hairStyle === 'bun' ? '' : top}</g>`;
+    if (look.hairStyle === 'bun') s += top;
+    return s;
+  }
+  function character(look, P, ex, t, id, tr) {
+    SW = look.suit ? 26 : 19; ST = P.stretch || 1;
+    const bob = P.bob || 0, hip = [0, -64 - bob];
     let s = '';
-    // shadow is drawn by the caller (stays on the floor while jumping)
-    s += arm([-5, -124 - (P.bob || 0)], P.bs, P.be, look, true);
-    s += leg([-6, hip[1]], P.bh, P.bk, look, true);
-    s += leg([6, hip[1]], P.fh, P.fk, look, false);
-    // upper body
-    s += `<g transform="rotate(${f(P.lean)} 0 ${f(hip[1])})"><g transform="translate(0 ${f(-(P.bob || 0))})">`;
-    // coat
-    s += `<path d="M-19 -131 Q-26 -92 -28 -40 Q0 -34 28 -40 Q26 -92 19 -131 Q0 -137 -19 -131 Z" fill="url(#coat${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
-      + `<path d="M-9 -132 L1 -110 L10 -132 Z" fill="${look.shirt}" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
-      + (look.tie ? `<path d="M0 -127 L4 -127 L5 -112 L2 -106 L-1 -112 Z" fill="${look.tie}" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/>` : '')
-      + `<path d="M-9 -132 L-3 -104 L1 -110 M10 -132 L5 -104 L1 -110" fill="none" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
-      + `<path d="M1 -106 L1 -42" stroke="${OUT}" stroke-width="1.6" opacity=".55"/><circle cx="4" cy="-92" r="1.8" fill="${OUT}"/><circle cx="4" cy="-74" r="1.8" fill="${OUT}"/>`
-      + `<path d="M8 -103 L19 -103 L19 -93 Q13.5 -90 8 -93 Z" fill="none" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/><path d="M11 -110 L11 -101" stroke="${look.pen}" stroke-width="2.6" stroke-linecap="round"/>`
-      + (look.badge ? `<g transform="translate(-17 -104) rotate(-4)"><rect x="0" y="0" width="13" height="9" rx="2" fill="#fff" stroke="${OUT}" stroke-width="1.5"/>${KRETI.mark ? `<g transform="translate(2.3 1) scale(0.033)">${KRETI.mark}</g>` : ''}</g>` : '');
-    // neck + head
+    if (look.suit) s += `<rect x="-34" y="${-142 - bob}" width="68" height="84" rx="16" fill="#AEB6C8" stroke="${OUT}" stroke-width="2.6"/><rect x="-28" y="${-134 - bob}" width="10" height="50" rx="4" fill="#8C93A8"/>`;
+    s += leg([-8, hip[1]], P.bh, P.bk, look, true);
+    s += leg([8, hip[1]], P.fh, P.fk, look, false);
+    s += `<g transform="rotate(${f(P.lean)} 0 ${f(hip[1])})"><g transform="translate(0 ${f(-bob)})">`;
+    if (look.suit) {
+      s += `<path d="M-25 -134 Q-33 -96 -31 -44 Q0 -36 31 -44 Q33 -96 25 -134 Q0 -142 -25 -134 Z" fill="url(#coat${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+        + `<path d="M-30 -62 Q0 -56 30 -62" fill="none" stroke="${OUT}" stroke-width="2" opacity=".5"/>`
+        + `<rect x="-2" y="-118" width="24" height="17" rx="4" fill="#5B6178" stroke="${OUT}" stroke-width="2"/><circle cx="4" cy="-109.5" r="2.6" fill="#FF5C7A"/><circle cx="11" cy="-109.5" r="2.6" fill="#FFD166"/><circle cx="17.5" cy="-109.5" r="2.6" fill="#5CE1B8"/>`
+        + `<g transform="translate(-15 -106)"><circle r="9" fill="#fff" stroke="${OUT}" stroke-width="1.8"/><g transform="translate(-6.5 -6.5) scale(0.054)">${KRETI.mark}</g></g>`;
+    } else {
+      s += `<path d="M-19 -131 Q-26 -92 -28 -40 Q0 -34 28 -40 Q26 -92 19 -131 Q0 -137 -19 -131 Z" fill="url(#coat${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+        + `<path d="M-9 -132 L1 -110 L10 -132 Z" fill="${look.shirt}" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
+        + (look.tie ? `<path d="M0 -127 L4 -127 L5 -112 L2 -106 L-1 -112 Z" fill="${look.tie}" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/>` : '')
+        + `<path d="M-9 -132 L-3 -104 L1 -110 M10 -132 L5 -104 L1 -110" fill="none" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
+        + `<path d="M1 -106 L1 -42" stroke="${OUT}" stroke-width="1.6" opacity=".55"/><circle cx="4" cy="-92" r="1.8" fill="${OUT}"/><circle cx="4" cy="-74" r="1.8" fill="${OUT}"/>`
+        + `<path d="M8 -103 L19 -103 L19 -93 Q13.5 -90 8 -93 Z" fill="none" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/><path d="M11 -110 L11 -101" stroke="${look.pen}" stroke-width="2.6" stroke-linecap="round"/>`
+        + (look.badge ? `<g transform="translate(-17 -104) rotate(-4)"><rect x="0" y="0" width="13" height="9" rx="2" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><g transform="translate(2.3 1) scale(0.033)">${KRETI.mark}</g></g>` : '');
+    }
     s += `<g transform="rotate(${f(P.tilt)} 2 -134)">`
       + `<path d="M-6 -140 L-5 -130 L8 -130 L9 -140 Z" fill="${look.skinDark}" stroke="${OUT}" stroke-width="2.2"/>`
-      + `<ellipse cx="-32" cy="-168" rx="6.5" ry="8.5" fill="${look.skinDark}" stroke="${OUT}" stroke-width="2.4"/>`
-      + `<circle cx="2" cy="-172" r="37" fill="url(#skin${id})" stroke="${OUT}" stroke-width="2.6"/>`
-      + `<path d="M-30 -158 Q-20 -138 6 -136 Q-28 -140 -33 -170 Z" fill="#000" opacity=".05"/>`
-      + (look.hairStyle === 'bun'
-        ? `<circle cx="-14" cy="-210" r="11" fill="${look.hair}" stroke="${OUT}" stroke-width="2.4"/><path d="M-34 -168 Q-40 -206 -6 -209 Q22 -210 36 -186 Q14 -198 -6 -196 Q-24 -194 -26 -172 Z" fill="${look.hair}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
-        : `<path d="M-35 -162 Q-41 -190 -24 -200 Q-26 -190 -22 -184 Q-26 -174 -30 -160 Z" fill="${look.hair}" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-3 -208 Q0 -218 7 -214 Q5 -210 9 -208" fill="none" stroke="${OUT}" stroke-width="2.4" stroke-linecap="round"/>`)
-      + face(look, ex, t, id) + `</g>`;
-    s += `</g></g>`;
-    s += arm([5, -124 - (P.bob || 0)], P.fs, P.fe, look, false, look.hand);
+      + head(look, ex, t, id, tr.lid || 0, tr.brain || 0, tr.bglow || 0);
+    if (look.suit) s += `<circle cx="2" cy="-174" r="50" fill="url(#visor${id})" stroke="${OUT}" stroke-width="2.8"/><circle cx="2" cy="-174" r="46" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>`
+      + `<path d="M-30 -204 Q-14 -220 8 -220" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".75"/><path d="M-36 -186 Q-36 -192 -34 -196" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".55"/>`
+      + `<ellipse cx="2" cy="-128" rx="30" ry="8" fill="#C9CFDB" stroke="${OUT}" stroke-width="2.4"/>`;
+    s += `</g></g></g>`;
+    s += arm('b', P, look) + arm('f', P, look);
     return s;
   }
   function charDefs(look, id) {
     return `<radialGradient id="skin${id}" cx="0.62" cy="0.36" r="0.75"><stop offset="0" stop-color="${look.skinLight}"/><stop offset=".7" stop-color="${look.skin}"/><stop offset="1" stop-color="${look.skinDark}"/></radialGradient>`
-      + `<linearGradient id="coat${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${look.coatDark}"/><stop offset=".45" stop-color="${look.coat}"/><stop offset="1" stop-color="${look.coat}"/></linearGradient>`;
+      + `<linearGradient id="coat${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${look.coatDark}"/><stop offset=".45" stop-color="${look.coat}"/><stop offset="1" stop-color="${look.coat}"/></linearGradient>`
+      + `<clipPath id="below${id}"><rect x="-60" y="${CUT}" width="140" height="120"/></clipPath><clipPath id="brainclip${id}"><rect x="-80" y="-340" width="170" height="${340 + CUT + 3}"/></clipPath><clipPath id="above${id}"><rect x="-60" y="-260" width="140" height="${260 + CUT}"/></clipPath>`
+      + (look.suit ? `<radialGradient id="visor${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#E8F6FF" stop-opacity=".25"/><stop offset=".7" stop-color="#9FD4FF" stop-opacity=".18"/><stop offset="1" stop-color="#6FA8FF" stop-opacity=".35"/></radialGradient>` : '');
   }
   const LOOKS = {
     scientist: { skin: '#F7EDE0', skinLight: '#FFFBF5', skinDark: '#E4D3BF', hair: '#3B2A22', coat: '#FFFFFF', coatDark: '#DCE3EA',
@@ -183,7 +235,10 @@
       sleeve: '#E9F6FF', sleeveDark: '#C3D6E4', pen: '#FF7A59', glasses: false, mustache: false, badge: true, hairStyle: 'bun' },
     professor: { skin: '#F5E6D6', skinLight: '#FFF8EF', skinDark: '#DFCBB5', hair: '#8E8A96', coat: '#FFFFFF', coatDark: '#DCE3EA',
       shirt: '#3E7BFA', tie: '#E0B43A', pants: '#4A4458', pantsDark: '#38334A', shoe: '#2A2230', shoeDark: '#1E1826',
-      sleeve: '#FFFFFF', sleeveDark: '#D5DCE4', pen: '#E0B43A', glasses: true, mustache: true, badge: false }
+      sleeve: '#FFFFFF', sleeveDark: '#D5DCE4', pen: '#E0B43A', glasses: true, mustache: true, badge: false },
+    astronaut: { skin: '#F7EDE0', skinLight: '#FFFBF5', skinDark: '#E4D3BF', hair: '#3B2A22', coat: '#F7F8FC', coatDark: '#D3D9E5',
+      pants: '#F2F4F9', pantsDark: '#D3D9E5', shoe: '#8C93A8', shoeDark: '#6E7590', sleeve: '#F7F8FC', sleeveDark: '#D3D9E5',
+      glasses: true, mustache: false, suit: true }
   };
 
   // ---------------------------------------------------------------- props
@@ -351,14 +406,80 @@
     }
   };
 
+  // sky → space: a tall set. Camera y ~1350 = inside the clouds, y ~40 = deep space.
+  function cloud(x, y, k, op, tone) {
+    return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})" opacity="${op}"><path d="M-70 24 Q-86 -4 -54 -12 Q-50 -46 -14 -40 Q2 -70 38 -50 Q70 -60 76 -24 Q104 -16 92 14 Q96 30 70 30 L-50 30 Q-74 32 -70 24 Z" fill="url(#cl${tone || ''}S)"/><path d="M-50 30 Q0 18 70 30" fill="none" stroke="#9FC2E8" stroke-width="3" opacity=".35"/></g>`;
+  }
+  SETS.space = {
+    depth: { far: 0.5, air: 0.75, fg: 1.4 },
+    defs: id => `<linearGradient id="spg${id}" gradientUnits="userSpaceOnUse" x1="0" y1="-500" x2="0" y2="1500"><stop offset="0" stop-color="#05040F"/><stop offset=".32" stop-color="#140C3C"/><stop offset=".5" stop-color="#2B3E9E"/><stop offset=".7" stop-color="#5FA8F0"/><stop offset="1" stop-color="#CBEBFF"/></linearGradient>`
+      + `<radialGradient id="neb1${id}"><stop offset="0" stop-color="#912EE8" stop-opacity=".55"/><stop offset="1" stop-color="#912EE8" stop-opacity="0"/></radialGradient>`
+      + `<radialGradient id="neb2${id}"><stop offset="0" stop-color="#B91097" stop-opacity=".45"/><stop offset="1" stop-color="#B91097" stop-opacity="0"/></radialGradient>`
+      + `<radialGradient id="neb3${id}"><stop offset="0" stop-color="#2EC4B6" stop-opacity=".25"/><stop offset="1" stop-color="#2EC4B6" stop-opacity="0"/></radialGradient>`
+      + `<radialGradient id="earth${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#7FD0FF"/><stop offset=".6" stop-color="#2E7FD9"/><stop offset="1" stop-color="#173E86"/></radialGradient>`
+      + `<radialGradient id="atm${id}"><stop offset=".78" stop-color="#7FD0FF" stop-opacity=".6"/><stop offset="1" stop-color="#7FD0FF" stop-opacity="0"/></radialGradient>`
+      + `<linearGradient id="pl${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC27A"/><stop offset="1" stop-color="#D9663B"/></linearGradient>`
+      + `<radialGradient id="moon${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#F2EFF7"/><stop offset="1" stop-color="#A9A3BA"/></radialGradient>`
+      + `<linearGradient id="clS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCEBFA"/></linearGradient>`
+      + `<linearGradient id="clbS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4F9FF"/><stop offset="1" stop-color="#C3DBF4"/></linearGradient>`
+      + `<filter id="fgblur${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>`,
+    far: (t, id) => {
+      let s = `<rect x="-900" y="-1600" width="2600" height="4400" fill="url(#spg${id})"/>`
+        + `<ellipse cx="220" cy="-80" rx="300" ry="220" fill="url(#neb1${id})"/><ellipse cx="540" cy="250" rx="260" ry="200" fill="url(#neb2${id})"/><ellipse cx="420" cy="40" rx="200" ry="150" fill="url(#neb3${id})"/>`;
+      for (let i = 0; i < 150; i++) {
+        const x = -200 + hash(i) * 1000, y = -700 + hash(i + 50) * 1250, fade = clamp((560 - y) / 320, 0, 1);
+        if (fade <= 0) continue;
+        const tw = 0.45 + 0.55 * Math.abs(Math.sin(t * (1 + hash(i + 9) * 2) + i));
+        const r = 0.6 + hash(i + 3) * 1.6;
+        s += r > 1.8 ? `<path transform="translate(${f(x)} ${f(y)}) scale(${f(r * 0.9)})" d="M0 -4 C.5 -1 1 -.5 4 0 C1 .5 .5 1 0 4 C-.5 1 -1 .5 -4 0 C-1 -.5 -.5 -1 0 -4 Z" fill="#fff" opacity="${f(fade * tw)}"/>`
+          : `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="#fff" opacity="${f(fade * tw)}"/>`;
+      }
+      // Earth seen from far away, the Moon and a ringed planet
+      s += `<circle cx="150" cy="40" r="58" fill="url(#atm${id})"/><circle cx="150" cy="40" r="44" fill="url(#earth${id})" stroke="${OUT}" stroke-width="2.4"/>`
+        + `<g opacity=".85"><path d="M126 18 Q138 8 150 16 Q146 28 134 30 Q124 28 126 18 Z M160 44 Q176 36 184 50 Q176 66 162 60 Q152 54 160 44 Z M130 56 Q140 52 144 62 Q136 70 128 64 Z" fill="#5CC98A"/></g>`
+        + `<path d="M118 14 Q140 -2 168 8" stroke="#fff" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>`
+        + `<circle cx="232" cy="-56" r="15" fill="url(#moon${id})" stroke="${OUT}" stroke-width="2"/><circle cx="228" cy="-60" r="3" fill="#9A93AE" opacity=".6"/><circle cx="238" cy="-50" r="2.2" fill="#9A93AE" opacity=".6"/>`
+        + `<g transform="translate(520 120) rotate(-18)"><ellipse rx="66" ry="14" fill="none" stroke="#F3D7A8" stroke-width="7" opacity=".9"/><circle r="34" fill="url(#pl${id})" stroke="${OUT}" stroke-width="2.4"/><path d="M-32 -8 Q0 -2 32 -10 M-30 10 Q0 16 30 8" stroke="#B4512E" stroke-width="4" fill="none" opacity=".45"/><path d="M-66 0 A66 14 0 0 0 66 0" fill="none" stroke="#F3D7A8" stroke-width="7"/><path d="M-66 0 A66 14 0 0 0 66 0" fill="none" stroke="${OUT}" stroke-width="1.2" opacity=".35"/></g>`;
+      // shooting star every 4 s
+      const u = (t % 4) / 0.7;
+      if (u < 1) { const x = 80 + u * 260, y = -160 + u * 120; s += `<path d="M${f(x)} ${f(y)} L${f(x - 60)} ${f(y - 28)}" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="${f(1 - u)}"/>`; }
+      return s;
+    },
+    air: (t) => {
+      let s = '';
+      for (let i = 0; i < 26; i++) {
+        const x = hash(i + 70) * 760, y = 300 + hash(i + 80) * 700, k = 0.3 + hash(i) * 0.5;
+        s += `<circle cx="${f(x + Math.sin(t + i) * 6)}" cy="${f(y)}" r="${f(k * 2)}" fill="#fff" opacity="${f(0.15 + 0.2 * Math.abs(Math.sin(t * 0.8 + i)))}"/>`;
+      }
+      return s;
+    },
+    mid: (t, id, st, sh) => {
+      const ts = t - (sh ? sh.start : 0);
+      let s = '';
+      // cloud band
+      const C = [[60, 1210, 1.3, 'b'], [330, 1330, 1.6, ''], [620, 1190, 1.2, 'b'], [180, 1480, 1.8, ''], [520, 1500, 1.7, ''], [110, 1010, 0.9, 'b'], [600, 960, 0.8, ''], [360, 1120, 1.0, 'b'], [40, 1620, 2, ''], [680, 1640, 2, 'b']];
+      for (const [x, y, k, tone] of C) s += cloud(x + Math.sin(t * 0.3 + y) * 8, y, k, 1, tone);
+      // an airplane crossing the sky
+      const px = -80 + ts * 95;
+      s += `<g transform="translate(${f(px)} 1090) rotate(-6)"><path d="M-30 0 Q-30 -7 -20 -7 L22 -7 Q34 -6 38 0 Q34 6 22 6 L-20 6 Q-30 6 -30 0 Z" fill="#fff" stroke="${OUT}" stroke-width="2.2"/><path d="M-4 -2 L-16 -22 L-8 -22 L10 -2 Z M-4 3 L-12 18 L-5 18 L8 3 Z M-26 -3 L-32 -16 L-26 -16 L-18 -4 Z" fill="#912EE8" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="20" cy="-1" r="1.6" fill="#7EC8FF"/><circle cx="12" cy="-1" r="1.6" fill="#7EC8FF"/><circle cx="4" cy="-1" r="1.6" fill="#7EC8FF"/></g>`;
+      // birds
+      for (let i = 0; i < 4; i++) { const bx = 520 - ts * 40 + i * 22, by = 1400 + (i % 2) * 12, w = Math.sin(t * 10 + i) * 5; s += `<path d="M${f(bx - 8)} ${f(by - w)} Q${f(bx - 4)} ${f(by - 4)} ${f(bx)} ${f(by)} Q${f(bx + 4)} ${f(by - 4)} ${f(bx + 8)} ${f(by - w)}" fill="none" stroke="${OUT}" stroke-width="2" stroke-linecap="round"/>`; }
+      // satellite with a Kreti solar panel
+      const sx = 590 - ts * 7, sy = -40 + Math.sin(t * 0.8) * 6;
+      s += `<g transform="translate(${f(sx)} ${f(sy)}) rotate(${f(-14 + Math.sin(t * 0.6) * 6)})"><rect x="-52" y="-10" width="34" height="20" rx="2" fill="#3D5BD8" stroke="${OUT}" stroke-width="2"/><path d="M-41 -10 L-41 10 M-30 -10 L-30 10" stroke="#9FB7FF" stroke-width="1.2"/><rect x="18" y="-10" width="34" height="20" rx="2" fill="#3D5BD8" stroke="${OUT}" stroke-width="2"/><path d="M29 -10 L29 10 M40 -10 L40 10" stroke="#9FB7FF" stroke-width="1.2"/><path d="M-18 0 L18 0" stroke="${OUT}" stroke-width="2.4"/><rect x="-12" y="-14" width="24" height="28" rx="5" fill="#E8E4F2" stroke="${OUT}" stroke-width="2.2"/><g transform="translate(-8 -8) scale(0.067)">${KRETI.mark}</g><path d="M0 -14 L0 -24" stroke="${OUT}" stroke-width="2"/><circle cx="0" cy="-26" r="3" fill="#FF5C7A" stroke="${OUT}" stroke-width="1.5"/></g>`;
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})">${cloud(80, 1560, 2.6, 0.95, '')}${cloud(620, 1720, 3, 0.95, 'b')}${cloud(340, 1880, 2.8, 0.95, '')}${cloud(-40, 1230, 2.2, 0.9, 'b')}${cloud(720, 1150, 2.4, 0.9, '')}</g>`
+  };
+
   // ---------------------------------------------------------------- frame
+  // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
-  function cameraAt(t) {
-    const k = S.camera;
+  function cameraAt(sh, t) {
+    const k = sh.camera;
     const c = { x: track(k, t, 'x'), y: track(k, t, 'y'), z: track(k, t, 'z') };
-    // camera shake: [{t0, t1, amp}]
-    for (const sh of S.shake || []) if (t >= sh.t0 && t <= sh.t1) {
-      const u = (t - sh.t0) / (sh.t1 - sh.t0), a = sh.amp * (1 - u);
+    for (const q of sh.shake || []) if (t >= q.t0 && t <= q.t1) {
+      const u = (t - q.t0) / (q.t1 - q.t0), a = q.amp * (1 - u);
       c.x += Math.sin(t * 61) * a; c.y += Math.cos(t * 47) * a;
     }
     return c;
@@ -369,80 +490,87 @@
   }
   function actorAt(a, t) {
     const k = a.keys;
-    const x = track(k, t, 'x'), y = track(k, t, 'y') || 520;
+    const x = track(k, t, 'x'), y = track(k, t, 'y');
     const face = step(k, t, 'face', 1);
     const sc = track(k, t, 's') || 1;
-    // pose with blending: each key may set pose; blend 0.28s from previous pose
+    const tr = { lid: track(k, t, 'lid') || 0, brain: track(k, t, 'brain') || 0, bglow: track(k, t, 'bglow') || 0, rot: track(k, t, 'rot') || 0 };
     const pk = k.filter(q => q.pose);
     let cur = pk[0], prev = null;
-    for (const q of pk) if (q.t <= t) { prev = cur === q ? prev : cur; cur = q; }
-    const poseOf = q => q.pose === 'walk' ? walkPose((x / (a.stride || 70)) % 1) : POSES[q.pose];
+    for (const q of pk) if (q.t <= t && q !== cur) { prev = cur; cur = q; }
+    const poseOf = q => {
+      let P = q.pose === 'walk' ? walkPose((x / (a.stride || 70)) % 1) : Object.assign({}, POSES[q.pose]);
+      if (P.drift) { P.fs += Math.sin(t * 1.6) * 7; P.bs -= Math.sin(t * 1.6 + 1) * 7; P.fh += Math.sin(t * 1.2) * 6; P.bh += Math.sin(t * 1.2 + 2) * 6; }
+      if (P.waveF) P.fe += Math.sin(t * 9) * 30;
+      return P;
+    };
     let P = poseOf(cur);
     const bl = cur.blend !== undefined ? cur.blend : 0.28;
-    if (prev && prev !== cur && t - cur.t < bl) P = mixPose(poseOf(prev), P, EASE.inout((t - cur.t) / bl));
-    // jumps: [{t0, t1, h}]
+    if (prev && t - cur.t < bl) P = mixPose(poseOf(prev), P, EASE.inout((t - cur.t) / bl));
     let lift = 0, squash = 1;
     for (const j of a.jumps || []) {
       if (t >= j.t0 && t <= j.t1) { const u = (t - j.t0) / (j.t1 - j.t0); lift = 4 * j.h * u * (1 - u); squash = 1 + 0.06 * Math.sin(u * Math.PI); }
       else if (t > j.t1 && t < j.t1 + 0.16) { const u = (t - j.t1) / 0.16; squash = 1 - 0.07 * Math.sin(u * Math.PI); }
     }
-    // tremble
     let tx = 0;
-    for (const tr of a.tremble || []) if (t >= tr.t0 && t <= tr.t1) tx = Math.sin(t * 70) * (tr.amp || 1.2);
-    // expression = merge of all expr keys up to t
+    for (const q of a.tremble || []) if (t >= q.t0 && t <= q.t1) tx = Math.sin(t * 70) * (q.amp || 1.2);
+    // floating characters bob gently
+    if (a.float) lift += Math.sin(t * 1.4) * 8;
     const ex = { seed: a.seed || 0 };
     for (const q of k) if (q.t <= t && q.expr) Object.assign(ex, q.expr);
-    return { x: x + tx, y, face, sc, P, lift, squash, ex };
+    return { x: x + tx, y, face, sc, P, lift, squash, ex, tr };
   }
   function drawActor(a, st, t) {
     const look = Object.assign({}, LOOKS[a.look] || LOOKS.scientist, a.lookOverride || {});
-    const sh = `<ellipse cx="${f(st.x)}" cy="${f(st.y + 1)}" rx="${f(30 * st.sc * (1 - st.lift / 140))}" ry="${f(6 * st.sc)}" fill="#000" opacity="${f(0.2 * (1 - st.lift / 120))}"/>`;
-    return sh + `<g transform="translate(${f(st.x)} ${f(st.y - st.lift)}) scale(${f(st.face * st.sc / st.squash)} ${f(st.sc * st.squash)})">${character(look, st.P, st.ex, t, a.id)}</g>`;
+    const sh = a.float ? '' : `<ellipse cx="${f(st.x)}" cy="${f(st.y + 1)}" rx="${f(30 * st.sc * (1 - st.lift / 140))}" ry="${f(6 * st.sc)}" fill="#000" opacity="${f(0.2 * (1 - st.lift / 120))}"/>`;
+    return sh + `<g transform="translate(${f(st.x)} ${f(st.y - st.lift)}) rotate(${f(st.tr.rot)} 0 -110) scale(${f(st.face * st.sc / st.squash)} ${f(st.sc * st.squash)})">${character(look, st.P, st.ex, t, a.id, st.tr)}</g>`;
   }
-  // text pops (sound words / labels) in world space: [{t0, t1, x, y, text, color}]
-  function pops(t) {
+  function pops(sh, t) {
     let s = '';
-    for (const p of S.pops || []) if (t >= p.t0 && t <= p.t1) {
-      const u = (t - p.t0) / (p.t1 - p.t0), sc = u < 0.2 ? EASE.back(u / 0.2) : 1, op = u > 0.8 ? (1 - u) / 0.2 : 1;
-      s += `<g transform="translate(${p.x} ${p.y}) rotate(${p.rot || -8}) scale(${f(sc)})" opacity="${f(op)}"><text text-anchor="middle" font-family="Rubik" font-weight="900" font-size="${p.size || 26}" fill="${p.color || '#FFD166'}" stroke="${OUT}" stroke-width="5" paint-order="stroke" direction="rtl">${p.text}</text></g>`;
+    for (const p of sh.pops || []) if (t >= p.t0 && t <= p.t1) {
+      const u = (t - p.t0) / (p.t1 - p.t0), sc = u < 0.2 ? EASE.back(u / 0.2) : 1, op = u > 0.85 ? (1 - u) / 0.15 : 1;
+      s += `<g transform="translate(${p.x} ${p.y}) rotate(${p.rot || -8}) scale(${f(sc)})" opacity="${f(op)}"><text text-anchor="middle" font-family="Rubik" font-weight="900" font-size="${p.size || 26}" fill="${p.color || '#FFD166'}" stroke="${OUT}" stroke-width="5" paint-order="stroke" direction="${p.dir || 'rtl'}">${p.text}</text></g>`;
     }
     return s;
   }
-  // sparkle bursts in world space: [{t0, x, y}]
-  function bursts(t) {
+  function bursts(sh, t) {
     let s = '';
-    for (const b of S.bursts || []) {
+    for (const b of sh.bursts || []) {
       const u = (t - b.t0) / 0.9;
       if (u < 0 || u > 1) continue;
       for (let i = 0; i < 12; i++) {
-        const a = i * 30 + hash(i) * 20, r = 20 + EASE.out(u) * (50 + hash(i + 3) * 40), k = (1 - u) * (0.6 + hash(i) * 0.6);
+        const a = i * 30 + hash(i) * 20, r = 20 + EASE.out(u) * (50 + hash(i + 3) * 40) * (b.k || 1), k = (1 - u) * (0.6 + hash(i) * 0.6);
         const x = b.x + r * Math.cos(a * R), y = b.y + r * Math.sin(a * R);
         s += `<path transform="translate(${f(x)} ${f(y)}) scale(${f(k)})" d="M0 -8 C1 -2 2 -1 8 0 C2 1 1 2 0 8 C-1 2 -2 1 -8 0 C-2 -1 -1 -2 0 -8 Z" fill="${i % 3 ? '#FFF3A6' : '#FFFFFF'}"/>`;
       }
     }
     return s;
   }
-  // screen-space captions: word-by-word, [{t0, t1, text}] (words appear evenly)
+  // captions: the spoken words appear one by one (times from the voice)
   function captions(t) {
     for (const c of S.captions || []) if (t >= c.t0 && t <= c.t1) {
-      const w = c.text.split(' '), n = Math.min(w.length, Math.floor((t - c.t0) / ((c.t1 - c.t0) * 0.75) * w.length) + 1);
-      return `<div style="position:absolute;left:20px;right:20px;top:64px;display:flex;justify-content:center"><div style="max-width:300px;padding:10px 18px;border-radius:22px;background:rgba(255,255,255,.55);border:1.5px solid rgba(255,255,255,.8);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(30,16,40,.18);text-align:center;direction:rtl;font-family:Rubik;font-weight:900;font-size:22px;line-height:1.35;color:${OUT}">${w.slice(0, n).join(' ')}</div></div>`;
+      const shown = c.words.filter(w => w.t <= t + 0.05).map(w => w.w);
+      if (!shown.length) return '';
+      return `<div style="position:absolute;left:20px;right:20px;top:64px;display:flex;justify-content:center"><div style="max-width:300px;padding:10px 18px;border-radius:22px;background:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.85);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(30,16,40,.18);text-align:center;direction:rtl;font-family:Rubik;font-weight:900;font-size:22px;line-height:1.35;color:${OUT}">${shown.join(' ')}</div></div>`;
     }
     return '';
   }
   window.drawFrame = function (t) {
-    const set = SETS[S.set];
-    const c = cameraAt(t);
-    const st = { glow: track(S.glow || [{ t: 0, v: 0 }], t, 'v') || 0 };
+    let sh = S.shots[0];
+    for (const q of S.shots) if (t >= q.start) sh = q;
+    const set = SETS[sh.set], dep = set.depth || { far: 0.78, air: 0.9, fg: 1.3 };
+    const c = cameraAt(sh, t);
+    const st = { glow: sh.glow ? track(sh.glow, t, 'v') || 0 : 0 };
     const id = 'S';
-    const actors = (S.actors || []).map(a => ({ a, s: actorAt(a, t) }));
-    let defs = set.defs(id);
-    for (const a of S.actors || []) defs += charDefs(Object.assign({}, LOOKS[a.look] || LOOKS.scientist, a.lookOverride || {}), a.id);
-    let world = layer(c, 0.78, set.far(t, id)) + layer(c, 0.9, set.air(t));
-    let mid = set.mid(t, id, st);
+    const actors = (sh.actors || []).map(a => ({ a, s: actorAt(a, t) }));
+    let defs = set.defs(id) + `<radialGradient id="bglow"><stop offset="0" stop-color="#FFF3A6" stop-opacity=".9"/><stop offset="1" stop-color="#FFB0D0" stop-opacity="0"/></radialGradient>`;
+    for (const a of sh.actors || []) defs += charDefs(Object.assign({}, LOOKS[a.look] || LOOKS.scientist, a.lookOverride || {}), a.id);
+    let world = layer(c, dep.far, set.far(t, id, sh)) + layer(c, dep.air, set.air(t, sh));
+    let mid = set.mid(t, id, st, sh);
     for (const { a, s } of actors) mid += drawActor(a, s, t);
-    mid += bursts(t) + pops(t);
-    world += layer(c, 1, mid) + layer(c, 1.3, set.fg(t, id));
+    mid += bursts(sh, t) + pops(sh, t);
+    world += layer(c, 1, mid) + layer(c, dep.fg, set.fg(t, id, sh));
+    const mb = sh.mblur ? track(sh.mblur, t, 'v') || 0 : 0;
+    if (mb > 0.3) { defs += `<filter id="mb" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="0 ${f(mb)}"/></filter>`; world = `<g filter="url(#mb)">${world}</g>`; }
     const fl = S.flash ? track(S.flash, t, 'v') || 0 : 0;
     document.getElementById('stage').innerHTML =
       `<svg width="360" height="640" viewBox="0 0 360 640" style="position:absolute;inset:0"><defs>${defs}<radialGradient id="vig" cx=".5" cy=".46" r=".75"><stop offset=".55" stop-color="#1A1024" stop-opacity="0"/><stop offset="1" stop-color="#1A1024" stop-opacity=".42"/></radialGradient></defs>`
