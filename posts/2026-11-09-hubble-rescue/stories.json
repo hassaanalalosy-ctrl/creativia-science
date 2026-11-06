@@ -5,23 +5,33 @@
  },
  "fact": {
   "tag": "معلومة سريعة",
-  "icon": "bolt",
-  "title": "البرق أسخن من سطح الشمس!",
-  "lines": 1,
-  "body": "يسخّن الهواء إلى نحو 5 أضعاف حرارة سطح الشمس.",
+  "icon": "planet",
+  "icon2": "atom",
+  "title": "دورة الزهرة حول نفسها أطول من سنتها!",
+  "lines": 2,
+  "size": 20,
+  "body": "تدور حول نفسها كل 243 يوماً أرضياً، وحول الشمس كل 225 يوماً.",
   "art": {
    "row": [
     {
-     "name": "bolt"
-    },
-    ">",
-    {
-     "name": "sun"
+     "parts": [
+      "<circle cx='200' cy='150' r='92'/>"
+     ],
+     "palette": "sand",
+     "box": [
+      108,
+      58,
+      292,
+      242
+     ],
+     "details": [
+      "<path d='M130 120 C170 108 230 108 272 122' fill='none' stroke='#E0B06A' stroke-width='10' stroke-linecap='round' opacity='0.7'/>",
+      "<path d='M120 168 C168 182 236 182 280 166' fill='none' stroke='#C8964C' stroke-width='9' stroke-linecap='round' opacity='0.55'/>"
+     ],
+     "gloss": "M140 110 C150 92 168 80 188 74"
     }
    ]
   },
-  "credit": "رسم توضيحي: كريتيفيا ساينس",
-  "size": 20,
-  "icon2": "planet"
+  "credit": "رسم توضيحي: كريتيفيا ساينس"
  }
 }
