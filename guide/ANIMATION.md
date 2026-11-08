@@ -38,6 +38,8 @@ Kreti is **never the main character** in animated reels. He is hidden in the wor
 - Transitions between sets: fly through a window / into an object / up through the clouds, with `mblur` (vertical motion blur 6–12) and a short white `flash` at the cut. No plain hard cuts.
 - `shake` [{t0,t1,amp}] on impacts, `bursts` (sparkles) on reveals, `pops` (big words or numbers like "20%", `dir: "ltr"` for numbers). Pops and props never cover the caption area (top of the screen, about y 60–150 on screen) or any other text.
 
+- Keep every text, pop and label inside the Instagram safe zone (RUN.md "Instagram safe zone"): nothing at y < 40, nothing at x > 318 below y 420, nothing at y > 575.
+
 ## Voice, captions, sound
 - Narrator for animated reels: **Hamida — voice id `JjTirzdD7T3GMLkwdd3a`** (owner's choice). Story reels keep `fbIG6gEosVIM95R5qOna`.
 - `lines`: `[{"say": fully vowelled, "show": plain caption text, "gap": seconds before it}]`. Same number of words in say and show when possible (numbers like "2%" are fine in show). Proofread every show line (RUN.md "Language check").

@@ -106,7 +106,7 @@ function keyed(keys, lt, f, def) {
 
 // ---- window geometry ----
 // window frames: wide (about 1:1, the default), square, tall (4:5). A shot can change frame over time (frameKeys).
-const FR = { wide: { x: 24, y: 72, w: 312, h: 300 }, square: { x: 24, y: 72, w: 312, h: 312 }, tall: { x: 40, y: 72, w: 280, h: 350 } }, PAD = 8;
+const FR = { wide: { x: 24, y: 82, w: 312, h: 300 }, square: { x: 24, y: 82, w: 312, h: 312 }, tall: { x: 40, y: 82, w: 280, h: 350 } }, PAD = 8;
 function geom(sh, lt) {
   const f = FR[sh.frame] || FR.wide, k = sh.frameKeys;
   const x = keyed(k, lt, 'x', f.x), y = keyed(k, lt, 'y', f.y), w = keyed(k, lt, 'w', f.w), h = keyed(k, lt, 'h', f.h);
@@ -229,7 +229,7 @@ const SHOT = {
         + '<svg viewBox="0 0 400 300" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">' + overlay(sh, lt) + '</svg></div>'
         + star(lt, 52, 120, 15, 0.4) + star(lt, 300, 400, 11, 0.8),
       inner: '',
-      over: caption(sh.beats[b].words, lt - sh.beats[b].start, 'right:26px;left:26px;top:430px;font-size:21px;text-shadow:0 2px 18px ' + C.bg2)
+      over: caption(sh.beats[b].words, lt - sh.beats[b].start, 'right:58px;left:22px;top:430px;font-size:20px;text-shadow:0 2px 18px ' + C.bg2)
     };
   },
   // the glass window: one picture, a camera that zooms and follows, labels, counters, a glowing dot
@@ -241,8 +241,8 @@ const SHOT = {
     return {
       shape: { x: g.x, y: g.y, w: g.w, h: g.h, r: g.r }, glassOp: 1, stage: '',
       inner: '<div style="position:absolute;left:' + PAD + 'px;top:' + PAD + 'px;width:' + IW + 'px;height:' + IH + 'px;overflow:hidden;border-radius:' + (g.r - PAD) + 'px">' + layer + dotSvg(sh, lt, c, g) + labels(sh, lt, c, g) + '</div>' + counters(sh, lt),
-      over: (sh.note ? '<div style="position:absolute;right:28px;left:28px;top:' + (g.y + g.h + 6) + 'px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + C.muted + '">' + cred(sh.note) + '</div>' : '')
-        + caption(sh.beats[b].words, lt - sh.beats[b].start, 'right:26px;left:26px;top:' + (g.y + g.h + 26) + 'px;font-size:' + (g.h > 320 ? 18 : 20) + 'px')
+      over: (sh.note ? '<div style="position:absolute;right:58px;left:22px;top:' + (g.y + g.h + 6) + 'px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + C.muted + '">' + cred(sh.note) + '</div>' : '')
+        + caption(sh.beats[b].words, lt - sh.beats[b].start, 'right:58px;left:22px;top:' + (g.y + g.h + 26) + 'px;font-size:' + (g.h > 320 ? 18 : 20) + 'px')
     };
   },
   // closing card: Kreti, a reaction bubble with an emoji, and "follow us"
@@ -291,8 +291,8 @@ window.drawFrame = function (t) {
   }
   const tiltY = Math.sin(t * 0.45) * 2.2, tiltX = Math.cos(t * 0.37) * 1.3, push = 1 + 0.02 * Math.sin(t * 0.3);
   document.getElementById('stage').innerHTML = bg(t) + scene
-    + '<div style="position:absolute;top:22px;right:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:' + C.muted + ';z-index:3"><span style="width:7px;height:7px;border-radius:50%;background:' + C.accent + ';opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا ساينس') + '</div>'
-    + '<div style="position:absolute;top:20px;left:22px;z-index:3">' + D.mark + '</div>'
+    + '<div style="position:absolute;top:46px;right:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:' + C.muted + ';z-index:3"><span style="width:7px;height:7px;border-radius:50%;background:' + C.accent + ';opacity:' + (0.5 + 0.5 * Math.sin(t * 5)) + '"></span>' + esc(D.badge || 'كريتيفيا ساينس') + '</div>'
+    + '<div style="position:absolute;top:43px;left:22px;z-index:3">' + D.mark + '</div>'
     + '<div style="position:absolute;inset:0;perspective:900px"><div style="position:absolute;inset:0;transform:scale(' + push + ') rotateY(' + tiltY + 'deg) rotateX(' + tiltX + 'deg);transform-style:preserve-3d">'
     + stage
     + (gop > 0.01 && shape ? glass(shape.x, shape.y, shape.w, shape.h, shape.r, t, inner, gop) : '')

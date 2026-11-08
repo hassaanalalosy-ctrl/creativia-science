@@ -56,6 +56,13 @@ Before writing ANY spec, proofread every Arabic text that will appear on screen:
 - punctuation: Arabic comma ، and question mark ؟.
 Re-read the whole text once more after any edit. A `show` fix keeps the same word count as `say`; `say` is re-voiced only if a word in it is actually wrong (cost credits).
 
+## Instagram safe zone (owner: very important)
+Instagram draws its own buttons over every reel. In screen units (360 x 640, the 1080 x 1920 video divided by 3) keep all text, numbers, labels, pops and important drawings out of:
+- the top bar: y < 40 (the "Reels" title and camera button);
+- the action buttons on the right: x > 318 from y ≈ 420 down to the bottom (like, comment, share, save);
+- the name and caption at the bottom: y > 575.
+The engines already place captions inside this area (story reels: captions `right:58px`, header at y 43–62, frames from y 82; animated reels: the caption pill at the top). Never move text back into these zones, and check the zones on the 20 frames.
+
 ## Overlap rule (owner: very important)
 Nothing may sit on top of anything else in any slide, reel frame or story: no text over text, no Kreti over text, cards or images, no element over the handle or the badge, no button or handle inside or across another text, nothing cut off. Check every image/frame you open for this. If anything overlaps, shorten the text or fix the spec and re-render BEFORE scheduling. Story alert titles must be under 60 characters; fact titles under 40.
 
