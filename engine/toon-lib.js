@@ -162,6 +162,19 @@
     // talking: the mouth opens and closes while the line is spoken
     else if (mouth === 'talk') { const o = Math.abs(Math.sin(t * 15)) * 5 + 1; s += `<path d="M5 ${my - 1} Q13 ${f(my + 1 + o)} 21 ${my - 2} Q13 ${my + 1} 5 ${my - 1} Z" fill="#4A1E2C" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/>`; }
     if (ex.blush !== false) s += `<ellipse cx="-6" cy="-160" rx="5" ry="2.6" fill="#FF8FA3" opacity=".35"/><ellipse cx="29" cy="-161" rx="4" ry="2.4" fill="#FF8FA3" opacity=".35"/>`;
+    // tears: two cartoon tear streams arcing out of the eyes (number = strength, 1 = normal, 2 = a fountain)
+    if (ex.tears) {
+      const k = ex.tears === true ? 1 : ex.tears;
+      for (const [sx, dir] of [[-6, -1], [28, 1]]) {
+        const sy = -171, cx = sx + dir * 18 * k, cy = -196 - 8 * k, ex2 = sx + dir * 44 * k, ey = -150 + 10 * k;
+        s += `<path d="M${sx} ${sy} Q${f(cx)} ${f(cy)} ${f(ex2)} ${f(ey)}" fill="none" stroke="#7CCBFF" stroke-width="${f(4 + 2.4 * k)}" stroke-linecap="round" opacity=".9"/>`
+          + `<path d="M${sx} ${sy} Q${f(cx)} ${f(cy)} ${f(ex2)} ${f(ey)}" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7" stroke-dasharray="5 9" stroke-dashoffset="${f(-t * 60)}"/>`;
+        for (let i = 0; i < 4; i++) {
+          const u = (t * 1.6 + i / 4) % 1, x = ex2 + dir * u * 14 * k, y = ey + u * u * 60 * k, r = 2.6 + k;
+          s += `<path transform="translate(${f(x)} ${f(y)})" d="M0 ${f(-r * 1.6)} Q${f(r)} 0 0 ${f(r)} Q${f(-r)} 0 0 ${f(-r * 1.6)} Z" fill="#8FD3FF" stroke="${OUT}" stroke-width="1.2" opacity="${f(1 - u * 0.7)}"/>`;
+        }
+      }
+    }
     if (ex.sweat) {
       const sy = -200 + ((t * 18) % 16);
       s += `<path d="M38 ${f(sy)} Q44 ${f(sy + 9)} 38 ${f(sy + 12)} Q32 ${f(sy + 9)} 38 ${f(sy)} Z" fill="#8FD3FF" stroke="${OUT}" stroke-width="1.8"/><path d="M37 ${f(sy + 5)} Q36 ${f(sy + 8)} 37.5 ${f(sy + 9.5)}" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
@@ -340,7 +353,7 @@
       + `<linearGradient id="poster${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A855F7"/><stop offset=".6" stop-color="#912EE8"/><stop offset="1" stop-color="#B91097"/></linearGradient>`
       + `<filter id="fgblur${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.2"/></filter>`,
     // depth 0.78: back wall, window, poster, chart, clock, shelves
-    far: (t, id) => {
+    far: (t, id, sh) => {
       let s = `<rect x="-200" y="-100" width="1200" height="640" fill="url(#wall${id})"/>`
         + `<rect x="-200" y="372" width="1200" height="150" fill="url(#wain${id})"/><path d="M-200 372 L1000 372" stroke="${OUT}" stroke-width="2.4"/><path d="M-200 380 L1000 380" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>`;
       for (let x = -200; x < 1000; x += 40) s += `<path d="M${x} 382 L${x} 520" stroke="#7FB3A7" stroke-width="1.4" opacity=".6"/>`;
@@ -359,7 +372,7 @@
       // Kreti poster
       s += `<g transform="rotate(2 345 185)"><rect x="288" y="104" width="114" height="156" rx="6" fill="#8A5A3C" stroke="${OUT}" stroke-width="2.6"/><rect x="296" y="112" width="98" height="140" rx="3" fill="url(#poster${id})"/>`
         + `<circle cx="345" cy="168" r="40" fill="#fff" opacity=".12"/><g transform="translate(305 128)">${KRETI.poster}</g>`
-        + `<text x="345" y="240" text-anchor="middle" font-family="Rubik" font-weight="800" font-size="13" fill="#fff" direction="rtl">ابقَ فضولياً!</text>`
+        + (sh && sh.posterText === false ? '' : `<text x="345" y="240" text-anchor="middle" font-family="Rubik" font-weight="800" font-size="13" fill="#fff" direction="rtl">ابقَ فضولياً!</text>`)
         + `<circle cx="345" cy="108" r="4" fill="#E0336E" stroke="${OUT}" stroke-width="1.6"/></g>`;
       // periodic-table chart
       s += `<g transform="rotate(-1.5 495 168)"><rect x="428" y="118" width="134" height="98" rx="4" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.4"/>`;
@@ -526,9 +539,50 @@
     kretiSticker: () => `<circle r="46" fill="#FFFDF7" stroke="${OUT}" stroke-width="5"/><circle r="40" fill="#F1E4FF"/><g transform="translate(-40 -40)">${KRETI.poster}</g>`,
     // phytoplankton: a round green diatom with ridges and chloroplast dots, slowly turning
     plankton: (t) => { let r = ''; for (let i = 0; i < 10; i++) { const a = i * 36 + t * 18; r += `<path d="M${f(22 * Math.cos(a * R))} ${f(22 * Math.sin(a * R))} L${f(31 * Math.cos(a * R))} ${f(31 * Math.sin(a * R))}" stroke="${OUT}" stroke-width="2.2" stroke-linecap="round"/>`; } return r + `<circle r="24" fill="#7ED389" stroke="${OUT}" stroke-width="2.4"/><circle r="15" fill="#B5EAA0" stroke="#3E9A52" stroke-width="1.6"/><g transform="rotate(${f(t * 18)})"><path d="M-15 0 L15 0 M0 -15 L0 15 M-10.6 -10.6 L10.6 10.6 M-10.6 10.6 L10.6 -10.6" stroke="#58BE7E" stroke-width="1.4"/></g><circle cx="-6" cy="4" r="3.4" fill="#2D7A50"/><circle cx="6" cy="-5" r="3" fill="#2D7A50"/><circle cx="5" cy="7" r="2.4" fill="#2D7A50"/><path d="M-14 -12 Q-6 -20 4 -19" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".75"/>`; },
+    // a whole golden onion (origin = centre)
+    onion: () => `<path d="M0 -40 Q4 -30 14 -24 Q36 -12 34 10 Q30 32 0 34 Q-30 32 -34 10 Q-36 -12 -14 -24 Q-4 -30 0 -40 Z" fill="#E9A953" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M0 -36 Q-16 -8 -6 32 M0 -36 Q16 -8 6 32 M-6 -28 Q-30 0 -20 30 M6 -28 Q30 0 20 30" fill="none" stroke="#C47F2E" stroke-width="1.6" opacity=".7"/>`
+      + `<path d="M0 -40 Q-2 -48 3 -54 M0 -40 Q4 -47 9 -50" stroke="#8A5A3C" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+      + `<path d="M-8 34 L-10 40 M0 34 L0 41 M8 34 L10 40" stroke="#C9A27A" stroke-width="2" stroke-linecap="round"/>`
+      + `<path d="M-22 -10 Q-26 2 -20 14" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>`,
+    // an onion cut in half: the cut face with its rings (origin = centre of the cut)
+    onionHalf: () => `<path d="M-36 0 Q-36 -30 0 -38 Q36 -30 36 0 Q34 28 0 32 Q-34 28 -36 0 Z" fill="#E9A953" stroke="${OUT}" stroke-width="2.4"/>`
+      + `<ellipse cx="0" cy="-2" rx="31" ry="27" fill="#FFF7DE" stroke="#E8D49A" stroke-width="1.6"/>`
+      + [23, 16, 9].map((r, i) => `<ellipse cx="0" cy="${f(-2 + i * 1.5)}" rx="${r}" ry="${f(r * 0.86)}" fill="none" stroke="#E8D49A" stroke-width="2"/>`).join('')
+      + `<ellipse cx="0" cy="2" rx="3" ry="2.6" fill="#E8D49A"/><path d="M-20 -18 Q-10 -24 2 -24" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".8"/>`,
+    // a wooden cutting board (origin = centre of its top)
+    board: () => `<ellipse cx="0" cy="8" rx="56" ry="6" fill="#000" opacity=".12"/><rect x="-54" y="-4" width="108" height="12" rx="6" fill="#D9A46C" stroke="${OUT}" stroke-width="2.4"/><circle cx="44" cy="2" r="2.6" fill="#8A5A3C"/><path d="M-44 0 L20 0" stroke="#fff" stroke-width="2" opacity=".4" stroke-linecap="round"/>`,
+    // a kitchen knife, blade to the right (origin = handle end)
+    knife: () => `<rect x="0" y="-5" width="30" height="10" rx="4" fill="#8A5A3C" stroke="${OUT}" stroke-width="2.2"/><circle cx="9" cy="0" r="1.6" fill="#E9C9A6"/><circle cx="20" cy="0" r="1.6" fill="#E9C9A6"/>`
+      + `<path d="M30 -6 L84 -6 Q92 -4 86 4 L30 6 Z" fill="#E6EAF2" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/><path d="M36 -2 L78 -2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`,
+    // a small kitchen table (origin = floor, centre). Top at y -80
+    table: () => `<rect x="-92" y="-84" width="184" height="16" rx="6" fill="#C99A6B" stroke="${OUT}" stroke-width="2.6"/><rect x="-80" y="-68" width="160" height="14" rx="3" fill="#A87A50" stroke="${OUT}" stroke-width="2.2"/>`
+      + `<rect x="-78" y="-56" width="12" height="56" rx="3" fill="#A87A50" stroke="${OUT}" stroke-width="2.2"/><rect x="66" y="-56" width="12" height="56" rx="3" fill="#A87A50" stroke="${OUT}" stroke-width="2.2"/><path d="M-80 -80 L60 -80" stroke="#fff" stroke-width="2.4" opacity=".35" stroke-linecap="round"/>`,
+    // the irritating gas: a soft yellow-green puff that wobbles
+    gas: (t) => { const w = Math.sin(t * 4) * 3; return `<g opacity=".88"><path d="M-34 10 Q-46 -6 -28 ${f(-14 + w)} Q-24 -34 -4 ${f(-28 - w)} Q10 -44 26 -26 Q46 -24 40 -4 Q50 12 30 16 Q8 26 -12 18 Q-30 24 -34 10 Z" fill="#D8F27A" fill-opacity=".72" stroke="#8FB83A" stroke-width="2.2" stroke-linejoin="round"/>`
+      + `<path d="M-22 2 Q-14 ${f(-6 + w)} -4 2 Q6 ${f(10 - w)} 16 2 Q24 -6 30 0" fill="none" stroke="#8FB83A" stroke-width="2" stroke-linecap="round"/><path d="M-20 -12 Q-12 -20 0 -20" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/></g>`; },
+    // magnified onion skin cells in a round lens: whole bricks (origin = centre, radius 70)
+    cells: () => onionCells(false),
+    // the same cells broken open, with tiny drops spilling out
+    cellsBroken: (t) => onionCells(true, t),
+    // a snowflake (cold)
+    snow: (t) => { let r = ''; for (let i = 0; i < 6; i++) r += `<g transform="rotate(${i * 60 + t * 20})"><path d="M0 0 L0 -24 M0 -14 L-7 -20 M0 -14 L7 -20" stroke="#7CCBFF" stroke-width="4.6" stroke-linecap="round" fill="none"/><path d="M0 0 L0 -24" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></g>`; return r + `<circle r="5" fill="#E6F8FF" stroke="#7CCBFF" stroke-width="2"/>`; },
     // a column of oxygen bubbles rising and fading (loops)
     bubbles: (t) => { let r = ''; for (let i = 0; i < 7; i++) { const ph = ((t * 0.7 + i / 7) % 1), y = -ph * 170, x = Math.sin(t * 3 + i * 1.7) * 8 + (i % 3 - 1) * 9, rr = 4 + (i % 3) * 2.4 + ph * 3; r += `<g opacity="${f(Math.min(1, (1 - ph) * 2.2))}"><circle cx="${f(x)}" cy="${f(y)}" r="${f(rr)}" fill="#E6F8FF" fill-opacity=".55" stroke="#fff" stroke-width="1.8"/><path d="M${f(x - rr * 0.5)} ${f(y - rr * 0.2)} Q${f(x - rr * 0.4)} ${f(y - rr * 0.6)} ${f(x)} ${f(y - rr * 0.65)}" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`; } return r; }
   };
+  function onionCells(broken, t) {
+    let s = `<circle r="74" fill="#FFFDF7" stroke="${OUT}" stroke-width="3"/><clipPath id="oclip"><circle r="66"/></clipPath><g clip-path="url(#oclip)"><rect x="-70" y="-70" width="140" height="140" fill="#F3EBC8"/>`;
+    for (let r = 0; r < 6; r++) for (let c = 0; c < 4; c++) {
+      const x = -84 + c * 46 + (r % 2) * 23, y = -66 + r * 22;
+      if (!broken) s += `<rect x="${x}" y="${y}" width="42" height="18" rx="7" fill="#FFF8DD" stroke="#C9B46A" stroke-width="2"/><circle cx="${x + 21}" cy="${y + 9}" r="3" fill="#D9C27A"/>`;
+      else {
+        const k = (r * 4 + c) % 3;
+        s += `<path d="M${x} ${y + 4} L${x + 14} ${y} L${x + 18} ${y + 7} L${x + 26} ${y + 1} L${x + 42} ${y + 5} L${x + 40} ${y + 18} L${x + 22} ${y + 14} L${x + 16} ${y + 19} L${x + 2} ${y + 17} Z" fill="#FFF8DD" stroke="#C9B46A" stroke-width="2"/>`;
+        if (k === 0) { const u = ((t || 0) * 1.5 + r * 0.17 + c * 0.31) % 1; s += `<circle cx="${f(x + 18 + u * 10)}" cy="${f(y + 10 - u * 20)}" r="${f(3.4 - u * 1.5)}" fill="#D8F27A" stroke="#8FB83A" stroke-width="1.2" opacity="${f(1 - u)}"/>`; }
+      }
+    }
+    return s + `</g><circle r="66" fill="none" stroke="#fff" stroke-width="4" opacity=".6"/><path d="M-44 -44 Q-30 -58 -10 -62" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>`;
+  }
   function propsSvg(sh, t, front) {
     let s = '';
     for (const p of sh.props || []) {
