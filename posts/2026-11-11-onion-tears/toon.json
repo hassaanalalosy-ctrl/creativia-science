@@ -348,7 +348,7 @@
       },
       {
        "t": 0.55,
-       "pose": "surprise",
+       "pose": "cheer",
        "blend": 0.15,
        "expr": {
         "eyes": "closed",
@@ -762,7 +762,7 @@
       },
       {
        "t": "L4:الدموع",
-       "pose": "surprise",
+       "pose": "cheer",
        "blend": 0.15,
        "expr": {
         "tears": 2.2,
@@ -834,6 +834,13 @@
      "x": 335,
      "y": 360,
      "z": 1.5,
+     "ease": "inout"
+    },
+    {
+     "t": "L6:يحزنك+0.5",
+     "x": 350,
+     "y": 215,
+     "z": 1.55,
      "ease": "inout"
     },
     {
