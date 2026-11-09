@@ -783,9 +783,33 @@
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
+  // Smooth camera: one continuous curve through all keys (monotone cubic Hermite), so the camera never stops and
+  // restarts at a key. Zoom is interpolated in log space (equal zoom steps feel equally fast). A key with an explicit
+  // "ease" (out/in/back/linear/inout) keeps that easing for the move that ends on it (punch-ins, whips).
+  function smooth(keys, t, prop, log) {
+    const ks = keys.filter(k => k[prop] !== undefined);
+    if (!ks.length) return undefined;
+    const v = k => log ? Math.log(k[prop]) : k[prop];
+    const out = x => log ? Math.exp(x) : x;
+    if (t <= ks[0].t) return ks[0][prop];
+    if (t >= ks[ks.length - 1].t) return ks[ks.length - 1][prop];
+    let i = 0; while (i < ks.length - 2 && t > ks[i + 1].t) i++;
+    const a = ks[i], b = ks[i + 1], h = Math.max(1e-6, b.t - a.t), u = (t - a.t) / h;
+    if (b.ease && EASE[b.ease]) return out(lerp(v(a), v(b), EASE[b.ease](u)));
+    const slope = j => (v(ks[j + 1]) - v(ks[j])) / Math.max(1e-6, ks[j + 1].t - ks[j].t);
+    const tan = j => {
+      if (j <= 0 || j >= ks.length - 1) return 0;
+      if (ks[j].ease || (ks[j + 1] && ks[j + 1].ease)) return 0;   // around eased moves, arrive and leave calmly
+      const s0 = slope(j - 1), s1 = slope(j);
+      if (s0 * s1 <= 0) return 0;                                    // turning point: no overshoot
+      return 2 / (1 / s0 + 1 / s1);                                  // harmonic mean (Fritsch–Carlson)
+    };
+    const m0 = tan(i) * h, m1 = tan(i + 1) * h, u2 = u * u, u3 = u2 * u;
+    return out((2 * u3 - 3 * u2 + 1) * v(a) + (u3 - 2 * u2 + u) * m0 + (-2 * u3 + 3 * u2) * v(b) + (u3 - u2) * m1);
+  }
   function cameraAt(sh, t) {
     const k = sh.camera;
-    const c = { x: track(k, t, 'x'), y: track(k, t, 'y'), z: track(k, t, 'z') };
+    const c = { x: smooth(k, t, 'x'), y: smooth(k, t, 'y'), z: smooth(k, t, 'z', true) };
     for (const q of sh.shake || []) if (t >= q.t0 && t <= q.t1) {
       const u = (t - q.t0) / (q.t1 - q.t0), a = q.amp * (1 - u);
       c.x += Math.sin(t * 61) * a; c.y += Math.cos(t * 47) * a;
@@ -862,6 +886,7 @@
     }
     return '';
   }
+  window.__cam = function (t) { let sh = S.shots[0]; for (const q of S.shots) if (t >= q.start) sh = q; return Object.assign({ shot: S.shots.indexOf(sh) }, cameraAt(sh, t)); };
   window.drawFrame = function (t) {
     let sh = S.shots[0];
     for (const q of S.shots) if (t >= q.start) sh = q;

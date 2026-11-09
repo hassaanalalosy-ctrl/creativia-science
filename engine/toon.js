@@ -86,6 +86,10 @@ const strip = s => s.replace(/[ً-ْٰـ]/g, '').replace(/[،,.!؟?…:«»"]/g,
   await page.goto('file://' + file, { waitUntil: 'networkidle0' });
   await page.evaluateHandle('document.fonts.ready');
   const el = await page.$('#stage');
+  if (process.env.CAMLOG) {
+    const rows = await page.evaluate((n, fps) => { const r = []; for (let i = 0; i < n; i++) r.push(window.__cam(i / fps)); return r; }, Math.round(total * FPS), FPS);
+    fs.writeFileSync(process.env.CAMLOG, JSON.stringify(rows)); await browser.close(); return;
+  }
   if (process.env.FRAMES) {
     for (const s of process.env.FRAMES.split(',').map(Number)) { await page.evaluate(x => window.drawFrame(x), s); await el.screenshot({ path: path.join(tmp, `toon-${s}.jpg`), type: 'jpeg', quality: 88 }); }
     await browser.close(); return;
