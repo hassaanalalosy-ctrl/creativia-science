@@ -534,6 +534,15 @@
     cell: (t) => `<g transform="rotate(${f(t * 20)})"><ellipse rx="26" ry="20" fill="#E8344E" stroke="${OUT}" stroke-width="2.4"/><ellipse rx="13" ry="9" fill="#B81E38" opacity=".7"/><path d="M-16 -10 Q-8 -16 4 -15" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/></g>`,
     fish: (t) => `<g transform="rotate(${f(Math.sin(t * 6) * 4)})"><path d="M-26 0 Q-6 -20 18 -6 L32 -16 L28 0 L32 16 L18 6 Q-6 20 -26 0 Z" fill="#FF9F43" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-4 -12 Q2 0 -4 12" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/><circle cx="-14" cy="-3" r="3" fill="${OUT}"/><circle cx="-13" cy="-4" r="1" fill="#fff"/></g>`,
     sun: (t) => { let r = ''; for (let i = 0; i < 12; i++) { const a = i * 30 + t * 12; r += `<path d="M${f(34 * Math.cos(a * R))} ${f(34 * Math.sin(a * R))} L${f(46 * Math.cos(a * R))} ${f(46 * Math.sin(a * R))}" stroke="#FFB547" stroke-width="5" stroke-linecap="round"/>`; } return r + `<circle r="27" fill="#FFD166" stroke="${OUT}" stroke-width="2.6"/><path d="M-12 -12 Q-4 -18 6 -16" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>`; },
+    // a spine: vertebrae with soft pink discs between them (origin = bottom centre). v 0…1 = squeezed → stretched (gaps grow)
+    spine: (t, v) => { const g = 3 + (v || 0) * 11; let r = '', y = 0; for (let i = 0; i < 6; i++) { const w = 40 - i * 2.4, h = 22 - i * 1.2;
+        r += `<rect x="${f(-w / 2)}" y="${f(y - h)}" width="${f(w)}" height="${f(h)}" rx="7" fill="#F6EEDF" stroke="${OUT}" stroke-width="2.4"/><path d="M${f(w / 2)} ${f(y - h * 0.62)} L${f(w / 2 + 9)} ${f(y - h * 0.5)} L${f(w / 2)} ${f(y - h * 0.3)} M${f(-w / 2)} ${f(y - h * 0.62)} L${f(-w / 2 - 9)} ${f(y - h * 0.5)} L${f(-w / 2)} ${f(y - h * 0.3)}" fill="#E9DCC4" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/><path d="M${f(-w / 2 + 6)} ${f(y - h + 5)} L${f(w / 2 - 10)} ${f(y - h + 5)}" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`;
+        y -= h; if (i < 5) { r += `<ellipse cx="0" cy="${f(y - g / 2)}" rx="${f(w / 2 - 3)}" ry="${f(Math.max(2.2, g / 2))}" fill="#FF9FB8" stroke="${OUT}" stroke-width="2"/>`; y -= g; } }
+      return `<ellipse cx="0" cy="4" rx="30" ry="5" fill="#000" opacity=".12"/>` + r; },
+    // a heavy iron weight pressing down (origin = bottom centre)
+    weight: () => `<path d="M-40 0 L-30 -46 Q-28 -54 -20 -54 L20 -54 Q28 -54 30 -46 L40 0 Z" fill="#5B5670" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-14 -54 Q-14 -76 0 -76 Q14 -76 14 -54" fill="none" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M-14 -54 Q-14 -76 0 -76 Q14 -76 14 -54" fill="none" stroke="#7D7894" stroke-width="3.4" stroke-linecap="round"/><path d="M-24 -40 L-30 -12" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".45"/>`,
+    // a tall height ruler (origin = bottom centre, 250 high) with a mark at v (0…1 of its height)
+    ruler: (t, v) => { let r = `<rect x="-14" y="-250" width="28" height="250" rx="5" fill="#FFE8A3" stroke="${OUT}" stroke-width="2.4"/>`; for (let i = 1; i < 25; i++) r += `<path d="M-14 ${-i * 10} L${i % 5 ? -6 : 2} ${-i * 10}" stroke="${OUT}" stroke-width="${i % 5 ? 1.4 : 2.2}"/>`; if (v) r += `<path d="M-22 ${f(-v * 250)} L22 ${f(-v * 250)}" stroke="#E0336E" stroke-width="4" stroke-linecap="round"/>`; return r + `<path d="M8 -240 L8 -10" stroke="#fff" stroke-width="2.4" opacity=".6" stroke-linecap="round"/>`; },
     kreti: () => `<g transform="translate(-40 -40)">${KRETI.poster}</g>`,
     // a round Kreti sticker (for chests, jars, helmets)
     kretiSticker: () => `<circle r="46" fill="#FFFDF7" stroke="${OUT}" stroke-width="5"/><circle r="40" fill="#F1E4FF"/><g transform="translate(-40 -40)">${KRETI.poster}</g>`,
@@ -601,7 +610,7 @@
       const x = track(k, t, 'x'), y = track(k, t, 'y'), sc = track(k, t, 's') || 1, rot = track(k, t, 'rot') || 0;
       const op = track(k, t, 'op'); const o = op === undefined ? 1 : op;
       if (o <= 0.01 || !PROPS[p.type]) continue;
-      s += `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${f(sc)})" opacity="${f(o)}">${PROPS[p.type](t)}</g>`;
+      s += `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${f(sc)})" opacity="${f(o)}">${PROPS[p.type](t, track(k, t, 'v') || 0)}</g>`;
     }
     return s;
   }
@@ -833,6 +842,7 @@
     const x = track(k, t, 'x'), y = track(k, t, 'y');
     const face = step(k, t, 'face', 1);
     const sc = track(k, t, 's') || 1;
+    const sy = track(k, t, 'sy') || 1; // vertical stretch (taller / squashed), feet stay on the floor
     const tr = { lid: track(k, t, 'lid') || 0, brain: track(k, t, 'brain') || 0, bglow: track(k, t, 'bglow') || 0, rot: track(k, t, 'rot') || 0 };
     const pk = k.filter(q => q.pose);
     let cur = pk[0], prev = null;
@@ -857,12 +867,12 @@
     if (a.float) lift += Math.sin(t * 1.4) * 8;
     const ex = { seed: a.seed || 0 };
     for (const q of k) if (q.t <= t && q.expr) Object.assign(ex, q.expr);
-    return { x: x + tx, y, face, sc, P, lift, squash, ex, tr };
+    return { x: x + tx, y, face, sc, sy, P, lift, squash, ex, tr };
   }
   function drawActor(a, st, t) {
     const look = Object.assign({}, LOOKS[a.look] || LOOKS.scientist, a.lookOverride || {});
     const sh = a.float ? '' : `<ellipse cx="${f(st.x)}" cy="${f(st.y + 1)}" rx="${f(30 * st.sc * (1 - st.lift / 140))}" ry="${f(6 * st.sc)}" fill="#000" opacity="${f(0.2 * (1 - st.lift / 120))}"/>`;
-    return sh + `<g transform="translate(${f(st.x)} ${f(st.y - st.lift)}) rotate(${f(st.tr.rot)} 0 -110) scale(${f(st.face * st.sc / st.squash)} ${f(st.sc * st.squash)})">${character(look, st.P, st.ex, t, a.id, st.tr)}</g>`;
+    return sh + `<g transform="translate(${f(st.x)} ${f(st.y - st.lift)}) rotate(${f(st.tr.rot)} 0 -110) scale(${f(st.face * st.sc / st.squash)} ${f(st.sc * st.squash * (st.sy || 1))})">${character(look, st.P, st.ex, t, a.id, st.tr)}</g>`;
   }
   function pops(sh, t) {
     let s = '';
