@@ -1,0 +1,30 @@
+{
+  "id": "2026-11-15-animal-myths",
+  "topic": "Myth vs fact: goldfish do not have a 3-second memory; ostriches do not bury their heads in the sand",
+  "category": "حيوانات",
+  "mode": "dark",
+  "sources": [
+    "https://livescience.com/goldfish-memory.html",
+    "https://www.howitworksdaily.com/why-goldfish-having-a-three-second-memory-is-a-myth/",
+    "https://www.discoverwildlife.com/animal-facts/birds/do-ostriches-really-bury-their-heads-in-the-sand",
+    "https://wonderopolis.org/wonder/do-ostriches-really-bury-their-heads-in-the-sand"
+  ],
+  "slides": [
+    {"type": "cover", "badge": "خرافة أم حقيقة؟", "title": "خرافتان عن الحيوانات يصدّقهما الجميع", "note": "هل تصدق؟", "pose": "point",
+     "chips": [{"icon": "dna", "label": "حيوانات"}, {"icon": "spark", "label": "خرافة أم حقيقة"}]},
+    {"type": "text", "tag": "الخرافة 1", "tagIcon": "brain", "title": "ذاكرة السمكة الذهبية 3 ثوانٍ؟",
+     "points": ["خرافة! ذاكرتها تدوم أسابيع وأشهراً وأحياناً سنوات", "تتعلم مكان الطعام ووقته وتتذكرهما", "تتعلم الهروب من الشبكة وتكرره بعد أشهر"],
+     "note": "مدهش!"},
+    {"type": "text", "tag": "الخرافة 2", "tagIcon": "star", "title": "النعامة تدفن رأسها في الرمل؟",
+     "points": ["خرافة! لو فعلت ذلك لاختنقت", "تحفر عشها في الأرض وتقلّب بيضها بمنقارها مرات يومياً", "عند الخطر تتمدد على الأرض أو تركض هاربة"],
+     "note": "هل تصدق؟"},
+    {"type": "inner", "art": {"row": [{"name": "fish"}, "→", {"name": "brain"}]},
+     "title": "سمكتك تتذكرك!", "body": "إذا أطعمتها في الجهة نفسها من الحوض كل يوم، تتعلم أن تنتظر هناك وقت الطعام.",
+     "credit": "رسم توضيحي: كريتيفيا ساينس", "chip": {"icon": "microscope", "label": "تجربة علمية"}, "kreti": false},
+    {"type": "text", "tag": "الخلاصة", "tagIcon": "flask", "title": "3 أشياء تذكّرها",
+     "points": ["ذاكرة السمكة الذهبية تدوم أشهراً لا ثوانيَ", "النعامة لا تدفن رأسها، بل تقلّب بيضها", "الخرافة المنتشرة ليست دائماً حقيقة"],
+     "note": "احفظها!"},
+    {"type": "end"}
+  ],
+  "caption": "خرافتان عن الحيوانات يصدّقهما الجميع ✦\n\nالخرافة الأولى: ذاكرة السمكة الذهبية 3 ثوانٍ فقط. الحقيقة أن تجارب كثيرة منذ خمسينيات القرن الماضي أثبتت أنها تتذكر أسابيع وأشهراً وأحياناً سنوات: تتعلم مكان الطعام ووقته، وتتعلم الهروب من الشبكة وتكرر ذلك بعد أشهر.\n\nالخرافة الثانية: النعامة تدفن رأسها في الرمل عند الخطر. الحقيقة أنها لا تفعل ذلك أبداً، فلو فعلته لاختنقت. لكنها تحفر عشها حفرة في الأرض وتقلّب بيضها بمنقارها مرات في اليوم، فيبدو من بعيد كأن رأسها مدفون. وعند الخطر تتمدد على الأرض أو تركض هاربة.\n\nأي خرافة كنت تصدّقها؟ 👇\n\nالمصادر: Live Science · How It Works · BBC Wildlife (Discover Wildlife) · Wonderopolis\n\n#كريتيفيا_ساينس #علوم #معلومات #حيوانات #خرافة_أم_حقيقة #science #animals #mythbusting"
+}
