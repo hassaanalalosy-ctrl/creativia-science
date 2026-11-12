@@ -78,7 +78,7 @@ function frame(C, body, k, noHandle) {
         + `<div style="position:absolute;right:22px;left:22px;top:${img ? ih + 30 : 110}px;display:flex;flex-direction:column;gap:12px"><div style="font-size:${f.size || 25}px;font-weight:800;line-height:1.35;color:${C.text}">${esc(f.title)}</div><div style="font-size:16px;line-height:1.65;color:${C.muted}">${esc(f.body)}</div></div>`
         + (f.credit ? `<div style="position:absolute;right:22px;left:22px;bottom:16px;font-size:11px;color:${C.muted}">${esc(f.credit)}</div>` : ''))
       + star(C, 304, 118, 20) + star(C, 30, 500, 14)
-      + (cat ? chip(C, catIcon(cat), cat, 'right:26px;top:500px', 3) : '') + tile(C, f.icon2 || 'flask', 104, 500, -7)
+      + ((f.category || cat) ? chip(C, catIcon(f.category || cat), f.category || cat, 'right:26px;top:500px', 3) : '') + tile(C, f.icon2 || 'flask', 104, 500, -7)
       + K('think', 60, 18, 494), k);
   }
   const html = b => `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">${FONT_CSS}<style>body{margin:0}#s{position:relative;width:360px;height:640px;overflow:hidden;font-family:'Rubik',sans-serif;direction:rtl}</style></head><body><div id="s">${b}</div></body></html>`;
