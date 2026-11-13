@@ -797,6 +797,76 @@
     fg: (t, id) => { let s = ''; for (let i = 0; i < 3; i++) { const x = 900 - ((t * 160 + i * 400) % 1300); s += `<g transform="translate(${f(x)} ${f(120 + i * 220)}) scale(3)">${PROPS.cell(t)}</g>`; } return `<g filter="url(#fgblur${id})">${s}</g>`; }
   };
 
+
+  // ---------------------------------------------------------------- storm (lightning & thunder)
+  // lightning: a jagged bolt drawn from the top (y = 0) down to the ground (y = len). v = 0…1 strike progress / glow.
+  PROPS.lightning = (t, v) => {
+    if (v <= 0.01) return '';
+    const P = [[0, 0], [-22, 70], [10, 92], [-30, 170], [6, 196], [-24, 280], [4, 300], [-14, 380]];
+    const n = Math.max(2, Math.ceil(P.length * Math.min(1, v * 1.6)));
+    const d = 'M' + P.slice(0, n).map(p => p.join(' ')).join(' L');
+    const fl = 0.9 + 0.1 * Math.sin(t * 60);
+    return `<g opacity="${f(Math.min(1, v * 1.4) * fl)}"><path d="${d}" stroke="#FFF7B8" stroke-width="22" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".35"/><path d="${d}" stroke="${OUT}" stroke-width="12" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="${d}" stroke="#FFE066" stroke-width="8" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round"/></g>`;
+  };
+  // stormcloud: a dark rain cloud with falling drops
+  PROPS.stormcloud = (t) => {
+    let r = '';
+    for (let i = 0; i < 7; i++) { const ph = (t * 1.6 + i / 7) % 1, x = -54 + i * 18, y = 26 + ph * 70; r += `<path d="M${f(x)} ${f(y)} l-3 10" stroke="#9FD3FF" stroke-width="3" stroke-linecap="round" opacity="${f(1 - ph)}"/>`; }
+    return r + `<path d="M-70 24 Q-86 -4 -54 -12 Q-50 -46 -14 -40 Q2 -70 38 -50 Q70 -60 76 -24 Q104 -16 92 14 Q96 30 70 30 L-50 30 Q-74 32 -70 24 Z" fill="#6E7894" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-50 -14 Q-40 -34 -18 -32" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".35"/><path d="M-50 30 Q0 18 70 30" fill="none" stroke="#4A5370" stroke-width="3" opacity=".5"/>`;
+  };
+  // soundwave: three arcs that pulse outwards (the sound of thunder)
+  PROPS.soundwave = (t) => {
+    let r = '';
+    for (let i = 0; i < 3; i++) { const ph = (t * 1.4 + i / 3) % 1, rr = 14 + ph * 34; r += `<path d="M${f(-rr * 0.5)} ${f(-rr * 0.87)} A${f(rr)} ${f(rr)} 0 0 0 ${f(-rr * 0.5)} ${f(rr * 0.87)}" stroke="${OUT}" stroke-width="7" fill="none" stroke-linecap="round" opacity="${f(1 - ph)}"/><path d="M${f(-rr * 0.5)} ${f(-rr * 0.87)} A${f(rr)} ${f(rr)} 0 0 0 ${f(-rr * 0.5)} ${f(rr * 0.87)}" stroke="#FF8FA3" stroke-width="3.6" fill="none" stroke-linecap="round" opacity="${f(1 - ph)}"/>`; }
+    return r;
+  };
+  // snail: a slow snail carrying a loudspeaker shell (sound is slow!); moves to the left (head on the left)
+  PROPS.snail = (t) => {
+    const b = Math.sin(t * 5) * 1.5;
+    return `<ellipse cx="0" cy="2" rx="46" ry="6" fill="#000" opacity=".15"/>`
+      + `<path d="M-50 0 Q-58 -2 -56 -14 Q-54 -30 -44 -34 L-46 -52 M-44 -34 L-34 -50" stroke="${OUT}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="-46" cy="-54" r="4" fill="${OUT}"/><circle cx="-33" cy="-52" r="4" fill="${OUT}"/>`
+      + `<path d="M-56 0 Q-60 -26 -40 -30 Q-24 -30 -20 -14 L36 -6 Q46 -4 44 0 Z" fill="#FFC58A" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><circle cx="-44" cy="-18" r="2.6" fill="${OUT}"/><path d="M-48 -8 Q-44 -5 -40 -8" stroke="${OUT}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+      + `<g transform="translate(6 ${f(-30 + b)})"><circle r="30" fill="#C49BFF" stroke="${OUT}" stroke-width="2.6"/><path d="M0 0 Q14 -2 12 12 Q8 24 -6 22 Q-22 18 -22 2 Q-20 -18 2 -22 Q22 -22 26 -2" fill="none" stroke="${OUT}" stroke-width="2.2" stroke-linecap="round"/><path d="M-18 -16 Q-8 -26 6 -24" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" opacity=".7"/></g>`;
+  };
+  // stopwatch: v = 0…1 hand turns once
+  PROPS.stopwatch = (t, v) => `<rect x="-6" y="-40" width="12" height="9" rx="2" fill="#B9B4CC" stroke="${OUT}" stroke-width="2"/><circle r="30" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.6"/><circle r="24" fill="none" stroke="#E0336E" stroke-width="3"/><path d="M0 0 L${f(18 * Math.sin((v || 0) * 2 * Math.PI))} ${f(-18 * Math.cos((v || 0) * 2 * Math.PI))}" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/><circle r="3.4" fill="${OUT}"/><path d="M-16 -16 Q-8 -24 4 -24" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>`;
+
+  // storm: a rainy evening meadow with dark clouds, rain and a cosy house (Kreti poster in the window)
+  SETS.storm = {
+    depth: { far: 0.55, air: 0.85, fg: 1.35 },
+    defs: id => grad(id, 'tsky', '#3B4668', '#8E9BB9') + grad(id, 'gr', '#4F8F63', '#33664A') + grad(id, 'roof', '#B23A5E', '#8A2848') + blurDef(id),
+    far: (t, id) => {
+      let s = `<rect x="-600" y="-500" width="2000" height="1100" fill="url(#tsky${id})"/>`;
+      s += `<path d="M-300 440 Q-120 360 60 420 Q240 350 420 420 Q600 360 780 420 Q940 370 1100 430 L1100 600 L-300 600 Z" fill="#5C7A8C"/>`;
+      const dc = (cx, cy, k, c) => `<g transform="translate(${f(cx)} ${cy}) scale(${k})"><path d="M-70 24 Q-86 -4 -54 -12 Q-50 -46 -14 -40 Q2 -70 38 -50 Q70 -60 76 -24 Q104 -16 92 14 Q96 30 70 30 L-50 30 Q-74 32 -70 24 Z" fill="${c}"/></g>`;
+      s += dc(-60 + Math.sin(t * 0.3) * 20, 40, 2.2, '#56607E') + dc(380 + Math.sin(t * 0.25 + 1) * 24, 10, 2.6, '#4C5573') + dc(760 + Math.sin(t * 0.2) * 20, 60, 2.2, '#56607E');
+      s += dc(140 + t * 6, 130, 1.4, '#6E7894') + dc(560 - t * 5, 150, 1.2, '#6E7894');
+      return s;
+    },
+    air: (t) => {
+      let s = '';
+      for (let i = 0; i < 60; i++) { const x = hash(i) * 1000 - 120, y = ((t * (420 + hash(i + 2) * 120) + hash(i + 5) * 760) % 760) - 160; s += `<path d="M${f(x)} ${f(y)} l-5 16" stroke="#CFE6FF" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>`; }
+      return s;
+    },
+    mid: (t, id) => {
+      let s = ground(id);
+      for (let i = 0; i < 34; i++) { const x = -200 + i * 34 + hash(i) * 20, y = 540 + hash(i + 3) * 200; s += `<path d="M${f(x)} ${f(y)} q3 -10 6 0 q3 -12 6 0" fill="none" stroke="#2D5E40" stroke-width="2" stroke-linecap="round"/>`; }
+      // puddles with ripples
+      for (const [px, py] of [[120, 560], [420, 600]]) { s += `<ellipse cx="${px}" cy="${py}" rx="56" ry="10" fill="#8FB4D8" stroke="${OUT}" stroke-width="2"/>`; const ph = (t * 1.2 + px) % 1; s += `<ellipse cx="${px + 10}" cy="${py}" rx="${f(6 + ph * 26)}" ry="${f(1.5 + ph * 4)}" fill="none" stroke="#fff" stroke-width="1.6" opacity="${f(1 - ph)}"/>`; }
+      // tree
+      s += `<g transform="translate(70 520) scale(1.3)"><path d="M-8 0 L-6 -70 Q0 -76 6 -70 L8 0 Z" fill="#6E4A33" stroke="${OUT}" stroke-width="2.4"/><g transform="rotate(${f(Math.sin(t * 2.2) * 4)} 0 -70)"><circle cx="0" cy="-108" r="40" fill="#2D6E4A" stroke="${OUT}" stroke-width="2.4"/><circle cx="-30" cy="-82" r="26" fill="#245C3E" stroke="${OUT}" stroke-width="2.4"/><circle cx="30" cy="-84" r="28" fill="#245C3E" stroke="${OUT}" stroke-width="2.4"/></g></g>`;
+      // house with a lit window (Kreti poster inside) and a door
+      s += `<ellipse cx="610" cy="522" rx="150" ry="10" fill="#000" opacity=".18"/><rect x="480" y="340" width="260" height="180" fill="#F2E3CF" stroke="${OUT}" stroke-width="2.6"/>`
+        + `<path d="M458 346 L610 236 L762 346 Z" fill="url(#roof${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><rect x="680" y="250" width="26" height="56" fill="#9A8F86" stroke="${OUT}" stroke-width="2.4"/>`
+        + `<rect x="506" y="378" width="104" height="84" rx="4" fill="#FFE8A3" stroke="${OUT}" stroke-width="2.6"/><circle cx="558" cy="420" r="60" fill="#FFF3A6" opacity="${f(0.22 + 0.05 * Math.sin(t * 3))}"/>`
+        + `<g transform="translate(524 384) scale(.85)"><rect x="-2" y="-2" width="84" height="84" rx="6" fill="#F4E9FF" stroke="${OUT}" stroke-width="2"/>${KRETI.poster}</g>`
+        + `<path d="M558 378 L558 462 M506 420 L610 420" stroke="#fff" stroke-width="3" opacity=".45"/>`
+        + `<rect x="640" y="410" width="66" height="110" rx="6" fill="#8A5A3C" stroke="${OUT}" stroke-width="2.6"/><circle cx="692" cy="468" r="4" fill="#FFD166" stroke="${OUT}" stroke-width="1.4"/><rect x="636" y="402" width="74" height="10" rx="3" fill="#6E4A33" stroke="${OUT}" stroke-width="2"/>`;
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})"><circle cx="-30" cy="660" r="90" fill="#245C3E"/><path d="M760 780 Q780 620 800 540 Q820 640 840 780 Z" fill="#2D6E4A"/></g>`
+  };
+
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
