@@ -1,0 +1,43 @@
+{
+ "mode": "light",
+ "alert": {
+  "title": "هاتفك يحتاج أينشتاين ليعرف مكانك!"
+ },
+ "fact": {
+  "tag": "معلومة سريعة",
+  "icon": "atom",
+  "icon2": "planet",
+  "title": "الوقت يمر أسرع في الأعلى!",
+  "lines": 1,
+  "body": "كلما ابتعدت عن الأرض ضعفت جاذبيتها، فتدق الساعة أسرع بفرق ضئيل جداً قاسه العلماء بساعات ذرية.",
+  "art": {
+   "row": [
+    {
+     "name": "mountain"
+    },
+    "+",
+    {
+     "parts": [
+      "<circle cx='200' cy='140' r='80'/>"
+     ],
+     "palette": "white",
+     "box": [
+      120,
+      60,
+      280,
+      220
+     ],
+     "details": [
+      "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+      "<path d='M200 140 L200 96' stroke='#14204A' stroke-width='8' stroke-linecap='round'/>",
+      "<path d='M200 140 L232 160' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+      "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+     ],
+     "gloss": "M146 104 C156 88 172 78 190 74"
+    }
+   ]
+  },
+  "credit": "رسم توضيحي: كريتيفيا ساينس",
+  "category": "فيزياء"
+ }
+}

@@ -1,0 +1,286 @@
+{
+ "id": "2026-11-18-gps-einstein",
+ "topic": "Explainer: how GPS works and why satellite clocks need Einstein's relativity correction (+38 microseconds per day)",
+ "category": "فيزياء وتقنية",
+ "mode": "light",
+ "sources": [
+  "https://www.nist.gov/atomic-clocks/a-powerful-tool-for-science/putting-einstein-test",
+  "https://www.nist.gov/blogs/taking-measure/putting-einstein-test-worlds-most-accurate-clocks",
+  "https://physics.aps.org/articles/v17/140",
+  "https://www.livescience.com/what-is-time-dilation",
+  "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html"
+ ],
+ "slides": [
+  {
+   "type": "coverImage",
+   "art": {
+    "stack": [
+     {
+      "parts": [
+       "<rect x='165' y='92' width='70' height='92' rx='14'/>"
+      ],
+      "palette": "sand",
+      "box": [
+       60,
+       48,
+       340,
+       190
+      ],
+      "back": [
+       "<rect x='64' y='112' width='82' height='56' rx='8' fill='#3E7BE0'/><path d='M91 112 V168 M118 112 V168 M64 140 H146' stroke='#A9CCFF' stroke-width='3'/>",
+       "<rect x='254' y='112' width='82' height='56' rx='8' fill='#3E7BE0'/><path d='M281 112 V168 M308 112 V168 M254 140 H336' stroke='#A9CCFF' stroke-width='3'/>",
+       "<rect x='146' y='135' width='19' height='10' fill='#9AA0B4'/><rect x='235' y='135' width='19' height='10' fill='#9AA0B4'/>",
+       "<path d='M200 92 L200 70' stroke='#9AA0B4' stroke-width='6'/><path d='M176 70 Q200 44 224 70 Z' fill='#D4D8E4'/>"
+      ],
+      "details": [
+       "<rect x='180' y='112' width='40' height='8' rx='4' fill='#B98A3A' opacity='0.6'/>",
+       "<rect x='180' y='152' width='40' height='8' rx='4' fill='#B98A3A' opacity='0.6'/>"
+      ],
+      "gloss": "M176 104 C174 130 174 160 176 176",
+      "h": 96
+     },
+     {
+      "name": "earth",
+      "h": 130
+     }
+    ]
+   },
+   "title": "هاتفك يحتاج أينشتاين ليعرف مكانك!",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chips": [
+    {
+     "icon": "rocket",
+     "label": "تقنية وفضاء"
+    },
+    {
+     "icon": "atom",
+     "label": "النسبية"
+    }
+   ],
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<rect x='165' y='92' width='70' height='92' rx='14'/>"
+      ],
+      "palette": "sand",
+      "box": [
+       60,
+       48,
+       340,
+       190
+      ],
+      "back": [
+       "<rect x='64' y='112' width='82' height='56' rx='8' fill='#3E7BE0'/><path d='M91 112 V168 M118 112 V168 M64 140 H146' stroke='#A9CCFF' stroke-width='3'/>",
+       "<rect x='254' y='112' width='82' height='56' rx='8' fill='#3E7BE0'/><path d='M281 112 V168 M308 112 V168 M254 140 H336' stroke='#A9CCFF' stroke-width='3'/>",
+       "<rect x='146' y='135' width='19' height='10' fill='#9AA0B4'/><rect x='235' y='135' width='19' height='10' fill='#9AA0B4'/>",
+       "<path d='M200 92 L200 70' stroke='#9AA0B4' stroke-width='6'/><path d='M176 70 Q200 44 224 70 Z' fill='#D4D8E4'/>"
+      ],
+      "details": [
+       "<rect x='180' y='112' width='40' height='8' rx='4' fill='#B98A3A' opacity='0.6'/>",
+       "<rect x='180' y='152' width='40' height='8' rx='4' fill='#B98A3A' opacity='0.6'/>"
+      ],
+      "gloss": "M176 104 C174 130 174 160 176 176"
+     },
+     "+",
+     {
+      "parts": [
+       "<circle cx='200' cy='140' r='80'/>"
+      ],
+      "palette": "white",
+      "box": [
+       120,
+       60,
+       280,
+       220
+      ],
+      "details": [
+       "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+       "<path d='M200 140 L200 96' stroke='#14204A' stroke-width='8' stroke-linecap='round'/>",
+       "<path d='M200 140 L232 160' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+       "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+      ],
+      "gloss": "M146 104 C156 88 172 78 190 74"
+     }
+    ]
+   },
+   "title": "أقمار تبث الوقت",
+   "body": "تدور أقمار نظام تحديد المواقع (GPS) على ارتفاع نحو 20 ألف كم، وتحمل ساعات ذرية تبث الوقت الدقيق.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "planet",
+    "label": "نحو 20 ألف كم"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<rect x='165' y='92' width='70' height='92' rx='14'/>"
+      ],
+      "palette": "sand",
+      "box": [
+       60,
+       48,
+       340,
+       190
+      ],
+      "back": [
+       "<rect x='64' y='112' width='82' height='56' rx='8' fill='#3E7BE0'/><path d='M91 112 V168 M118 112 V168 M64 140 H146' stroke='#A9CCFF' stroke-width='3'/>",
+       "<rect x='254' y='112' width='82' height='56' rx='8' fill='#3E7BE0'/><path d='M281 112 V168 M308 112 V168 M254 140 H336' stroke='#A9CCFF' stroke-width='3'/>",
+       "<rect x='146' y='135' width='19' height='10' fill='#9AA0B4'/><rect x='235' y='135' width='19' height='10' fill='#9AA0B4'/>",
+       "<path d='M200 92 L200 70' stroke='#9AA0B4' stroke-width='6'/><path d='M176 70 Q200 44 224 70 Z' fill='#D4D8E4'/>"
+      ],
+      "details": [
+       "<rect x='180' y='112' width='40' height='8' rx='4' fill='#B98A3A' opacity='0.6'/>",
+       "<rect x='180' y='152' width='40' height='8' rx='4' fill='#B98A3A' opacity='0.6'/>"
+      ],
+      "gloss": "M176 104 C174 130 174 160 176 176"
+     },
+     "→",
+     {
+      "parts": [
+       "<rect x='150' y='50' width='100' height='200' rx='20'/>"
+      ],
+      "palette": "purple",
+      "box": [
+       150,
+       50,
+       250,
+       250
+      ],
+      "details": [
+       "<rect x='160' y='70' width='80' height='158' rx='8' fill='#14204A'/>",
+       "<path d='M200 108 C186 108 178 118 178 130 C178 146 200 168 200 168 C200 168 222 146 222 130 C222 118 214 108 200 108 Z' fill='#FF5A5F'/><circle cx='200' cy='130' r='8' fill='#FFFFFF'/>",
+       "<rect x='188' y='58' width='24' height='5' rx='2.5' fill='#14204A'/>"
+      ],
+      "gloss": "M156 72 C154 120 154 180 156 228"
+     }
+    ]
+   },
+   "title": "هاتفك يحسب المسافة",
+   "body": "يقيس هاتفك زمن وصول الإشارة من عدة أقمار، فيعرف بُعده عن كل قمر، ثم يحدد مكانه.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "clock",
+    "label": "زمن الإشارة"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx='200' cy='140' r='80'/>"
+      ],
+      "palette": "yellow",
+      "box": [
+       120,
+       60,
+       280,
+       220
+      ],
+      "details": [
+       "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+       "<path d='M200 140 L200 96' stroke='#14204A' stroke-width='8' stroke-linecap='round'/>",
+       "<path d='M200 140 L232 160' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+       "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+      ],
+      "gloss": "M146 104 C156 88 172 78 190 74"
+     },
+     ">",
+     {
+      "parts": [
+       "<circle cx='200' cy='140' r='80'/>"
+      ],
+      "palette": "white",
+      "box": [
+       120,
+       60,
+       280,
+       220
+      ],
+      "details": [
+       "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+       "<path d='M200 140 L200 96' stroke='#14204A' stroke-width='8' stroke-linecap='round'/>",
+       "<path d='M200 140 L232 160' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+       "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+      ],
+      "gloss": "M146 104 C156 88 172 78 190 74",
+      "h": 120
+     }
+    ]
+   },
+   "title": "ساعات الأقمار أسرع!",
+   "body": "حسب نسبية أينشتاين، سرعة القمر تُبطئ ساعته 7 ميكروثوانٍ يومياً، وضعف الجاذبية هناك يُسرّعها 45 ميكروثانيةً.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "atom",
+    "label": "أسرع بـ38 ميكروثانيةً يومياً"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<rect x='150' y='50' width='100' height='200' rx='20'/>"
+      ],
+      "palette": "purple",
+      "box": [
+       150,
+       50,
+       250,
+       250
+      ],
+      "details": [
+       "<rect x='160' y='70' width='80' height='158' rx='8' fill='#14204A'/>",
+       "<path d='M200 108 C186 108 178 118 178 130 C178 146 200 168 200 168 C200 168 222 146 222 130 C222 118 214 108 200 108 Z' fill='#FF5A5F'/><circle cx='200' cy='130' r='8' fill='#FFFFFF'/>",
+       "<rect x='188' y='58' width='24' height='5' rx='2.5' fill='#14204A'/>"
+      ],
+      "gloss": "M156 72 C154 120 154 180 156 228"
+     },
+     "→",
+     {
+      "name": "mountain"
+     }
+    ]
+   },
+   "title": "لو لم نصحّحها؟",
+   "body": "الميكروثانية جزء من مليون من الثانية، لكن الإشارة تسير بسرعة الضوء، فيتراكم خطأ يبلغ نحو 10 كم كل يوم.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "trend",
+    "label": "نحو 10 كم يومياً"
+   },
+   "kreti": false
+  },
+  {
+   "type": "text",
+   "tag": "الخلاصة",
+   "tagIcon": "flask",
+   "title": "3 أشياء تذكّرها",
+   "points": [
+    "أقمار GPS تبث الوقت من ساعات ذرية",
+    "ساعاتها أسرع من ساعات الأرض بنحو 38 ميكروثانيةً يومياً",
+    "لولا تصحيح النسبية لتراكم خطأ موقعك نحو 10 كم كل يوم"
+   ],
+   "note": "احفظها!"
+  },
+  {
+   "type": "end"
+  }
+ ],
+ "caption": "هاتفك يحتاج أينشتاين ليعرف مكانك! ✦\n\nحين تفتح الخريطة، يلتقط هاتفك إشارات من أقمار نظام تحديد المواقع (GPS) التي تدور على ارتفاع نحو 20 ألف كم. كل إشارة تحمل وقتاً دقيقاً من ساعة ذرية، فيحسب الهاتف من زمن وصولها بُعده عن كل قمر، ثم يحدد مكانه.\n\nلكن نسبية أينشتاين تقول إن الوقت لا يمر بالسرعة نفسها هناك: سرعة القمر تُبطئ ساعته نحو 7 ميكروثوانٍ يومياً، والجاذبية الأضعف في مداره تُسرّعها نحو 45 ميكروثانيةً. النتيجة: ساعات الأقمار أسرع من ساعات الأرض بنحو 38 ميكروثانيةً كل يوم (الميكروثانية جزء من مليون من الثانية).\n\nيبدو الفرق صغيراً جداً، لكن الإشارة تسير بسرعة الضوء، فلو لم يصحّحه المهندسون لتراكم خطأ في المواقع يبلغ نحو 10 كم كل يوم.\n\nهل كنت تعرف أن خريطة هاتفك تعمل بفضل النسبية؟ 👇\n\nالمصادر: NIST · Physics (APS) · Live Science · Ohio State University\n\n#كريتيفيا_ساينس #علوم #معلومات #فيزياء #تقنية #أينشتاين #science #physics #GPS"
+}
