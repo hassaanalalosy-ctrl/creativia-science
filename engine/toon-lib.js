@@ -842,6 +842,40 @@
   // stopwatch: v = 0…1 hand turns once
   PROPS.stopwatch = (t, v) => `<rect x="-6" y="-40" width="12" height="9" rx="2" fill="#B9B4CC" stroke="${OUT}" stroke-width="2"/><circle r="30" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.6"/><circle r="24" fill="none" stroke="#E0336E" stroke-width="3"/><path d="M0 0 L${f(18 * Math.sin((v || 0) * 2 * Math.PI))} ${f(-18 * Math.cos((v || 0) * 2 * Math.PI))}" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/><circle r="3.4" fill="${OUT}"/><path d="M-16 -16 Q-8 -24 4 -24" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>`;
 
+  // ---------------------------------------------------------------- apple browning
+  const mixHex = (a, b, k) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * Math.max(0, Math.min(1, k))).toString(16).padStart(2, '0')).join(''); };
+  // appleHalf: an apple cut in half, cut face to the camera (origin = centre). v 0…1 = fresh cream → brown
+  PROPS.appleHalf = (t, v) => {
+    const k = v || 0, flesh = mixHex('#FFF6D6', '#C98A4B', k), edge = mixHex('#F3E3B0', '#A86A33', k);
+    let spots = '';
+    if (k > 0.05) [[-14, -6, 7], [12, -10, 6], [-6, 14, 8], [16, 10, 5], [-20, 8, 4]].forEach(([x, y, r], i) => { spots += `<ellipse cx="${x}" cy="${y}" rx="${f(r * (0.6 + k))}" ry="${f(r * 0.8 * (0.6 + k))}" fill="#8E5626" opacity="${f(Math.min(0.75, k * 0.9))}"/>`; });
+    return `<ellipse cx="0" cy="36" rx="34" ry="5" fill="#000" opacity=".13"/>`
+      + `<path d="M0 -26 Q-24 -40 -36 -14 Q-44 14 -22 32 Q-10 40 0 34 Q10 40 22 32 Q44 14 36 -14 Q24 -40 0 -26 Z" fill="#FF5C5C" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M0 -21 Q-21 -33 -31 -12 Q-38 12 -19 28 Q-9 34 0 29 Q9 34 19 28 Q38 12 31 -12 Q21 -33 0 -21 Z" fill="${flesh}" stroke="${edge}" stroke-width="1.6"/>`
+      + spots
+      + `<path d="M0 -10 L5 -2 L13 0 L5 4 L0 12 L-5 4 L-13 0 L-5 -2 Z" fill="none" stroke="${edge}" stroke-width="1.6" stroke-linejoin="round"/>`
+      + `<ellipse cx="-4" cy="2" rx="2.4" ry="4" fill="#5A3420" transform="rotate(-20 -4 2)"/><ellipse cx="4" cy="2" rx="2.4" ry="4" fill="#5A3420" transform="rotate(20 4 2)"/>`
+      + `<path d="M0 -26 Q1 -36 5 -40" stroke="${OUT}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M4 -34 Q14 -42 18 -32 Q10 -28 4 -34 Z" fill="#58BE7E" stroke="${OUT}" stroke-width="1.8"/>`
+      + `<path d="M-24 -14 Q-28 -2 -24 8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="${f(0.75 - k * 0.4)}"/>`;
+  };
+  // lemon: a whole lemon (origin = centre)
+  PROPS.lemon = () => `<path d="M-34 0 Q-38 -6 -30 -10 Q-20 -26 0 -26 Q20 -26 30 -10 Q38 -6 34 0 Q38 6 30 10 Q20 26 0 26 Q-20 26 -30 10 Q-38 6 -34 0 Z" fill="#FFD84A" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+    + `<path d="M-18 -14 Q-6 -20 8 -18" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/><circle cx="10" cy="6" r="1.4" fill="#E0B020"/><circle cx="-8" cy="10" r="1.4" fill="#E0B020"/><circle cx="18" cy="-4" r="1.4" fill="#E0B020"/>`;
+  // lemonHalf: a lemon cut in half, its juicy face with segments (origin = centre)
+  PROPS.lemonHalf = () => { let r = `<circle r="28" fill="#FFD84A" stroke="${OUT}" stroke-width="2.4"/><circle r="23" fill="#FFF1A0" stroke="#F2D25A" stroke-width="1.6"/>`;
+    for (let i = 0; i < 8; i++) { const a = i * 45 * R, b = (i * 45 + 38) * R; r += `<path d="M${f(3 * Math.cos(a + 0.2))} ${f(3 * Math.sin(a + 0.2))} L${f(20 * Math.cos(a + 0.05))} ${f(20 * Math.sin(a + 0.05))} A20 20 0 0 1 ${f(20 * Math.cos(b))} ${f(20 * Math.sin(b))} Z" fill="#FFE46B" stroke="#F2C94C" stroke-width="1.2"/>`; }
+    return r + `<circle r="3" fill="#FFF8D0"/><path d="M-16 -12 Q-8 -20 4 -20" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".85"/>`; };
+  // juice: a yellow lemon-juice drop (origin = centre)
+  PROPS.juice = () => `<path d="M0 -20 Q14 0 11 8 Q8 17 0 17 Q-8 17 -11 8 Q-14 0 0 -20 Z" fill="#FFE46B" stroke="${OUT}" stroke-width="2.2"/><path d="M-5 0 Q-6 6 -2 10" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/>`;
+  // o2: an oxygen molecule, two red balls joined, gently spinning (origin = centre)
+  PROPS.o2 = (t) => `<g transform="rotate(${f(Math.sin(t * 2.4) * 25)})"><path d="M-10 0 L10 0" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/><circle cx="-12" cy="0" r="11" fill="#FF5C7A" stroke="${OUT}" stroke-width="2.2"/><circle cx="12" cy="0" r="11" fill="#FF5C7A" stroke="${OUT}" stroke-width="2.2"/><path d="M-17 -5 Q-14 -9 -9 -9 M7 -5 Q10 -9 15 -9" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".85"/></g>`;
+  // enzyme: a friendly green blob with a "mouth" pocket (origin = centre). v 0…1 = awake → sleepy (eyes close, zzz)
+  PROPS.enzyme = (t, v) => { const k = v || 0, w = Math.sin(t * 5) * 1.5 * (1 - k);
+    const eye = (x) => k > 0.5 ? `<path d="M${x - 4} -6 Q${x} -3 ${x + 4} -6" stroke="${OUT}" stroke-width="2.2" fill="none" stroke-linecap="round"/>` : `<circle cx="${x}" cy="-6" r="3.6" fill="${OUT}"/><circle cx="${x + 1}" cy="-7" r="1.2" fill="#fff"/>`;
+    let z = ''; if (k > 0.5) for (let i = 0; i < 2; i++) { const ph = (t * 0.8 + i * 0.5) % 1; const zs = 6 + ph * 5, zx = 20 + ph * 14, zy = -24 - ph * 26; z += `<path d="M${f(zx)} ${f(zy)} L${f(zx + zs)} ${f(zy)} L${f(zx)} ${f(zy + zs)} L${f(zx + zs)} ${f(zy + zs)}" stroke="#5E7BFF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${f(1 - ph)}"/>`; }
+    return `<path d="M-26 ${f(4 + w)} Q-30 -24 -4 -26 Q24 -28 28 -2 Q30 12 18 10 L8 4 L18 18 Q4 30 -12 26 Q-28 22 -26 ${f(4 + w)} Z" fill="${mixHex('#7ED389', '#9AB8A0', k)}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + eye(-12) + eye(2) + `<path d="M-16 -16 Q-8 -22 4 -21" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>` + z; };
+
   // storm: a rainy evening meadow with dark clouds, rain and a cosy house (Kreti poster in the window)
   SETS.storm = {
     depth: { far: 0.55, air: 0.85, fg: 1.35 },
