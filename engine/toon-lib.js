@@ -876,6 +876,33 @@
     return `<path d="M-26 ${f(4 + w)} Q-30 -24 -4 -26 Q24 -28 28 -2 Q30 12 18 10 L8 4 L18 18 Q4 30 -12 26 Q-28 22 -26 ${f(4 + w)} Z" fill="${mixHex('#7ED389', '#9AB8A0', k)}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
       + eye(-12) + eye(2) + `<path d="M-16 -16 Q-8 -22 4 -21" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>` + z; };
 
+  // candle: a wax candle standing on its base (origin = bottom centre). v 0 = Earth flame (tall yellow teardrop with rising heat),
+  // 1 = microgravity flame (a small, faint blue ball around the wick, no rising heat)
+  PROPS.candle = (t, v0) => { const k = Math.max(-1.3, Math.min(1, v0 || 0)), L = (a, b) => f(a + (b - a) * k), v = Math.max(0, k);
+    const sw = Math.sin(t * 9) * 2.2 * (1 - v), sw2 = Math.sin(t * 6.3 + 1) * 1.4 * (1 - v), br = 1 + Math.sin(t * 5) * 0.03 * v;
+    const fl = `M${f(sw)} ${L(-122, -88)} Q${L(13, 14)} ${L(-98, -88)} ${L(13, 14)} ${L(-82, -74)} Q${L(13, 14)} ${L(-66, -60)} 0 ${L(-66, -60)} Q${L(-13, -14)} ${L(-66, -60)} ${L(-13, -14)} ${L(-82, -74)} Q${L(-13, -14)} ${L(-98, -88)} ${f(sw)} ${L(-122, -88)} Z`;
+    const inner = `M${f(sw2)} ${L(-100, -82)} Q${L(7, 8)} ${L(-86, -82)} ${L(7, 8)} ${L(-78, -74)} Q${L(7, 8)} ${L(-69, -66)} 0 ${L(-69, -66)} Q${L(-7, -8)} ${L(-69, -66)} ${L(-7, -8)} ${L(-78, -74)} Q${L(-7, -8)} ${L(-86, -82)} ${f(sw2)} ${L(-100, -82)} Z`;
+    let heat = '';
+    if (v < 0.98) for (let i = 0; i < 3; i++) { const ph = (t * 0.9 + i / 3) % 1, x0 = (i - 1) * 9, y0 = L(-128, -94) - ph * 60, a = (1 - ph) * (1 - v) * 0.75;
+      heat += `<path d="M${f(x0)} ${f(y0 + 26)} q${f(6)} -6 0 -13 q${f(-6)} -7 0 -13" fill="none" stroke="#FFC98A" stroke-width="3" stroke-linecap="round" opacity="${f(a)}"/>`; }
+    return `<ellipse cx="0" cy="3" rx="22" ry="5" fill="#000" opacity=".14"/>`
+      + `<circle cx="0" cy="${L(-86, -74)}" r="${f((34 - 8 * v) * br)}" fill="${mixHex('#FFE9A0', '#9FC8FF', v)}" opacity="${f(0.35 - 0.12 * v)}"/>`
+      + `<path d="M-16 -56 Q-16 -60 -12 -60 L12 -60 Q16 -60 16 -56 L16 -4 Q16 0 12 0 L-12 0 Q-16 0 -16 -4 Z" fill="#FFF6EC" stroke="${OUT}" stroke-width="2.4"/>`
+      + `<path d="M-16 -56 Q-8 -50 -4 -58 Q2 -52 8 -58 Q12 -52 16 -56" fill="#FFE3EE" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
+      + `<path d="M-9 -48 L-9 -10" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".8"/>`
+      + `<g transform="translate(0 ${L(0, 0)}) scale(${f(br)})"><path d="${fl}" fill="${mixHex('#FFB547', '#5C8CFF', v)}" fill-opacity="${f(1 - 0.35 * v)}" stroke="${mixHex('#E07A1F', '#3E63D6', v)}" stroke-width="2" stroke-linejoin="round"/>`
+      + `<path d="${inner}" fill="${mixHex('#FFF3A6', '#BFE0FF', v)}" opacity="${f(0.95 - 0.35 * v)}"/></g>`
+      + `<ellipse cx="0" cy="${L(-68, -64)}" rx="${L(5, 9)}" ry="${L(3, 6)}" fill="#4F8BFF" opacity="${f(0.7 - 0.4 * v)}"/>`
+      + `<path d="M0 -60 Q1 ${L(-66, -68)} ${L(-1, 0)} ${L(-71, -76)}" stroke="${OUT}" stroke-width="2.6" fill="none" stroke-linecap="round"/>` + heat; };
+  // airflow: little blue arrows of fresh air flowing to a flame centred at (0, -78) from the origin (a candle base).
+  // v 0 = air comes in from below at the sides (Earth), 1 = it seeps in slowly from every direction (space)
+  PROPS.airflow = (t, v) => { const k = (v || 0) > 0.5; let r = '';
+    const arrow = (x1, y1, x2, y2, ph) => { const x = x1 + (x2 - x1) * ph, y = y1 + (y2 - y1) * ph, a = Math.atan2(y2 - y1, x2 - x1) / R, o = Math.min(1, Math.min(ph, 1 - ph) * 4);
+      return `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(a)})" opacity="${f(o)}"><path d="M-12 0 L6 0" stroke="${OUT}" stroke-width="6" stroke-linecap="round"/><path d="M-12 0 L6 0" stroke="#7CCBFF" stroke-width="3" stroke-linecap="round"/><path d="M2 -6 L10 0 L2 6 Z" fill="#7CCBFF" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/></g>`; };
+    if (!k) for (const sd of [-1, 1]) for (let j = 0; j < 2; j++) { const ph = (t * 0.9 + j * 0.5) % 1; r += arrow(sd * 64, -8, sd * 22, -66, ph); }
+    else for (let i = 0; i < 8; i++) { const a = (i * 45 + 22.5) * R, ph = (t * 0.35 + i * 0.125) % 1; r += arrow(Math.cos(a) * 78, -78 + Math.sin(a) * 78, Math.cos(a) * 30, -78 + Math.sin(a) * 30, ph); }
+    return r; };
+
   // storm: a rainy evening meadow with dark clouds, rain and a cosy house (Kreti poster in the window)
   SETS.storm = {
     depth: { far: 0.55, air: 0.85, fg: 1.35 },
