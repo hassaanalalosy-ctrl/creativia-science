@@ -1,0 +1,196 @@
+{
+ "id": "2026-11-21-hera-dart",
+ "topic": "News: ESA's Hera reaches the Didymos-Dimorphos asteroids that NASA's DART hit in 2022 (orbit shortened ~33 min); first close-up of Didymos",
+ "category": "فضاء",
+ "mode": "dark",
+ "sources": [
+  "https://www.sciencedaily.com/releases/2026/11/261116023351.htm",
+  "https://www.sciencedaily.com/releases/2026/11/261115085545.htm",
+  "https://www.space.com/space-exploration/asteroid-comet-missions/four-years-ago-nasa-punched-an-asteroid-europes-hera-probe-arrives-this-month-to-inspect-the-wreckage",
+  "https://astronomynow.com/2026/11/09/hera-closes-in-on-the-asteroid-dart-impacted/",
+  "https://gizmodo.com/europes-hera-probe-sends-back-its-closest-view-yet-of-nasas-dart-crash-site-2000836333",
+  "https://www.esa.int/Space_Safety/Hera/Didymos_and_Dimorphos",
+  "https://www.planetary.org/articles/what-dart-has-taught-us-so-far"
+ ],
+ "slides": [
+  {
+   "type": "cover",
+   "badge": "خبر علمي",
+   "title": "مسبار يزور كويكباً صدمته ناسا!",
+   "note": "مدهش!",
+   "pose": "jump",
+   "chips": [
+    {
+     "icon": "planet",
+     "label": "فضاء"
+    },
+    {
+     "icon": "rocket",
+     "label": "خبر جديد"
+    }
+   ]
+  },
+  {
+   "type": "inner",
+   "image": "https://astronomynow.com/wp-content/uploads/2026/11/STScI-01H5Q6WNZ8GPX2B6JMHX4G3RMT.tif.jpeg",
+   "title": "ناسا صدمت كويكباً عمداً",
+   "body": "في 26 سبتمبر 2022 اصطدمت مركبة دارت بالكويكب الصغير ديمورفوس، لتختبر هل يمكن حرف كويكب عن مساره.",
+   "credit": "الصورة: NASA/Johns Hopkins APL",
+   "chip": {
+    "icon": "bolt",
+    "label": "26 سبتمبر 2022"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx='200' cy='140' r='80'/>"
+      ],
+      "palette": "white",
+      "box": [
+       120,
+       60,
+       280,
+       220
+      ],
+      "details": [
+       "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+       "<path d='M200 140 L200 96' stroke='#14204A' stroke-width='8' stroke-linecap='round'/>",
+       "<path d='M200 140 L232 160' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+       "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+      ],
+      "gloss": "M146 104 C156 88 172 78 190 74"
+     },
+     "→",
+     {
+      "parts": [
+       "<circle cx='200' cy='140' r='80'/>"
+      ],
+      "palette": "yellow",
+      "box": [
+       120,
+       60,
+       280,
+       220
+      ],
+      "details": [
+       "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+       "<path d='M200 140 L200 96' stroke='#14204A' stroke-width='8' stroke-linecap='round'/>",
+       "<path d='M200 140 L232 160' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+       "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+      ],
+      "gloss": "M146 104 C156 88 172 78 190 74",
+      "h": 110
+     }
+    ]
+   },
+   "title": "دورته صارت أقصر",
+   "body": "كان ديمورفوس يدور حول الكويكب الأكبر ديديموس كل 11 ساعة و55 دقيقة، فقصّر الاصطدام دورته نحو 33 دقيقة.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "clock",
+    "label": "أقصر بنحو 33 دقيقة"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "image": "https://gizmodo.com/app/uploads/2026/11/hera-asteroid-target.jpg",
+   "title": "هيرا وصلت أخيراً",
+   "body": "وصلت مركبة هيرا الأوروبية إلى الكويكبين، وصوّرت ديديموس من مسافة 60 كم، فظهرت صخور وفوهات.",
+   "credit": "الصورة: ESA",
+   "chip": {
+    "icon": "microscope",
+    "label": "من مسافة 60 كم"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<path d='M120 150 C110 100 160 62 210 70 C262 76 296 112 290 160 C284 210 236 238 186 232 C140 226 126 196 120 150 Z'/>"
+      ],
+      "palette": "grey",
+      "box": [
+       110,
+       62,
+       296,
+       238
+      ],
+      "details": [
+       "<circle cx='175' cy='120' r='16' fill='#6E7488' opacity='0.55'/>",
+       "<circle cx='240' cy='170' r='22' fill='#6E7488' opacity='0.5'/>",
+       "<circle cx='190' cy='195' r='10' fill='#6E7488' opacity='0.5'/>",
+       "<circle cx='252' cy='112' r='8' fill='#6E7488' opacity='0.5'/>"
+      ],
+      "gloss": "M150 100 C165 84 185 76 205 76"
+     },
+     ">",
+     {
+      "parts": [
+       "<path d='M120 150 C110 100 160 62 210 70 C262 76 296 112 290 160 C284 210 236 238 186 232 C140 226 126 196 120 150 Z'/>"
+      ],
+      "palette": "grey",
+      "box": [
+       110,
+       62,
+       296,
+       238
+      ],
+      "details": [
+       "<circle cx='175' cy='120' r='16' fill='#6E7488' opacity='0.55'/>",
+       "<circle cx='240' cy='170' r='22' fill='#6E7488' opacity='0.5'/>",
+       "<circle cx='190' cy='195' r='10' fill='#6E7488' opacity='0.5'/>",
+       "<circle cx='252' cy='112' r='8' fill='#6E7488' opacity='0.5'/>"
+      ],
+      "gloss": "M150 100 C165 84 185 76 205 76",
+      "h": 70
+     }
+    ]
+   },
+   "title": "كويكب وقمره الصغير",
+   "body": "يبلغ عرض ديديموس نحو 780 م، ويدور حوله ديمورفوس الأصغر منه بنحو 5 مرات.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "planet",
+    "label": "نحو 780 م"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "image": "https://cdn.mos.cms.futurecdn.net/4EFiJpekt6vZwNTAmo3jsj.jpg",
+   "title": "ماذا ستفعل هيرا؟",
+   "body": "ستدرس أثر الاصطدام، وتقيس كتلة ديمورفوس، وتطلق قمرين صغيرين هما ميلاني ويوفنتاس.",
+   "credit": "تصوّر فني: ESA",
+   "chip": {
+    "icon": "rocket",
+    "label": "خلال الأشهر القادمة"
+   },
+   "kreti": false
+  },
+  {
+   "type": "text",
+   "tag": "الخلاصة",
+   "tagIcon": "flask",
+   "title": "ماذا نعرف حتى الآن؟",
+   "points": [
+    "ناسا صدمت ديمورفوس عام 2022 فقصّرت دورته نحو 33 دقيقة",
+    "هيرا الأوروبية وصلت لتفحص آثار الاصطدام",
+    "الكويكبان لا يهددان الأرض، والهدف هو التدرّب على حمايتها"
+   ],
+   "note": "احفظها!"
+  },
+  {
+   "type": "end"
+  }
+ ],
+ "caption": "مسبار أوروبي يزور كويكباً صدمته ناسا عمداً! ✦\n\nفي 26 سبتمبر 2022 اصطدمت مركبة دارت (DART) التابعة لناسا بالكويكب الصغير ديمورفوس، في أول تجربة لحرف كويكب عن مساره. كان ديمورفوس يدور حول الكويكب الأكبر ديديموس (عرضه نحو 780 م) كل 11 ساعة و55 دقيقة، فقصّر الاصطدام دورته نحو 33 دقيقة.\n\nوالآن وصلت إلى الكويكبين مركبة هيرا (Hera) التابعة لوكالة الفضاء الأوروبية، بعد أن انطلقت في أكتوبر 2024. وفي أول صورة قريبة لديديموس من مسافة 60 كم ظهرت صخور وفوهات على جانب لم تره دارت، بينما بقي معظم ديمورفوس في الظل.\n\nستدرس هيرا خلال الأشهر القادمة الأثر الذي تركه الاصطدام، وتقيس كتلة ديمورفوس، وتطلق قمرين صغيرين هما ميلاني ويوفنتاس. والكويكبان لا يشكلان أي خطر على الأرض، فالهدف هو التدرّب على حمايتها مستقبلاً.\n\nبرأيك: هل سنحتاج يوماً إلى صدم كويكب حقيقي لحماية الأرض؟ 👇\n\nالمصادر: ESA · NASA · Space.com · Astronomy Now · Planetary Society\n\n#كريتيفيا_ساينس #علوم #فضاء #كويكب #ناسا #science #space #ESA #asteroid"
+}
