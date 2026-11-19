@@ -939,6 +939,60 @@
     fg: (t, id) => `<g filter="url(#fgblur${id})"><circle cx="-30" cy="660" r="90" fill="#245C3E"/><path d="M760 780 Q780 620 800 540 Q820 640 840 780 Z" fill="#2D6E4A"/></g>`
   };
 
+  // ---------------------------------------------------------------- fruits (banana is a berry, strawberry is not)
+  // strawberry: a red strawberry with yellow achenes on its skin (origin = centre). v 0…1 = the achenes jump off the skin and fly out
+  const ACH = [[-18, -14], [-4, -18], [10, -16], [22, -10], [-24, 0], [-10, -4], [4, -6], [18, 2], [-16, 12], [-2, 8], [12, 14], [-6, 22], [6, 26], [24, -2]];
+  PROPS.strawberry = (t, v) => { const k = v || 0; let a = '';
+    ACH.forEach(([x, y], i) => { const d = Math.hypot(x, y) || 1, out = k * (60 + hash(i + 40) * 50), X = x + x / d * out, Y = y + y / d * out - k * 10 * Math.sin(i), r = (hash(i) - 0.5) * 60 + k * 360 * hash(i + 7);
+      a += `<g transform="translate(${f(X)} ${f(Y)}) rotate(${f(r)}) scale(${f(1 + k * 0.6)})" opacity="${f(k > 0.85 ? (1 - k) / 0.15 : 1)}"><ellipse rx="2.6" ry="3.8" fill="#FFD84A" stroke="#B8860B" stroke-width="1"/></g>`; });
+    return `<ellipse cx="0" cy="40" rx="28" ry="5" fill="#000" opacity=".13"/>`
+      + `<path d="M0 38 Q-28 24 -34 -4 Q-37 -26 -16 -28 Q0 -30 16 -28 Q37 -26 34 -4 Q28 24 0 38 Z" fill="#FF4F5E" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M-24 -14 Q-26 0 -18 12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>`
+      + (k < 0.02 ? a : ACH.map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="2.2" ry="3" fill="#D83A48"/>`).join('') + a)
+      + `<path d="M0 -28 L-20 -38 L-8 -30 L-14 -44 L0 -32 L14 -44 L8 -30 L20 -38 Z" fill="#58BE7E" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/><path d="M0 -34 Q2 -44 6 -48" stroke="${OUT}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`; };
+  // achene: one strawberry "seed" seen big: a tiny yellow fruit (origin = centre). v 0…1 = its skin opens and shows the one seed inside
+  PROPS.achene = (t, v) => { const k = v || 0;
+    return `<path d="M0 -30 Q20 -18 18 6 Q14 28 0 30 Q-14 28 -18 6 Q-20 -18 0 -30 Z" fill="#FFD84A" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + (k > 0.01 ? `<g opacity="${f(Math.min(1, k * 1.5))}"><path d="M0 -20 Q12 -12 11 4 Q9 20 0 21 Q-9 20 -11 4 Q-12 -12 0 -20 Z" fill="#FFF6D6" stroke="#D9B44A" stroke-width="1.6"/><g transform="scale(${f(0.4 + 0.6 * k)})"><ellipse cx="0" cy="2" rx="6" ry="10" fill="#8A5A3C" stroke="${OUT}" stroke-width="1.8"/><path d="M-2 -4 Q-3 0 -2 4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".7"/></g></g>` : '')
+      + `<path d="M-10 -14 Q-14 -4 -12 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".75"/>`; };
+  // banana: a whole yellow banana lying on its side (origin = centre)
+  PROPS.banana = () => `<ellipse cx="0" cy="30" rx="40" ry="5" fill="#000" opacity=".12"/>`
+    + `<path d="M-48 -14 Q-44 22 0 26 Q38 26 50 -10 Q52 -16 46 -14 Q32 8 0 8 Q-32 8 -40 -20 Q-46 -24 -48 -14 Z" fill="#FFD84A" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+    + `<path d="M-40 -4 Q-24 18 4 18 Q30 18 42 -4" stroke="#E0B020" stroke-width="2" fill="none" opacity=".8"/>`
+    + `<path d="M-48 -14 L-50 -22 Q-48 -26 -44 -22 L-42 -18" fill="#8A5A3C" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/><circle cx="49" cy="-12" r="3" fill="#5A3420"/>`
+    + `<path d="M-30 4 Q-14 14 6 14" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`;
+  // bananaSlice: a banana slice seen from the front, its tiny dark seeds inside the flesh (origin = centre)
+  PROPS.bananaSlice = () => { let s = `<circle r="34" fill="#FFD84A" stroke="${OUT}" stroke-width="2.4"/><circle r="29" fill="#FFF3C4" stroke="#EAD48A" stroke-width="1.6"/>`
+      + `<path d="M0 -12 Q10 -2 8 8 Q0 12 -8 8 Q-10 -2 0 -12 Z" fill="#FBE7A6" opacity=".9"/>`;
+    for (let i = 0; i < 3; i++) { const a = (i * 120 - 90) * R, x = 10 * Math.cos(a), y = 10 * Math.sin(a); s += `<path d="M0 0 L${f(x * 1.5)} ${f(y * 1.5)}" stroke="#EAD48A" stroke-width="2"/><ellipse cx="${f(x)}" cy="${f(y)}" rx="3.2" ry="4.6" fill="#3A2418" transform="rotate(${f(i * 120)} ${f(x)} ${f(y)})"/>`; }
+    return s + `<path d="M-20 -18 Q-10 -26 4 -26" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" opacity=".85"/>`; };
+  // grapes: a bunch of purple grapes (origin = centre)
+  PROPS.grapes = () => { const G = [[-14, -14], [0, -16], [14, -14], [-8, -2], [8, -2], [-16, 0], [16, 0], [0, 10], [-8, 20], [8, 20], [0, 30]]; let s = '';
+    G.forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y}" r="9" fill="#8E5BD9" stroke="${OUT}" stroke-width="2"/><path d="M${x - 4} ${y - 3} Q${x - 2} ${y - 6} ${x + 1} ${y - 6}" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".8"/>`; });
+    return `<path d="M0 -24 Q2 -32 8 -36" stroke="#6E4A33" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M4 -30 Q18 -40 24 -28 Q14 -24 4 -30 Z" fill="#58BE7E" stroke="${OUT}" stroke-width="1.8"/>` + s; };
+  // tomato: a round red tomato with its green star (origin = centre)
+  PROPS.tomato = () => `<path d="M0 -24 Q30 -26 32 2 Q32 28 0 28 Q-32 28 -32 2 Q-30 -26 0 -24 Z" fill="#FF5246" stroke="${OUT}" stroke-width="2.4"/><path d="M-6 -24 Q-8 -2 -4 26 M8 -24 Q12 0 8 26" stroke="#E0392E" stroke-width="1.6" fill="none" opacity=".7"/>`
+    + `<path d="M0 -22 L-16 -28 L-6 -24 L-10 -36 L0 -26 L10 -36 L6 -24 L16 -28 Z" fill="#58BE7E" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/><path d="M-20 -8 Q-24 4 -18 14" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`;
+  // basket: a woven berry basket full of blueberries (origin = bottom centre, rim at y -46). Put fruit that goes "in" before it in the props list
+  PROPS.basket = () => { let s = `<ellipse cx="0" cy="3" rx="56" ry="6" fill="#000" opacity=".14"/>`;
+    [[-30, -50], [-14, -56], [2, -52], [18, -56], [32, -50], [-22, -60], [10, -62]].forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y}" r="9" fill="#4F6BD9" stroke="${OUT}" stroke-width="1.8"/><circle cx="${x}" cy="${y - 6}" r="2" fill="#2E3E8F"/>`; });
+    s += `<path d="M-50 -46 L50 -46 L40 0 L-40 0 Z" fill="#D9A46C" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    for (let i = 1; i < 4; i++) s += `<path d="M${-50 + i * 2.5} ${-46 + i * 11.5} L${50 - i * 2.5} ${-46 + i * 11.5}" stroke="#A87A50" stroke-width="2"/>`;
+    for (let i = -3; i <= 3; i++) s += `<path d="M${i * 14} -46 L${i * 11} 0" stroke="#A87A50" stroke-width="2"/>`;
+    return s + `<rect x="-54" y="-50" width="108" height="9" rx="4" fill="#C99A6B" stroke="${OUT}" stroke-width="2.2"/><path d="M-40 -46 L30 -46" stroke="#fff" stroke-width="2" opacity=".4" stroke-linecap="round"/>`; };
+  // flower: a flower on its stem (origin = ground, head at y -110). v 0…1 = petals fall off and the ovary in the centre swells into a fruit.
+  // "flowerMany" is the same flower with many tiny ovaries in its centre (a strawberry flower)
+  const flowerHead = (t, v, many) => { const k = v || 0; let s = `<path d="M0 0 Q-6 -60 0 -104" stroke="#3FA36B" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M-2 -50 Q-26 -62 -30 -44 Q-14 -40 -2 -50 Z" fill="#58BE7E" stroke="${OUT}" stroke-width="2"/>`;
+    for (let i = 0; i < 5; i++) { const a = i * 72 - 90 + Math.sin(t * 2) * 3, d = k * 70, op = Math.max(0, 1 - k * 1.6);
+      if (op <= 0) continue;
+      s += `<g transform="translate(0 ${f(-110 + d * (0.6 + hash(i) * 0.6))}) rotate(${f(a + k * 80 * (hash(i + 3) - 0.5))})" opacity="${f(op)}"><ellipse cx="22" cy="0" rx="20" ry="13" fill="${many ? '#FFFFFF' : '#FF8FB8'}" stroke="${OUT}" stroke-width="2.2"/><path d="M12 -4 Q20 -8 28 -6" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/></g>`; }
+    if (!many) s += `<g transform="translate(0 -110) scale(${f(1 + k * 0.9)})"><ellipse cx="0" cy="0" rx="12" ry="14" fill="${mixHex('#9EE08A', '#FFD84A', k)}" stroke="${OUT}" stroke-width="2.2"/><path d="M-5 -6 Q-6 0 -4 5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/></g>`;
+    else { s += `<circle cx="0" cy="-110" r="${f(16 + k * 10)}" fill="${mixHex('#FFE27A', '#FF4F5E', k)}" stroke="${OUT}" stroke-width="2.2"/>`;
+      for (let i = 0; i < 16; i++) { const a = i * 137.5 * R, r = Math.sqrt(i / 16) * (12 + k * 8); s += `<circle cx="${f(r * Math.cos(a))}" cy="${f(-110 + r * Math.sin(a))}" r="2.6" fill="#7BC96F" stroke="${OUT}" stroke-width="1"/>`; } }
+    return s; };
+  PROPS.flower = (t, v) => flowerHead(t, v, false);
+  PROPS.flowerMany = (t, v) => flowerHead(t, v, true);
+
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
