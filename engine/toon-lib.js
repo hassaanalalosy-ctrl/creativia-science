@@ -805,7 +805,8 @@
       s += `<g transform="translate(${f(wx)} ${f(wy)})"><path d="M-40 0 Q-46 -30 -16 -38 Q8 -50 30 -32 Q50 -18 42 8 Q40 36 10 40 Q-24 46 -38 24 Q-48 14 -40 0 Z" fill="#F4F0FF" stroke="${OUT}" stroke-width="2.6"/><circle cx="-8" cy="-6" r="10" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="14" cy="-8" r="10" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="-6" cy="-4" r="4" fill="${OUT}"/><circle cx="16" cy="-6" r="4" fill="${OUT}"/><path d="M-6 14 Q4 22 14 13" stroke="${OUT}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
       return s;
     },
-    fg: (t, id) => { let s = ''; for (let i = 0; i < 3; i++) { const x = 900 - ((t * 160 + i * 400) % 1300); s += `<g transform="translate(${f(x)} ${f(120 + i * 220)}) scale(3)">${PROPS.cell(t)}</g>`; } return `<g filter="url(#fgblur${id})">${s}</g>`; }
+    fg: (t, id, sh) => { let s = ''; if (sh && sh.noFg) return s; // noFg: no big blurred foreground cells (keeps props uncovered)
+      for (let i = 0; i < 3; i++) { const x = 900 - ((t * 160 + i * 400) % 1300); s += `<g transform="translate(${f(x)} ${f(120 + i * 220)}) scale(3)">${PROPS.cell(t)}</g>`; } return `<g filter="url(#fgblur${id})">${s}</g>`; }
   };
 
 
@@ -992,6 +993,46 @@
     return s; };
   PROPS.flower = (t, v) => flowerHead(t, v, false);
   PROPS.flowerMany = (t, v) => flowerHead(t, v, true);
+
+  // ---------------------------------------------------------------- pruney fingers
+  // a big open hand, palm to the camera, fingers up (origin = wrist, bottom centre; about 150 high).
+  // v 0…1 = smooth → wrinkled fingertips (water-induced wrinkles), with a slightly pinker skin
+  PROPS.hand = (t, v) => {
+    const k = Math.max(0, Math.min(1, v || 0)), skin = mixHex('#F6C9A4', '#EDB3A0', k * 0.6), shade = mixHex('#E3A982', '#D6957F', k * 0.6);
+    const F = [[-25, -110, 15], [-8, -124, 16], [9, -120, 16], [25, -104, 14]];
+    let s = `<ellipse cx="0" cy="4" rx="40" ry="6" fill="#000" opacity=".12"/>`
+      + `<path d="M-30 0 L-31 -26 Q-36 -36 -46 -52 Q-56 -68 -50 -76 Q-42 -82 -34 -70 L-20 -50 Z" fill="${skin}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    s += `<path d="M-30 0 Q-34 -40 -34 -58 L34 -58 Q34 -30 30 0 Z" fill="${skin}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    for (const [x, top, w] of F) s += `<rect x="${x - w / 2}" y="${top}" width="${w}" height="${-top - 46}" rx="${w / 2}" fill="${skin}" stroke="${OUT}" stroke-width="2.4"/>`;
+    s += `<rect x="-32.6" y="-62" width="65" height="14" fill="${skin}"/>`;
+    // knuckle creases and a palm line
+    // (no knuckle creases: they read as teeth at this size)
+    s += `<path d="M-22 -34 Q0 -26 22 -38" stroke="${shade}" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M-16 -16 Q-4 -12 6 -20" stroke="${shade}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    // wrinkles on the fingertips (and thumb tip), drawn in with v
+    if (k > 0.02) {
+      let w = '';
+      for (const [x, top, fw] of F) for (let i = 0; i < 4; i++) {
+        const y = top + 8 + i * 6.5, a = fw / 2 - 3;
+        w += `<path d="M${f(x - a)} ${f(y)} Q${f(x - a / 2)} ${f(y - 2.4)} ${x} ${f(y)} Q${f(x + a / 2)} ${f(y + 2.4)} ${f(x + a)} ${f(y)}" stroke="#B9796A" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+      }
+      for (let i = 0; i < 3; i++) w += `<path d="M${-49 + i * 2} ${-70 + i * 6} q4 -3 8 0 q4 3 8 0" stroke="#B9796A" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+      s += `<g opacity="${f(k)}">${w}</g>`;
+    }
+    s += `<path d="M-26 -100 L-26 -84" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"/><path d="M-24 -50 Q-26 -30 -22 -12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".4"/>`;
+    return s;
+  };
+  // a glass marble (origin = centre, r 11). v picks the colour
+  const MARBLE = ['#4FA8FF', '#FF5C8A', '#FFD166', '#58BE7E', '#A86BFF'];
+  PROPS.marble = (t, v) => { const c = MARBLE[Math.round(v || 0) % MARBLE.length];
+    return `<circle r="11" fill="${c}" stroke="${OUT}" stroke-width="2.2"/><path d="M-6 -2 Q-2 -8 5 -6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/><circle cx="-4" cy="-5" r="2.6" fill="#fff" opacity=".9"/>`; };
+  // a glass bowl of water with marbles inside (origin = bottom centre, about 120 wide, 64 high)
+  PROPS.basin = (t) => { const w = Math.sin(t * 3) * 1.5;
+    let s = `<ellipse cx="0" cy="3" rx="62" ry="6" fill="#000" opacity=".14"/><path d="M-60 -56 Q-58 0 0 0 Q58 0 60 -56 Z" fill="#CFEFFF" fill-opacity=".75" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M-55 -40 Q-50 -4 0 -4 Q50 -4 55 -40 Q28 ${f(-34 + w)} 0 -40 Q-28 ${f(-46 - w)} -55 -40 Z" fill="#7FCBFF" opacity=".8"/>`;
+    [[-30, -16, 0], [-8, -12, 1], [14, -15, 2], [34, -20, 3], [2, -26, 4], [-20, -30, 2]].forEach(([x, y, c]) => { s += `<g transform="translate(${x} ${y}) scale(.8)">${PROPS.marble(t, c)}</g>`; });
+    return s + `<ellipse cx="0" cy="-56" rx="60" ry="8" fill="none" stroke="${OUT}" stroke-width="2.4"/><path d="M-46 -44 Q-44 -22 -30 -12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`; };
+  // a red "no" cross (origin = centre)
+  PROPS.cross = () => `<path d="M-26 -26 L26 26 M26 -26 L-26 26" stroke="${OUT}" stroke-width="15" stroke-linecap="round"/><path d="M-26 -26 L26 26 M26 -26 L-26 26" stroke="#FF4F5E" stroke-width="10" stroke-linecap="round"/>`;
 
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
