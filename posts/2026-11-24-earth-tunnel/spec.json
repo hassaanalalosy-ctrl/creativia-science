@@ -1,0 +1,228 @@
+{
+ "id": "2026-11-24-earth-tunnel",
+ "topic": "What happens if you jump into a straight tunnel through the Earth's centre: speed up, max speed at centre, slow down, ~38 min (Klotz 2015, Am. J. Phys.; ~42 min uniform density), then oscillate",
+ "category": "فيزياء",
+ "mode": "light",
+ "sources": [
+  "https://arxiv.org/abs/1308.1342",
+  "https://www.livescience.com/50312-how-long-to-fall-through-earth.html",
+  "https://phys.org/news/2015-03-fall-hole-earth.amp",
+  "https://en.wikipedia.org/wiki/Gravity_train"
+ ],
+ "slides": [
+  {
+   "type": "cover",
+   "badge": "سؤال اليوم",
+   "title": "ماذا لو قفزت في نفق يخترق الأرض؟",
+   "note": "هل تصدق؟",
+   "pose": "think",
+   "chips": [
+    {
+     "icon": "atom",
+     "label": "فيزياء"
+    },
+    {
+     "icon": "planet",
+     "label": "ماذا لو؟"
+    }
+   ]
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx=\"200\" cy=\"150\" r=\"128\"/>"
+      ],
+      "palette": "orange",
+      "box": [
+       70,
+       20,
+       330,
+       280
+      ],
+      "noShadow": true,
+      "details": [
+       "<circle cx=\"200\" cy=\"150\" r=\"124\" fill=\"none\" stroke=\"#3E9BE0\" stroke-width=\"9\"/><path d=\"M118 56 C140 44 168 40 180 52 M262 62 C280 70 300 92 306 112 M98 210 C108 232 124 250 140 258\" fill=\"none\" stroke=\"#46C46E\" stroke-width=\"9\" stroke-linecap=\"round\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"#FFB020\"/><circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"none\" stroke=\"#F07A1E\" stroke-width=\"4\" opacity=\"0.6\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"36\" fill=\"#FFF3B0\"/><circle cx=\"200\" cy=\"150\" r=\"46\" fill=\"#FFE27A\" opacity=\"0.35\"/>",
+       "<rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"#1A0D29\" opacity=\"0.92\"/><rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"none\" stroke=\"#D09BFF\" stroke-width=\"2\" opacity=\"0.9\"/>",
+       "<circle cx=\"200\" cy=\"52\" r=\"15\" fill=\"#FF4FA3\" opacity=\"0.35\"/><circle cx=\"200\" cy=\"52\" r=\"9\" fill=\"#FF4FA3\" stroke=\"#FFFFFF\" stroke-width=\"2.5\"/>",
+       "<path d=\"M232 46 L232 104 M222 92 L232 104 L242 92\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+      ],
+      "gloss": "M104 110 C116 78 140 56 168 44"
+     }
+    ]
+   },
+   "title": "1. تسقط وتزداد سرعتك",
+   "body": "تخيّل نفقاً مستقيماً يخترق الأرض من جهة إلى أخرى، بلا هواء. تقفز، فتجذبك الجاذبية نحو المركز.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "magnet",
+    "label": "الجاذبية تشدّك"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx=\"200\" cy=\"150\" r=\"128\"/>"
+      ],
+      "palette": "orange",
+      "box": [
+       70,
+       20,
+       330,
+       280
+      ],
+      "noShadow": true,
+      "details": [
+       "<circle cx=\"200\" cy=\"150\" r=\"124\" fill=\"none\" stroke=\"#3E9BE0\" stroke-width=\"9\"/><path d=\"M118 56 C140 44 168 40 180 52 M262 62 C280 70 300 92 306 112 M98 210 C108 232 124 250 140 258\" fill=\"none\" stroke=\"#46C46E\" stroke-width=\"9\" stroke-linecap=\"round\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"#FFB020\"/><circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"none\" stroke=\"#F07A1E\" stroke-width=\"4\" opacity=\"0.6\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"36\" fill=\"#FFF3B0\"/><circle cx=\"200\" cy=\"150\" r=\"46\" fill=\"#FFE27A\" opacity=\"0.35\"/>",
+       "<rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"#1A0D29\" opacity=\"0.92\"/><rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"none\" stroke=\"#D09BFF\" stroke-width=\"2\" opacity=\"0.9\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"15\" fill=\"#FF4FA3\" opacity=\"0.35\"/><circle cx=\"200\" cy=\"150\" r=\"9\" fill=\"#FF4FA3\" stroke=\"#FFFFFF\" stroke-width=\"2.5\"/>"
+      ],
+      "gloss": "M104 110 C116 78 140 56 168 44"
+     }
+    ]
+   },
+   "title": "2. في المركز: أقصى سرعة",
+   "body": "في مركز الأرض تشدّك الأرض من كل الجهات بالتساوي، فلا تشعر بوزنك، وتكون سرعتك في أقصاها.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "bolt",
+    "label": "أسرع لحظة"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx=\"200\" cy=\"150\" r=\"128\"/>"
+      ],
+      "palette": "orange",
+      "box": [
+       70,
+       20,
+       330,
+       280
+      ],
+      "noShadow": true,
+      "details": [
+       "<circle cx=\"200\" cy=\"150\" r=\"124\" fill=\"none\" stroke=\"#3E9BE0\" stroke-width=\"9\"/><path d=\"M118 56 C140 44 168 40 180 52 M262 62 C280 70 300 92 306 112 M98 210 C108 232 124 250 140 258\" fill=\"none\" stroke=\"#46C46E\" stroke-width=\"9\" stroke-linecap=\"round\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"#FFB020\"/><circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"none\" stroke=\"#F07A1E\" stroke-width=\"4\" opacity=\"0.6\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"36\" fill=\"#FFF3B0\"/><circle cx=\"200\" cy=\"150\" r=\"46\" fill=\"#FFE27A\" opacity=\"0.35\"/>",
+       "<rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"#1A0D29\" opacity=\"0.92\"/><rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"none\" stroke=\"#D09BFF\" stroke-width=\"2\" opacity=\"0.9\"/>",
+       "<circle cx=\"200\" cy=\"248\" r=\"15\" fill=\"#FF4FA3\" opacity=\"0.35\"/><circle cx=\"200\" cy=\"248\" r=\"9\" fill=\"#FF4FA3\" stroke=\"#FFFFFF\" stroke-width=\"2.5\"/>",
+       "<path d=\"M232 196 L232 240 M222 228 L232 240 L242 228\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+      ],
+      "gloss": "M104 110 C116 78 140 56 168 44"
+     }
+    ]
+   },
+   "title": "3. تتباطأ حتى تتوقف",
+   "body": "بعد المركز تصير الجاذبية عكس حركتك، فتتباطأ حتى تتوقف عند فتحة النفق في الجهة الأخرى.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "planet",
+    "label": "الجهة الأخرى"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx='200' cy='140' r='80'/>"
+      ],
+      "palette": "white",
+      "box": [
+       120,
+       60,
+       280,
+       220
+      ],
+      "details": [
+       "<path d='M200 140 L200 66 A74 74 0 1 1 145 189.5 Z' fill='#FF4FA3' opacity='0.35'/>",
+       "<path d='M200 74 V86 M266 140 H254 M200 206 V194 M134 140 H146' stroke='#14204A' stroke-width='6' stroke-linecap='round'/>",
+       "<path d='M200 140 L167 169' stroke='#14204A' stroke-width='7' stroke-linecap='round'/>",
+       "<circle cx='200' cy='140' r='9' fill='#E0457B'/>"
+      ],
+      "gloss": "M146 104 C156 88 172 78 190 74"
+     }
+    ]
+   },
+   "title": "4. الرحلة: نحو 38 دقيقة!",
+   "body": "حسب دراسة للفيزيائي ألكسندر كلوتز عام 2015 تستغرق الرحلة نحو 38 دقيقة، لأن قلب الأرض أكثف من قشرتها.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "clock",
+    "label": "نحو 38 دقيقة"
+   },
+   "kreti": false
+  },
+  {
+   "type": "inner",
+   "art": {
+    "row": [
+     {
+      "parts": [
+       "<circle cx=\"200\" cy=\"150\" r=\"128\"/>"
+      ],
+      "palette": "orange",
+      "box": [
+       70,
+       20,
+       330,
+       280
+      ],
+      "noShadow": true,
+      "details": [
+       "<circle cx=\"200\" cy=\"150\" r=\"124\" fill=\"none\" stroke=\"#3E9BE0\" stroke-width=\"9\"/><path d=\"M118 56 C140 44 168 40 180 52 M262 62 C280 70 300 92 306 112 M98 210 C108 232 124 250 140 258\" fill=\"none\" stroke=\"#46C46E\" stroke-width=\"9\" stroke-linecap=\"round\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"#FFB020\"/><circle cx=\"200\" cy=\"150\" r=\"70\" fill=\"none\" stroke=\"#F07A1E\" stroke-width=\"4\" opacity=\"0.6\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"36\" fill=\"#FFF3B0\"/><circle cx=\"200\" cy=\"150\" r=\"46\" fill=\"#FFE27A\" opacity=\"0.35\"/>",
+       "<rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"#1A0D29\" opacity=\"0.92\"/><rect x=\"191\" y=\"22\" width=\"18\" height=\"256\" rx=\"9\" fill=\"none\" stroke=\"#D09BFF\" stroke-width=\"2\" opacity=\"0.9\"/>",
+       "<circle cx=\"200\" cy=\"150\" r=\"15\" fill=\"#FF4FA3\" opacity=\"0.35\"/><circle cx=\"200\" cy=\"150\" r=\"9\" fill=\"#FF4FA3\" stroke=\"#FFFFFF\" stroke-width=\"2.5\"/>",
+       "<path d=\"M232 60 L232 240 M222 228 L232 240 L242 228 M222 72 L232 60 L242 72\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+      ],
+      "gloss": "M104 110 C116 78 140 56 168 44"
+     }
+    ]
+   },
+   "title": "5. ثم تعود... بلا توقف",
+   "body": "إن لم تمسك بحافة النفق ستسقط من جديد، وتذهب وتعود مثل البندول، ما دام النفق بلا هواء.",
+   "credit": "رسم توضيحي: كريتيفيا ساينس",
+   "chip": {
+    "icon": "atom",
+    "label": "مثل البندول"
+   },
+   "kreti": false
+  },
+  {
+   "type": "text",
+   "tag": "الخلاصة",
+   "tagIcon": "flask",
+   "title": "ماذا يحدث لو قفزت؟",
+   "points": [
+    "تتسارع حتى المركز، ثم تتباطأ حتى الجهة الأخرى",
+    "الرحلة كلها تستغرق نحو 38 دقيقة",
+    "إنها تجربة فكرية، لا رحلة حقيقية"
+   ],
+   "note": "احفظها!"
+  },
+  {
+   "type": "end"
+  }
+ ],
+ "caption": "ماذا لو قفزت في نفق يخترق الأرض من جهة إلى أخرى؟ ✦\n\nتخيّل نفقاً مستقيماً يمر بمركز الأرض، طوله نحو 12700 كم، ولا هواء فيه. حين تقفز تجذبك الجاذبية نحو المركز فتزداد سرعتك. وفي المركز تشدّك الأرض من كل الجهات بالتساوي، فتكون سرعتك في أقصاها، ثم تتباطأ حتى تتوقف عند فتحة النفق في الجهة الأخرى.\n\nكم تستغرق الرحلة؟ الحساب المعروف منذ زمن يفترض أن كثافة الأرض متساوية في كل مكان، ويعطي نحو 42 دقيقة. لكن الفيزيائي ألكسندر كلوتز نشر عام 2015 حساباً يراعي أن قلب الأرض أكثف من قشرتها، فصارت الرحلة نحو 38 دقيقة فقط.\n\nوإن لم تمسك بحافة النفق ستسقط من جديد، وتذهب وتعود مثل البندول. وهي طبعاً تجربة فكرية يحبها الفيزيائيون، لا رحلة يمكن القيام بها.\n\nلو كان هذا النفق حقيقياً، هل تجرّب الرحلة؟ اكتب: نعم أو لا 👇\n\nالمصادر: American Journal of Physics (Klotz, 2015) · Live Science · Phys.org\n\n#كريتيفيا_ساينس #علوم #فيزياء #معلومات #الأرض #science #physics #gravity"
+}
