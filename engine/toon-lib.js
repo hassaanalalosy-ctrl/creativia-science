@@ -1034,6 +1034,44 @@
   // a red "no" cross (origin = centre)
   PROPS.cross = () => `<path d="M-26 -26 L26 26 M26 -26 L-26 26" stroke="${OUT}" stroke-width="15" stroke-linecap="round"/><path d="M-26 -26 L26 26 M26 -26 L-26 26" stroke="#FF4F5E" stroke-width="10" stroke-linecap="round"/>`;
 
+  // ---- neutron-star reel props
+  // a white sugar cube (origin = bottom centre), sparkly crystal dots
+  PROPS.sugarCube = (t, v) => { const g = v || 0;
+    return `<ellipse cx="0" cy="2" rx="26" ry="4" fill="#000" opacity=".14"/>`
+      + (g > 0 ? `<circle cx="0" cy="-22" r="${f(30 + g * 16)}" fill="#BFE6FF" opacity="${f(0.35 * g)}"/>` : '')
+      + `<path d="M-22 -8 L-22 -36 L0 -46 L22 -36 L22 -8 L0 2 Z" fill="#F4F7FF" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M-22 -36 L0 -26 L22 -36 L0 -46 Z" fill="#FFFFFF" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/><path d="M0 -26 L0 2" stroke="${OUT}" stroke-width="2"/>`
+      + `<path d="M0 -26 L22 -36 L22 -8 L0 2 Z" fill="#DCE4F5"/>`
+      + [[-12, -30], [-8, -16], [-16, -20], [10, -22], [14, -14], [6, -38], [-6, -40]].map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="1.4" fill="#C9D3EA" opacity="${f(0.6 + 0.4 * Math.sin(t * 5 + i))}"/>`).join('')
+      + `<path d="M-17 -32 L-17 -14" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".9"/>`; };
+  // a grey mountain with a snowy top (origin = bottom centre, about 200 wide, 150 high)
+  PROPS.mountain = () => `<ellipse cx="0" cy="2" rx="104" ry="8" fill="#000" opacity=".12"/>`
+    + `<path d="M-104 0 L-30 -128 Q-22 -140 -14 -128 L14 -84 L34 -110 Q40 -118 46 -110 L104 0 Z" fill="#8C88A6" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+    + `<path d="M-14 -128 L14 -84 L-4 -60 L-30 -128 Q-22 -140 -14 -128 Z" fill="#6E6A8A" opacity=".55"/>`
+    + `<path d="M-48 -96 L-30 -128 Q-22 -140 -14 -128 L2 -102 L-8 -96 L-16 -106 L-26 -94 L-36 -102 Z" fill="#FFFFFF" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
+    + `<path d="M26 -100 L34 -110 Q40 -118 46 -110 L54 -96 L46 -92 L40 -98 L32 -92 Z" fill="#FFFFFF" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
+    + `<path d="M-70 -40 Q-60 -60 -46 -70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".45"/>`;
+  // the same kitchen table, broken in the middle (v 0…1 = how far the halves fall)
+  PROPS.tableBroken = (t, v) => { const k = v || 0, a = k * 24, d = k * 30;
+    const half = (sx) => `<g transform="translate(${f(sx * 6)} ${f(d)}) rotate(${f(-sx * a)} ${f(sx * 72)} -40)">`
+      + `<path d="M${sx * 92} -84 L${sx * 6} -84 L${sx * 10} -76 L${sx * 2} -68 L${sx * 92} -68 Z" fill="#C99A6B" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<rect x="${sx > 0 ? 66 : -78}" y="-60" width="12" height="60" rx="3" fill="#A87A50" stroke="${OUT}" stroke-width="2.2"/></g>`;
+    return half(-1) + half(1); };
+  // a huge glowing star (origin = centre, radius 80)
+  PROPS.bigStar = (t) => { let r = `<circle r="120" fill="#FFB547" opacity="${f(0.16 + 0.05 * Math.sin(t * 3))}"/><circle r="98" fill="#FF8A3D" opacity=".25"/>`;
+    for (let i = 0; i < 16; i++) { const a = (i * 22.5 + t * 8) * R, l = 92 + 8 * Math.sin(t * 4 + i); r += `<path d="M${f(84 * Math.cos(a))} ${f(84 * Math.sin(a))} L${f(l * Math.cos(a))} ${f(l * Math.sin(a))}" stroke="#FFD166" stroke-width="5" stroke-linecap="round" opacity=".8"/>`; }
+    return r + `<circle r="80" fill="#FF9A3D" stroke="${OUT}" stroke-width="2.8"/><circle r="64" fill="#FFB85C" opacity=".8"/><circle cx="-22" cy="-24" r="30" fill="#FFE29A" opacity=".55"/>`
+      + `<circle cx="30" cy="20" r="10" fill="#E8752E" opacity=".5"/><circle cx="-30" cy="34" r="6" fill="#E8752E" opacity=".45"/><path d="M-56 -30 Q-44 -56 -16 -64" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".6"/>`; };
+  // a neutron star: a small blue-white ball (radius 22) with two light beams; v = spin speed (beams turn faster)
+  PROPS.neutronStar = (t, v) => { const sp = v || 0, a = t * (20 + sp * 900);
+    return `<g transform="rotate(${f(a)})" opacity="${f(0.25 + 0.6 * Math.min(1, sp + 0.2))}"><path d="M0 0 L-16 -170 L16 -170 Z M0 0 L-16 170 L16 170 Z" fill="#CFEFFF" opacity=".7"/><path d="M0 0 L-5 -170 L5 -170 Z M0 0 L-5 170 L5 170 Z" fill="#fff"/></g>`
+      + `<circle r="46" fill="#9FDcFF" opacity="${f(0.25 + 0.08 * Math.sin(t * 9))}"/><circle r="32" fill="#BDEBFF" opacity=".45"/>`
+      + `<circle r="22" fill="#E9F8FF" stroke="${OUT}" stroke-width="2.4"/><circle cx="-6" cy="-6" r="10" fill="#fff"/><path d="M-14 -8 Q-10 -16 -2 -18" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`; };
+  // a small city skyline (origin = bottom centre, about 120 wide)
+  PROPS.city = () => { const B = [[-60, 34, '#9FB7FF'], [-44, 56, '#C49BFF'], [-26, 42, '#7DE2D1'], [-8, 70, '#FFD166'], [10, 48, '#FF8FA3'], [28, 62, '#9FB7FF'], [46, 38, '#C49BFF']]; let s = '';
+    for (const [x, h, c] of B) { s += `<rect x="${x}" y="${-h}" width="16" height="${h}" rx="2" fill="${c}" stroke="${OUT}" stroke-width="2"/>`; for (let y = -h + 6; y < -6; y += 10) s += `<rect x="${x + 4}" y="${y}" width="3" height="4" fill="#FFF7C2"/><rect x="${x + 9}" y="${y}" width="3" height="4" fill="#FFF7C2"/>`; }
+    return s; };
+
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
