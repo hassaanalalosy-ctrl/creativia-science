@@ -1072,6 +1072,56 @@
     for (const [x, h, c] of B) { s += `<rect x="${x}" y="${-h}" width="16" height="${h}" rx="2" fill="${c}" stroke="${OUT}" stroke-width="2"/>`; for (let y = -h + 6; y < -6; y += 10) s += `<rect x="${x + 4}" y="${y}" width="3" height="4" fill="#FFF7C2"/><rect x="${x + 9}" y="${y}" width="3" height="4" fill="#FFF7C2"/>`; }
     return s; };
 
+  // ---- flamingo topic (2026-11-26): flamingo standing / eating (v 0 grey … 1 pink), chick, egg, pond, brine shrimp, carrot, bucket
+  const flamCol = (k) => ({ body: mixHex('#C9C4CF', '#FF8FB1', k), dark: mixHex('#A39DAB', '#F0628F', k), light: mixHex('#E6E2EA', '#FFC4D6', k), leg: mixHex('#9A95A3', '#EF7A9C', k) });
+  const flamBody = (c, id) => `<path d="M-30 -100 Q-30 -126 6 -126 Q38 -126 52 -112 L70 -118 Q66 -102 56 -96 Q40 -80 6 -82 Q-30 -82 -30 -100 Z" fill="${c.body}" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+    + `<path d="M-6 -112 Q16 -122 40 -110 Q30 -94 6 -94 Q-8 -98 -6 -112 Z" fill="${c.dark}" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/>`
+    + `<path d="M-20 -110 Q-14 -120 0 -121" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".75"/>`;
+  const flamLegs = (c) => `<path d="M2 -84 L-2 -44 L0 0" stroke="${OUT}" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 -84 L-2 -44 L0 0" stroke="${c.leg}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+    + `<path d="M12 -84 L22 -52 L4 -48" stroke="${OUT}" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 -84 L22 -52 L4 -48" stroke="${c.leg}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+    + `<path d="M-10 0 L10 0" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/><path d="M-9 0 L9 0" stroke="${c.leg}" stroke-width="2.4" stroke-linecap="round"/>`;
+  const neck = (d, c) => `<path d="${d}" stroke="${OUT}" stroke-width="13" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${c.body}" stroke-width="8.4" fill="none" stroke-linecap="round"/>`;
+  const flamHead = (x, y, c, rot) => `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot || 0)})"><circle r="10" fill="${c.body}" stroke="${OUT}" stroke-width="2.2"/>`
+    + `<path d="M-6 -4 Q-20 -6 -26 2 Q-28 10 -22 14 Q-22 6 -16 4 Q-10 4 -6 4 Z" fill="#FFF6EC" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`
+    + `<path d="M-26 2 Q-28 10 -22 14 Q-22 8 -19 5 Z" fill="${OUT}"/>`
+    + `<circle cx="-1" cy="-3" r="2.2" fill="${OUT}"/><circle cx="-0.4" cy="-3.6" r=".7" fill="#fff"/><path d="M2 -8 Q6 -10 8 -6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/></g>`;
+  PROPS.flamingo = (t, v) => { const c = flamCol(v || 0), b = Math.sin(t * 1.8) * 2;
+    return `<ellipse cx="4" cy="2" rx="30" ry="5" fill="#000" opacity=".14"/>` + flamLegs(c) + `<g transform="translate(0 ${f(b * 0.3)})">` + flamBody(c)
+      + neck(`M-24 -108 Q-50 -122 -36 -146 Q-22 -168 -34 -186`, c) + flamHead(-32, -192 + b * 0.4, c, 0) + `</g>`; };
+  PROPS.flamingoEat = (t, v) => { const c = flamCol(v || 0), dip = Math.sin(t * 5) * 3;
+    return `<ellipse cx="4" cy="2" rx="30" ry="5" fill="#000" opacity=".14"/>` + flamLegs(c) + flamBody(c)
+      + neck(`M-24 -104 Q-58 -126 -64 -80 Q-68 -40 -60 ${f(-14 + dip)}`, c) + flamHead(-58, -8 + dip, c, -100)
+      + [0, 1].map(i => { const ph = (t * 0.9 + i * 0.5) % 1; return `<ellipse cx="-62" cy="2" rx="${f(10 + ph * 26)}" ry="${f(2.4 + ph * 4)}" fill="none" stroke="#fff" stroke-width="1.8" opacity="${f(0.8 * (1 - ph))}"/>`; }).join(''); };
+  PROPS.chick = (t) => { const b = Math.abs(Math.sin(t * 4)) * 2, C = '#C2BCC8', D = '#A7A0AF';
+    let fluff = ''; for (let i = 0; i < 9; i++) { const a = (i * 40 - 20) * R; fluff += `<circle cx="${f(25 * Math.cos(a))}" cy="${f(-30 + 21 * Math.sin(a))}" r="7" fill="${C}" stroke="${OUT}" stroke-width="2.2"/>`; }
+    return `<ellipse cx="0" cy="2" rx="24" ry="4" fill="#000" opacity=".14"/><path d="M-6 -10 L-7 0 M8 -10 L9 0" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/><path d="M-6 -10 L-7 0 M8 -10 L9 0" stroke="#8F8A99" stroke-width="2.4" stroke-linecap="round"/>`
+      + `<g transform="translate(0 ${f(-b)})">${fluff}<ellipse cx="0" cy="-30" rx="25" ry="21" fill="${C}"/>`
+      + `<path d="M4 -34 Q16 -40 22 -30 Q14 -22 4 -26 Z" fill="${D}" stroke="${OUT}" stroke-width="1.6"/>`
+      + `<circle cx="-14" cy="-58" r="14" fill="${C}" stroke="${OUT}" stroke-width="2.4"/><path d="M-20 -72 Q-16 -78 -12 -71 Q-8 -78 -6 -70" stroke="${OUT}" stroke-width="1.8" fill="${C}"/>`
+      + `<path d="M-26 -60 L-38 -56 L-26 -52 Z" fill="${OUT}"/>`
+      + `<circle cx="-18" cy="-61" r="2.6" fill="${OUT}"/><circle cx="-17.3" cy="-61.8" r=".8" fill="#fff"/><path d="M-12 -38 Q-18 -32 -16 -24" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/></g>`; };
+  PROPS.egg = (t, v) => { const k = v || 0, open = Math.max(0, (k - 0.5) * 2), w = k < 0.5 ? Math.sin(t * 40) * k * 4 : 0;
+    const crack = `<path d="M-22 -34 L-14 -28 L-8 -36 L0 -28 L8 -36 L14 -28 L22 -34" stroke="${OUT}" stroke-width="2" fill="none" stroke-linejoin="round" opacity="${f(Math.min(1, k * 3))}"/>`;
+    const bottom = `<path d="M-26 -30 Q-28 0 0 2 Q28 0 26 -30 L22 -34 L14 -28 L8 -36 L0 -28 L-8 -36 L-14 -28 L-22 -34 Z" fill="#FFFDF4" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    const top = `<g transform="translate(${f(open * 40)} ${f(-open * 50)}) rotate(${f(open * 70)} 0 -34)"><path d="M-26 -30 Q-26 -76 0 -76 Q26 -76 26 -30 L22 -34 L14 -28 L8 -36 L0 -28 L-8 -36 L-14 -28 L-22 -34 Z" fill="#FFFDF4" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-14 -56 Q-12 -66 -4 -70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;
+    return `<g transform="rotate(${f(w)} 0 0)"><ellipse cx="0" cy="2" rx="24" ry="4" fill="#000" opacity=".14"/>` + bottom + (open < 0.01 ? crack : '') + `</g>` + (open < 1 ? top : `<g opacity="0">${top}</g>`); };
+  PROPS.pond = (t) => { let r = `<ellipse cx="0" cy="0" rx="150" ry="24" fill="#5CC3FF" stroke="${OUT}" stroke-width="2.6"/><ellipse cx="0" cy="-3" rx="138" ry="18" fill="#8ED8FF"/>`;
+    for (let i = 0; i < 3; i++) { const ph = (t * 0.5 + i / 3) % 1; r += `<ellipse cx="${f(-60 + i * 60)}" cy="-2" rx="${f(10 + ph * 30)}" ry="${f(2 + ph * 5)}" fill="none" stroke="#fff" stroke-width="1.6" opacity="${f(0.7 * (1 - ph))}"/>`; }
+    return r + `<path d="M-110 -12 Q-80 -18 -50 -16" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`; };
+  PROPS.shrimp = (t, v) => { const k = v || 0, c = mixHex('#FFB38A', '#FF6FA0', k), d = mixHex('#F28A5E', '#E0447E', k);
+    let legs = ''; for (let i = 0; i < 9; i++) { const x = -24 + i * 6, a = Math.sin(t * 12 + i * 0.8) * 5; legs += `<path d="M${x} 4 L${f(x - 3 + a * 0.4)} ${f(14 + Math.abs(a) * 0.4)}" stroke="${OUT}" stroke-width="2.2" stroke-linecap="round"/>`; }
+    let segs = ''; for (let i = 0; i < 6; i++) segs += `<path d="M${-18 + i * 9} -8 Q${-16 + i * 9} 0 ${-18 + i * 9} 7" stroke="${d}" stroke-width="1.6" fill="none"/>`;
+    return (k > 0.05 ? `<ellipse rx="${f(44 + k * 10)}" ry="${f(22 + k * 6)}" fill="#FF8FB1" opacity="${f(0.28 * k)}"/>` : '') + legs
+      + `<path d="M-30 -2 Q-30 -10 -20 -10 L28 -8 Q40 -6 46 -2 L58 -12 L56 0 L60 10 L46 4 Q40 8 28 8 L-20 8 Q-30 8 -30 -2 Z" fill="${c}" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/>` + segs
+      + `<path d="M-30 -6 L-40 -14 M-30 -2 L-42 -6" stroke="${OUT}" stroke-width="2" stroke-linecap="round"/><circle cx="-41" cy="-15" r="3.4" fill="${OUT}"/><circle cx="-43" cy="-6" r="3.4" fill="${OUT}"/>`
+      + `<path d="M-20 -6 Q0 -8 20 -6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7"/>`; };
+  PROPS.carrot = (t) => { const s = Math.sin(t * 2) * 4;
+    return `<g transform="rotate(${f(s)} 0 -40)"><path d="M-8 -40 Q-14 -60 -4 -66 M0 -40 Q2 -64 10 -70 M6 -40 Q18 -56 24 -54" stroke="${OUT}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-8 -40 Q-14 -60 -4 -66 M0 -40 Q2 -64 10 -70 M6 -40 Q18 -56 24 -54" stroke="#58BE7E" stroke-width="3.6" fill="none" stroke-linecap="round"/></g>`
+      + `<path d="M-16 -40 Q0 -46 16 -40 Q14 -10 2 30 Q0 34 -2 30 Q-14 -10 -16 -40 Z" fill="#FF9A3C" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>`
+      + `<path d="M-12 -24 L-4 -22 M8 -14 L2 -12 M-8 0 L-2 2 M6 12 L1 13" stroke="#D9772A" stroke-width="2" stroke-linecap="round"/><path d="M-10 -34 Q-10 -20 -6 -8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>`; };
+  PROPS.bucket = (t) => { let p = ''; [[-16, -46], [-6, -50], [6, -48], [16, -45], [0, -44], [-10, -42], [11, -42]].forEach(([x, y], i) => { p += `<circle cx="${x}" cy="${y}" r="5" fill="${i % 2 ? '#FF8FB1' : '#FF9A6B'}" stroke="${OUT}" stroke-width="1.4"/>`; });
+    return `<ellipse cx="0" cy="2" rx="30" ry="5" fill="#000" opacity=".14"/>` + p + `<path d="M-26 -42 L-20 0 L20 0 L26 -42 Z" fill="#7DB8F2" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="0" cy="-42" rx="26" ry="6" fill="none" stroke="${OUT}" stroke-width="2.4"/><path d="M-26 -42 Q0 -84 26 -42" stroke="${OUT}" stroke-width="2.4" fill="none"/><path d="M-18 -34 L-14 -8" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/>`; };
+
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
