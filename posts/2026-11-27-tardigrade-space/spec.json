@@ -1,0 +1,26 @@
+{
+ "id": "2026-11-27-tardigrade-space",
+ "topic": "Tardigrades (water bears) survived open space on ESA's Foton-M3 TARDIS experiment, Sept 2007 (Jönsson et al. 2008, Current Biology)",
+ "category": "حيوانات",
+ "mode": "light",
+ "sources": [
+  "https://www.esa.int/Our_Activities/Human_and_Robotic_Exploration/Research/Tiny_animals_survive_exposure_to_space",
+  "https://www.nationalgeographic.com/science/article/tardigrades-become-first-animals-to-survive-vacuum-of-space",
+  "https://www.sciencedaily.com/releases/2008/09/080908135906.htm"
+ ],
+ "slides": [
+  {
+   "type": "single",
+   "badge": "اختيار اليوم",
+   "image": "https://upload.wikimedia.org/wikipedia/commons/c/cd/SEM_image_of_Milnesium_tardigradum_in_active_state_-_journal.pone.0045682.g001-2.png",
+   "fit": "contain",
+   "title": "حيوان صغير نجا في الفضاء المفتوح!",
+   "credit": "الصورة: Schokraie et al., PLOS ONE (CC BY)",
+   "chip": {"icon": "microscope", "label": "دب الماء"},
+   "kreti": true,
+   "pose": "jump",
+   "note": "هل تصدق؟"
+  }
+ ],
+ "caption": "هذا الحيوان الصغير نجا في الفضاء المفتوح! ✦\n\nإنه دب الماء (Tardigrade)، حيوان صغير جداً يتراوح طوله بين 0.1 و1.5 ملم، ويعيش في الطحالب والتربة والماء. والصورة له تحت المجهر الإلكتروني.\n\nفي سبتمبر 2007 أُرسلت دببة ماء مجففة إلى مدار حول الأرض على متن المركبة الأوروبية «فوتون-إم3»، وعُرّضت للفضاء المفتوح: فراغ وإشعاع كوني وأشعة الشمس فوق البنفسجية. نجا معظمها من الفراغ والإشعاع الكوني، بل نجا بعضها من الأشعة فوق البنفسجية الشديدة أيضاً، وتكاثرت بشكل طبيعي بعد عودتها إلى الأرض.\n\nما سرّها؟ حين تجف تنكمش وتدخل في حالة سكون، فيكاد نشاطها الحيوي يتوقف، ثم تعود إلى الحركة حين تبتل.\n\nلو أخذت قدرة واحدة من دب الماء، ماذا تختار: تحمّل الجفاف أم البرد أم الإشعاع؟ اكتب اختيارك 👇\n\nالمصادر: ESA · Current Biology (Jönsson et al., 2008) · National Geographic\nالصورة: Schokraie et al., PLOS ONE 2012 (CC BY)\n\n#كريتيفيا_ساينس #علوم #معلومات #حيوانات #فضاء #دب_الماء #science #tardigrade #space"
+}
