@@ -1122,6 +1122,92 @@
   PROPS.bucket = (t) => { let p = ''; [[-16, -46], [-6, -50], [6, -48], [16, -45], [0, -44], [-10, -42], [11, -42]].forEach(([x, y], i) => { p += `<circle cx="${x}" cy="${y}" r="5" fill="${i % 2 ? '#FF8FB1' : '#FF9A6B'}" stroke="${OUT}" stroke-width="1.4"/>`; });
     return `<ellipse cx="0" cy="2" rx="30" ry="5" fill="#000" opacity=".14"/>` + p + `<path d="M-26 -42 L-20 0 L20 0 L26 -42 Z" fill="#7DB8F2" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="0" cy="-42" rx="26" ry="6" fill="none" stroke="${OUT}" stroke-width="2.4"/><path d="M-26 -42 Q0 -84 26 -42" stroke="${OUT}" stroke-width="2.4" fill="none"/><path d="M-18 -34 L-14 -8" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/>`; };
 
+
+  // ---- Everest boiling topic (2026-11-28): summit set, camping stove + pot, thermometer, runny egg, air arrows, pressure cooker, tea glass
+  // summit: a snowy mountain top above a sea of clouds, deep blue sky, a Kreti flag on a pole (x 640, flag top y ≈ 372)
+  SETS.summit = {
+    depth: { far: 0.55, air: 0.85, fg: 1.35 },
+    defs: id => grad(id, 'ssky', '#2F5FC8', '#BFE6FF') + grad(id, 'snw', '#FFFFFF', '#D7E6F7') + grad(id, 'flg', '#A855F7', '#B91097', 1) + blurDef(id),
+    far: (t, id) => {
+      let s = `<rect x="-600" y="-500" width="2000" height="1100" fill="url(#ssky${id})"/><g transform="translate(150 90) scale(.8)">${PROPS.sun(t)}</g>`;
+      // distant peaks poking out of the clouds
+      s += `<path d="M-300 470 L-160 330 L-60 420 L60 300 L170 410 L300 340 L420 430 L560 290 L700 420 L820 330 L1100 470 Z" fill="#9DB3E8" stroke="${OUT}" stroke-width="2" stroke-linejoin="round" opacity=".9"/>`
+        + `<path d="M60 300 L84 324 L70 322 L60 334 L50 322 L36 324 Z M560 290 L586 316 L572 314 L560 326 L548 314 L534 316 Z M820 330 L842 352 L830 350 L820 360 L810 350 L798 352 Z" fill="#fff"/>`;
+      // sea of clouds
+      for (let i = 0; i < 12; i++) { const x = -260 + i * 120 + ((t * 6 + hash(i) * 40) % 120), y = 440 + hash(i + 5) * 30;
+        s += `<g transform="translate(${f(x)} ${f(y)}) scale(${f(1.2 + hash(i + 9) * 0.6)})"><path d="M-60 20 Q-72 0 -46 -6 Q-42 -30 -12 -26 Q4 -46 30 -32 Q58 -38 62 -12 Q84 -6 74 16 L-50 22 Z" fill="#FFFFFF" opacity=".95"/></g>`; }
+      return s + `<rect x="-600" y="480" width="2000" height="120" fill="#F4F8FF"/>`;
+    },
+    air: (t) => {
+      let s = '';
+      for (let i = 0; i < 26; i++) { const x = ((hash(i) * 900 + t * (40 + hash(i + 2) * 30)) % 900) - 150, y = 60 + hash(i + 4) * 440 + Math.sin(t * 2 + i) * 10;
+        s += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(1.2 + hash(i + 8) * 1.8)}" fill="#fff" opacity="${f(0.5 + 0.4 * hash(i + 11))}"/>`; }
+      return s;
+    },
+    mid: (t, id) => {
+      // snowy summit ridge and flat snow floor (y 520)
+      let s = `<path d="M-300 520 Q-120 470 60 500 Q240 476 420 498 Q600 470 780 494 Q940 480 1100 520 L1100 800 L-300 800 Z" fill="url(#snw${id})" stroke="${OUT}" stroke-width="2.6"/>`
+        + `<rect x="-300" y="520" width="1400" height="280" fill="url(#snw${id})"/><path d="M-300 520 L1100 520" stroke="#B8CCE6" stroke-width="2.4"/>`;
+      for (let i = 0; i < 18; i++) { const x = -200 + i * 70 + hash(i) * 30, y = 548 + hash(i + 3) * 160; s += `<path d="M${f(x)} ${f(y)} q16 -6 32 0" stroke="#B8CCE6" stroke-width="2" fill="none" stroke-linecap="round"/>`; }
+      for (let i = 0; i < 8; i++) { const x = -100 + hash(i + 40) * 900, y = 530 + hash(i + 50) * 180; s += `<path transform="translate(${f(x)} ${f(y)}) scale(${f(0.4 + 0.3 * Math.abs(Math.sin(t * 3 + i)))})" d="M0 -8 C1 -2 2 -1 8 0 C2 1 1 2 0 8 C-1 2 -2 1 -8 0 C-2 -1 -1 -2 0 -8 Z" fill="#fff"/>`; }
+      // rocks peeking out of the snow
+      s += `<path d="M90 522 Q84 496 112 490 Q140 486 146 508 Q148 522 136 522 Z" fill="#8C88A6" stroke="${OUT}" stroke-width="2.4"/><path d="M96 502 Q110 492 128 494 L120 500 Z" fill="#fff"/>`;
+      // Kreti flag (waving)
+      const w = Math.sin(t * 4) * 5, w2 = Math.sin(t * 4 + 1.2) * 5;
+      s += `<g transform="translate(640 520)"><ellipse cx="0" cy="2" rx="18" ry="4" fill="#000" opacity=".15"/><path d="M0 0 L0 -152" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M0 0 L0 -152" stroke="#B9B4CC" stroke-width="3.4" stroke-linecap="round"/><circle cx="0" cy="-156" r="5" fill="#FFD166" stroke="${OUT}" stroke-width="2"/>`
+        + `<path d="M2 -148 Q30 ${f(-154 + w)} 58 -148 Q86 ${f(-142 + w2)} 104 -148 L104 -78 Q86 ${f(-72 + w2)} 58 -78 Q30 ${f(-84 + w)} 2 -78 Z" fill="url(#flg${id})" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+        + `<g transform="translate(25 -141) scale(.7)">${KRETI.poster}</g><path d="M10 -140 Q30 -146 48 -142" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".55"/></g>`;
+      return s;
+    },
+    fg: (t, id) => `<g filter="url(#fgblur${id})"><ellipse cx="-20" cy="700" rx="130" ry="70" fill="#FFFFFF"/><ellipse cx="760" cy="720" rx="140" ry="80" fill="#E8F1FC"/></g>`
+  };
+  // camping stove with a pot (origin = bottom centre, about 90 wide, 92 high); v = boil 0…1 (bubbles + steam)
+  PROPS.campPot = (t, v) => { const k = v || 0, fl = 1 + Math.sin(t * 22) * 0.12;
+    let b = ''; if (k > 0.02) for (let i = 0; i < 6; i++) { const ph = (t * (1.4 + k) + i / 6) % 1, x = -28 + i * 11 + Math.sin(i * 3) * 3; b += `<circle cx="${f(x)}" cy="${f(-74 - ph * 6 * k)}" r="${f((2 + ph * 4) * k)}" fill="#E6F8FF" stroke="#fff" stroke-width="1.4" opacity="${f(1 - ph)}"/>`; }
+    let st = ''; if (k > 0.05) for (let i = 0; i < 3; i++) { const ph = (t * 0.6 + i / 3) % 1, x = -18 + i * 18 + Math.sin(t * 3 + i) * 6; st += `<path d="M${f(x)} ${f(-84 - ph * 70)} q${f(-8 + Math.sin(t * 2 + i) * 4)} -14 0 -26" stroke="#FFFFFF" stroke-width="${f(5 - ph * 2)}" fill="none" stroke-linecap="round" opacity="${f(0.85 * (1 - ph) * k)}"/>`; }
+    return `<ellipse cx="0" cy="2" rx="46" ry="6" fill="#000" opacity=".16"/>`
+      + `<path d="M-26 0 L-14 -22 M26 0 L14 -22" stroke="${OUT}" stroke-width="4" stroke-linecap="round"/><rect x="-20" y="-26" width="40" height="10" rx="3" fill="#5B5670" stroke="${OUT}" stroke-width="2"/>`
+      + `<g transform="translate(0 -26) scale(1 ${f(fl)})"><path d="M-14 0 Q-12 -14 -4 -12 Q0 -22 4 -12 Q12 -14 14 0 Z" fill="#4FA8FF" stroke="${OUT}" stroke-width="1.6"/><path d="M-6 0 Q-4 -8 0 -6 Q4 -8 6 0 Z" fill="#BFE6FF"/></g>`
+      + `<path d="M-40 -74 L-36 -34 Q-34 -28 -28 -28 L28 -28 Q34 -28 36 -34 L40 -74 Z" fill="#C9CFDB" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+      + `<ellipse cx="0" cy="-74" rx="40" ry="7" fill="#7CCBFF" stroke="${OUT}" stroke-width="2.4"/><path d="M-40 -66 L-50 -66 M40 -66 L50 -66" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/>`
+      + `<path d="M-30 -66 L-28 -38" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".7"/>` + b + st; };
+  // a big thermometer (origin = bottom centre of the bulb, about 230 high); v = level 0…1
+  PROPS.thermo = (t, v) => { const k = Math.max(0, Math.min(1, v || 0)), top = -40 - k * 170;
+    let ticks = ''; for (let i = 0; i <= 10; i++) ticks += `<path d="M14 ${-40 - i * 17} L${i % 5 ? 22 : 28} ${-40 - i * 17}" stroke="${OUT}" stroke-width="${i % 5 ? 1.6 : 2.4}" stroke-linecap="round"/>`;
+    return `<ellipse cx="0" cy="4" rx="26" ry="5" fill="#000" opacity=".14"/><rect x="-14" y="-228" width="28" height="216" rx="14" fill="#FFFFFF" stroke="${OUT}" stroke-width="2.6"/>`
+      + `<rect x="-6" y="${f(top)}" width="12" height="${f(-top - 10)}" rx="6" fill="#FF4F5E"/>` + ticks
+      + `<circle cx="0" cy="-20" r="22" fill="#FF4F5E" stroke="${OUT}" stroke-width="2.6"/><path d="M-10 -28 Q-12 -20 -8 -12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`
+      + `<path d="M-7 -214 L-7 -60" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".7"/>`; };
+  // an egg that cracks open and shows a runny yolk (origin = centre); v 0 whole … 1 open and dripping
+  PROPS.eggRunny = (t, v) => { const k = v || 0, o = Math.min(1, k * 1.6), d = Math.max(0, k - 0.4) / 0.6;
+    const half = (sx) => `<g transform="translate(${f(sx * o * 18)} ${f(-o * 6)}) rotate(${f(sx * o * 28)} 0 0)"><path d="M0 -30 Q${sx * 24} -30 ${sx * 24} 0 Q${sx * 24} 26 0 26 L0 12 L${sx * 6} 4 L0 -4 L${sx * 6} -12 Z" fill="#FFFDF4" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M${sx * 14} -18 Q${sx * 18} -8 ${sx * 17} 2" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/></g>`;
+    const drip = d > 0 ? `<path d="M-10 6 Q-14 ${f(14 + d * 26)} -6 ${f(18 + d * 30)} Q0 ${f(22 + d * 30)} 4 ${f(14 + d * 22)} Q8 ${f(10 + d * 16)} 10 6 Z" fill="#FFC23D" stroke="${OUT}" stroke-width="2"/><circle cx="-8" cy="${f(26 + d * 40)}" r="${f(3 * d)}" fill="#FFC23D" stroke="${OUT}" stroke-width="1.4"/>` : '';
+    const yolk = o > 0.05 ? `<ellipse cx="0" cy="0" rx="${f(14 * o)}" ry="${f(12 * o)}" fill="#FFB020" stroke="${OUT}" stroke-width="2"/><path d="M-6 -4 Q-3 -8 2 -8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>` : '';
+    if (o < 0.05) return `<ellipse cx="0" cy="-2" rx="24" ry="29" fill="#FFFDF4" stroke="${OUT}" stroke-width="2.4"/><path d="M-12 -4 L-5 -10 L1 -3 L7 -9" stroke="${OUT}" stroke-width="1.8" fill="none" stroke-linejoin="round" opacity="${f(Math.min(1, k * 20))}"/><path d="M-14 -18 Q-17 -8 -15 2" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    return drip + yolk + half(-1) + half(1); };
+  // air pressing down: 9 arrows (3 x 3), origin = bottom centre (tips at y 0); v 0 = all 9 … 1 = only 3 left
+  PROPS.airPush = (t, v) => { const k = v || 0; let s = '';
+    const keep = [1, 4, 7];
+    for (let i = 0; i < 9; i++) { const col = i % 3, row = Math.floor(i / 3), x = -70 + col * 70 + (row % 2) * 10, y = -12 - row * 58 + ((t * 30 + row * 12) % 14);
+      const op = keep.indexOf(i) >= 0 ? 1 : Math.max(0, 1 - k * 1.4);
+      if (op < 0.02) continue;
+      s += `<g transform="translate(${f(x)} ${f(y)})" opacity="${f(op)}"><path d="M-7 -40 L7 -40 L7 -18 L16 -18 L0 0 L-16 -18 L-7 -18 Z" fill="#9FD8FF" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-2 -36 L-2 -20" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></g>`; }
+    return s; };
+  // a pressure cooker on the stove (origin = bottom centre, about 100 wide, 110 high); v = steam jet 0…1
+  PROPS.cooker = (t, v) => { const k = v || 0, wob = Math.sin(t * 30) * 3 * k;
+    let jet = ''; if (k > 0.02) for (let i = 0; i < 4; i++) { const ph = (t * 1.8 + i / 4) % 1; jet += `<circle cx="${f(8 + ph * 22 + Math.sin(t * 9 + i) * 3)}" cy="${f(-116 - ph * 60)}" r="${f((4 + ph * 10) * k)}" fill="#FFFFFF" opacity="${f(0.9 * (1 - ph))}"/>`; }
+    return `<ellipse cx="0" cy="2" rx="50" ry="6" fill="#000" opacity=".16"/>`
+      + `<path d="M-26 0 L-14 -22 M26 0 L14 -22" stroke="${OUT}" stroke-width="4" stroke-linecap="round"/><rect x="-20" y="-26" width="40" height="10" rx="3" fill="#5B5670" stroke="${OUT}" stroke-width="2"/>`
+      + `<path d="M-44 -92 L-42 -36 Q-40 -28 -32 -28 L32 -28 Q40 -28 42 -36 L44 -92 Z" fill="#D5DAE4" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+      + `<path d="M-48 -92 Q0 -114 48 -92 Z" fill="#B9C0CE" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M44 -92 L74 -96" stroke="${OUT}" stroke-width="9" stroke-linecap="round"/><path d="M44 -92 L74 -96" stroke="#2A2230" stroke-width="5" stroke-linecap="round"/>`
+      + `<g transform="translate(${f(wob)} 0)"><rect x="2" y="-114" width="10" height="12" rx="2" fill="#E0336E" stroke="${OUT}" stroke-width="2"/></g>`
+      + `<path d="M-34 -84 L-32 -40" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".7"/>` + jet; };
+  // a glass of tea (origin = bottom centre, about 44 high); v 0 strong dark … 1 weak pale
+  PROPS.teaGlass = (t, v) => { const k = v || 0, c = mixHex('#8A3B12', '#F2D38A', k);
+    return `<ellipse cx="0" cy="2" rx="18" ry="3" fill="#000" opacity=".15"/><path d="M-14 -44 L-11 -2 Q-10 0 -8 0 L8 0 Q10 0 11 -2 L14 -44 Z" fill="#EAF6FF" fill-opacity=".7" stroke="${OUT}" stroke-width="2.2" stroke-linejoin="round"/>`
+      + `<path d="M-13 -34 L-11 -3 L11 -3 L13 -34 Z" fill="${c}" opacity=".92"/><path d="M-9 -30 L-8 -8" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>`
+      + `<path d="M-4 -50 q-5 -8 0 -16 M5 -50 q-5 -8 0 -16" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="${f(0.6 + 0.3 * Math.sin(t * 3))}"/>`; };
+
   // ---------------------------------------------------------------- frame
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
