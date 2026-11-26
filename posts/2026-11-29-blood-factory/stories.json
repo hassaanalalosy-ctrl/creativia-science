@@ -1,0 +1,17 @@
+{
+ "mode": "light",
+ "alert": {
+  "title": "جسمك يصنع مليوني كرية دم كل ثانية!",
+  "label": "ريل جديد"
+ },
+ "fact": {
+  "tag": "معلومة سريعة",
+  "category": "حيوانات",
+  "icon": "microscope",
+  "icon2": "atom",
+  "title": "النحلة ترقص لتدل أخواتها على الطعام!",
+  "lines": 2,
+  "body": "تهزّ جسمها في رقصة تدل على اتجاه الأزهار وبُعدها، واكتشف ذلك العالم كارل فون فريش.",
+  "credit": "المصدر: NC State Extension · University of Sussex"
+ }
+}

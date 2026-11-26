@@ -1209,6 +1209,60 @@
       + `<path d="M-4 -50 q-5 -8 0 -16 M5 -50 q-5 -8 0 -16" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="${f(0.6 + 0.3 * Math.sin(t * 3))}"/>`; };
 
   // ---------------------------------------------------------------- frame
+  // ---------------------------------------------------------------- blood factory (red blood cells)
+  // a plain red blood cell (no spin): a soft red disc with a darker dimple (origin = centre)
+  const rbcSvg = (k, rot) => `<g transform="rotate(${f(rot || 0)}) scale(${f(k)})"><ellipse rx="22" ry="16" fill="#E8344E" stroke="${OUT}" stroke-width="2.6"/><ellipse cx="1" cy="1" rx="11" ry="7" fill="#B81E38" opacity=".7"/><path d="M-14 -7 Q-6 -13 6 -12" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".55"/></g>`;
+  // cellFountain: red cells pop out of the origin to both sides in arcs and drop to the floor 110 below. v 0…1 = how many
+  PROPS.cellFountain = (t, v) => { const k = v || 0; let r = ''; const N = 18;
+    for (let i = 0; i < N; i++) { if (hash(i + 5) > k) continue; const ph = (t * 1.1 + i / N) % 1, sd = i % 2 ? 1 : -1, sp = 120 + hash(i) * 70;
+      const x = sd * (30 + sp * ph), y = -70 * Math.sin(Math.PI * ph) + 110 * ph * ph, o = Math.min(1, ph * 8, (1 - ph) * 6);
+      r += `<g transform="translate(${f(x)} ${f(y)})" opacity="${f(o)}">${rbcSvg(0.55 + hash(i + 2) * 0.25, t * 90 * sd + i * 40)}</g>`; }
+    return r; };
+  // counter: a white glass pill with a climbing number (v = the number itself, origin = centre)
+  PROPS.counter = (t, v) => { const s = Math.round(v || 0).toLocaleString('en-US'), w = 34 + s.length * 12.5;
+    return `<rect x="${f(-w / 2)}" y="-19" width="${f(w)}" height="38" rx="19" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.6"/><path d="M${f(-w / 2 + 14)} -11 L${f(w / 2 - 14)} -11" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>`
+      + `<text x="0" y="9" text-anchor="middle" font-family="Rubik" font-weight="900" font-size="24" fill="#E0336E" direction="ltr">${s}</text>`; };
+  // bone: a long bone lying down, cut open in the middle to show the red marrow (origin = centre, about 260 wide).
+  // v 0…1 = new red cells popping out of the marrow
+  PROPS.bone = (t, v) => { const k = v || 0;
+    const end = (x) => `<circle cx="${x}" cy="-20" r="30" fill="#F6EEDF" stroke="${OUT}" stroke-width="2.6"/><circle cx="${x}" cy="20" r="30" fill="#F6EEDF" stroke="${OUT}" stroke-width="2.6"/>`;
+    let s = `<ellipse cx="0" cy="56" rx="130" ry="8" fill="#000" opacity=".12"/>` + end(-104) + end(104)
+      + `<rect x="-110" y="-26" width="220" height="52" rx="18" fill="#F6EEDF" stroke="${OUT}" stroke-width="2.6"/>`
+      + `<path d="M-128 -22 Q-118 -40 -100 -36 M100 -36 Q118 -40 128 -22" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>`
+      + `<rect x="-82" y="-17" width="164" height="34" rx="14" fill="#C9274A" stroke="${OUT}" stroke-width="2.2"/>`;
+    for (let i = 0; i < 14; i++) s += `<circle cx="${f(-72 + i * 11 + hash(i) * 4)}" cy="${f(-8 + hash(i + 3) * 16)}" r="${f(2.5 + hash(i + 7) * 2.5)}" fill="#FF8FA3" opacity=".8"/>`;
+    s += `<path d="M-72 -9 Q-30 -14 20 -12" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".45"/>`;
+    for (let i = 0; i < 9; i++) { const ph = (t * 0.9 + i / 9) % 1; if (k <= 0.02) break;
+      const x = -66 + hash(i + 11) * 132 + Math.sin(t * 3 + i) * 4, y = -6 - ph * 96, o = k * Math.min(1, ph * 6, (1 - ph) * 3);
+      s += `<g transform="translate(${f(x)} ${f(y)})" opacity="${f(o)}">${rbcSvg(0.35 + ph * 0.3, i * 37 + t * 40)}</g>`; }
+    return s; };
+  // cellHero: a big friendly red blood cell with a face (origin = centre). v 0 fresh and happy … 1 old: pale, wrinkly, sleepy
+  PROPS.cellHero = (t, v) => { const k = Math.max(0, Math.min(1, v || 0)), b = Math.sin(t * 3) * 3 * (1 - k * 0.7);
+    const body = mixHex('#E8344E', '#B98C98', k), dim = mixHex('#B81E38', '#9A7480', k);
+    let edge = ''; for (let i = 0; i <= 24; i++) { const a = i * 15 * R, w = 1 + k * 0.07 * Math.sin(i * 2.3 + 1); edge += (i ? ' L' : 'M') + f(48 * w * Math.cos(a)) + ' ' + f(36 * w * Math.sin(a)); }
+    const eye = (x) => k > 0.5 ? `<path d="M${x - 6} -6 Q${x} -2 ${x + 6} -6" stroke="${OUT}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M${x - 7} -12 L${x + 7} -10" stroke="${OUT}" stroke-width="2" stroke-linecap="round"/>`
+      : `<ellipse cx="${x}" cy="-6" rx="5.5" ry="6.5" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="${x + 1}" cy="-5" r="3" fill="${OUT}"/><circle cx="${x + 2}" cy="-7" r="1.1" fill="#fff"/>`;
+    const mouth = k > 0.5 ? `<path d="M-8 12 Q0 9 8 12" stroke="${OUT}" stroke-width="2.6" fill="none" stroke-linecap="round"/>` : `<path d="M-10 9 Q0 18 10 9" stroke="${OUT}" stroke-width="2.6" fill="#7A1230" stroke-linecap="round" stroke-linejoin="round"/>`;
+    return `<g transform="translate(0 ${f(b)})"><path d="${edge} Z" fill="${body}" stroke="${OUT}" stroke-width="2.8" stroke-linejoin="round"/>`
+      + `<ellipse cx="2" cy="4" rx="26" ry="16" fill="${dim}" opacity=".45"/>`
+      + (k > 0.3 ? `<path d="M-34 -14 q6 4 12 0 M22 18 q6 4 12 0 M-30 16 q5 -4 10 0" stroke="${OUT}" stroke-width="1.8" fill="none" opacity="${f((k - 0.3) * 1.4)}"/>` : '')
+      + `<path d="M-34 -18 Q-20 -32 0 -32" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" opacity="${f(0.7 - k * 0.4)}"/>`
+      + eye(-14) + eye(14) + mouth
+      + (k < 0.5 ? `<ellipse cx="-26" cy="6" rx="6" ry="3.5" fill="#FF9FB8" opacity=".8"/><ellipse cx="26" cy="6" rx="6" ry="3.5" fill="#FF9FB8" opacity=".8"/>` : '') + `</g>`; };
+  // calendar: a desk calendar page showing the number v (rounded), origin = centre (about 80 x 90)
+  PROPS.calendar = (t, v) => `<rect x="-40" y="-42" width="80" height="88" rx="9" fill="#FFFDF7" stroke="${OUT}" stroke-width="2.6"/><path d="M-40 -18 L-40 -33 Q-40 -42 -31 -42 L31 -42 Q40 -42 40 -33 L40 -18 Z" fill="#E0336E" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`
+    + `<rect x="-22" y="-52" width="7" height="18" rx="3.5" fill="#B9B4CC" stroke="${OUT}" stroke-width="2"/><rect x="15" y="-52" width="7" height="18" rx="3.5" fill="#B9B4CC" stroke="${OUT}" stroke-width="2"/>`
+    + `<text x="0" y="24" text-anchor="middle" font-family="Rubik" font-weight="900" font-size="32" fill="${OUT}" direction="ltr">${Math.max(1, Math.round(v || 0))}</text>`;
+  // iron: a small shiny grey ball (the recycled iron), origin = centre
+  PROPS.iron = (t) => `<g transform="rotate(${f(Math.sin(t * 3) * 10)})"><circle r="16" fill="#8C93A8" stroke="${OUT}" stroke-width="2.4"/><circle cx="4" cy="4" r="9" fill="#6E7590" opacity=".6"/><path d="M-9 -6 Q-5 -12 2 -12" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".9"/></g>`;
+  // cellPile: a growing heap of red cells on the floor (origin = bottom centre, up to 300 wide). v 0…1 = how big
+  PROPS.cellPile = (t, v) => { const k = Math.max(0, Math.min(1, v || 0)); if (k < 0.01) return ''; let r = '', n = 0; const rows = [[11, 300], [9, 250], [7, 196], [5, 140], [3, 84]];
+    const total = rows.reduce((a, q) => a + q[0], 0);
+    rows.forEach(([c, w], j) => { for (let i = 0; i < c; i++) { n++; if (n / total > k + 0.001) continue;
+      const x = -w / 2 + (i + 0.5) * w / c + (hash(n) - 0.5) * 6, y = -14 - j * 22 + (hash(n + 4) - 0.5) * 4;
+      r += `<g transform="translate(${f(x)} ${f(y)})">${rbcSvg(0.95, (hash(n + 8) - 0.5) * 50)}</g>`; } });
+    return `<ellipse cx="0" cy="2" rx="${f(160 * Math.min(1, k * 2))}" ry="8" fill="#000" opacity=".14"/>` + r; };
+
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
   // Smooth camera: one continuous curve through all keys (monotone cubic Hermite), so the camera never stops and
