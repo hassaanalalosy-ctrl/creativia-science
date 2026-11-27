@@ -1,8 +1,38 @@
-{"mode": "light",
- "alert": {"title": "3 خرافات عن الأرض يصدّقها كثيرون"},
- "fact": {"tag": "معلومة سريعة", "icon": "drop", "icon2": "atom", "title": "لماذا يطفو الجليد؟", "lines": 1,
-  "body": "حين يتجمد الماء يزداد حجمه بنحو 9%، فيصير الجليد أقل كثافة من الماء ويطفو فوقه.",
-  "art": {"row": [{"parts": ["<path d='M96 118 L304 118 L292 250 C291 257 285 262 278 262 L122 262 C115 262 109 257 108 250 Z'/>"], "palette": "sky", "box": [80, 70, 320, 266],
-   "details": ["<rect x='156' y='98' width='88' height='78' rx='14' fill='#F2FBFF' stroke='#9FD8F5' stroke-width='5' opacity='0.96'/>", "<path d='M170 112 L196 112' stroke='#FFFFFF' stroke-width='6' stroke-linecap='round'/>", "<path d='M102 122 C130 114 150 130 156 122 M244 122 C262 114 282 130 300 122' fill='none' stroke='#FFFFFF' stroke-width='5' stroke-linecap='round' opacity='0.8'/>"],
-   "gloss": "M124 236 L114 140"}]},
-  "credit": "رسم توضيحي: كريتيفيا ساينس", "category": "كيمياء"}}
+{
+ "mode": "light",
+ "alert": {
+  "title": "3 خرافات عن الأرض يصدّقها كثيرون"
+ },
+ "fact": {
+  "tag": "معلومة سريعة",
+  "icon": "drop",
+  "icon2": "atom",
+  "title": "لماذا يطفو الجليد؟",
+  "lines": 1,
+  "body": "حين يتجمد الماء يزداد حجمه بنحو 9%، فتقل كثافته ويطفو.",
+  "art": {
+   "row": [
+    {
+     "parts": [
+      "<path d='M96 118 L304 118 L292 250 C291 257 285 262 278 262 L122 262 C115 262 109 257 108 250 Z'/>"
+     ],
+     "palette": "sky",
+     "box": [
+      80,
+      70,
+      320,
+      266
+     ],
+     "details": [
+      "<rect x='156' y='106' width='88' height='78' rx='14' fill='#F2FBFF' stroke='#9FD8F5' stroke-width='5' opacity='0.9'/>",
+      "<path d='M170 120 L196 120' stroke='#FFFFFF' stroke-width='6' stroke-linecap='round'/>",
+      "<path d='M102 122 C130 114 150 130 156 122 M244 122 C262 114 282 130 300 122' fill='none' stroke='#FFFFFF' stroke-width='5' stroke-linecap='round' opacity='0.8'/>"
+     ],
+     "gloss": "M124 236 L114 140"
+    }
+   ]
+  },
+  "credit": "رسم توضيحي: كريتيفيا ساينس",
+  "category": "كيمياء"
+ }
+}
