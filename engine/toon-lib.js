@@ -1263,6 +1263,35 @@
       r += `<g transform="translate(${f(x)} ${f(y)})">${rbcSvg(0.95, (hash(n + 8) - 0.5) * 50)}</g>`; } });
     return `<ellipse cx="0" cy="2" rx="${f(160 * Math.min(1, k * 2))}" ry="8" fill="#000" opacity=".14"/>` + r; };
 
+  // ---- ISS sunrises topic (2026-12-01): the space station, a day/night Earth globe, a globe with an orbit ring
+  // station: the space station (origin = centre, about 110 wide). v = how lit (0 night … 1 sunlit)
+  const issSvg = (lit) => { const P = lit > 0.5 ? '#3D6BE0' : '#24346E', L = lit > 0.5 ? '#9FC2FF' : '#4A5A8E', M = lit > 0.5 ? '#FFFDF7' : '#9C98B4';
+    const wing = (x) => `<rect x="${x}" y="-30" width="20" height="26" rx="2" fill="${P}" stroke="${OUT}" stroke-width="2"/><rect x="${x}" y="4" width="20" height="26" rx="2" fill="${P}" stroke="${OUT}" stroke-width="2"/><path d="M${x + 10} -30 L${x + 10} -4 M${x + 10} 4 L${x + 10} 30 M${x} -17 L${x + 20} -17 M${x} 17 L${x + 20} 17" stroke="${L}" stroke-width="1.2"/>`;
+    return `<rect x="-56" y="-3" width="112" height="6" rx="2" fill="#C9C4D8" stroke="${OUT}" stroke-width="1.8"/>` + wing(-54) + wing(-30) + wing(10) + wing(34)
+      + `<rect x="-11" y="-9" width="22" height="18" rx="7" fill="${M}" stroke="${OUT}" stroke-width="2"/><rect x="-4" y="-16" width="8" height="32" rx="4" fill="${M}" stroke="${OUT}" stroke-width="2"/>`
+      + (lit > 0.5 ? `<path d="M-7 -5 Q-3 -8 3 -7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".9"/>` : ''); };
+  PROPS.station = (t, v) => issSvg(v === undefined ? 1 : v);
+  // globe: the Earth (origin = centre, radius 100). Sunlight comes from the right; the left half is night with city lights.
+  const globeSvg = (t) => { const sh = (t * 10) % 260; let land = '';
+    for (const dx of [-260, 0, 260]) land += `<g transform="translate(${f(dx - sh)} 0)"><path d="M-70 -50 Q-40 -78 -10 -60 Q0 -36 -24 -22 Q-46 -12 -62 -26 Q-78 -36 -70 -50 Z M10 -10 Q40 -24 62 -4 Q70 24 46 44 Q24 58 14 34 Q4 14 10 -10 Z M-60 30 Q-40 18 -26 34 Q-24 58 -46 62 Q-64 54 -60 30 Z M60 -70 Q80 -76 92 -60 Q84 -46 70 -50 Z" fill="#5CC98A" stroke="#3FA36B" stroke-width="2"/></g>`;
+    let lights = ''; for (let i = 0; i < 14; i++) { const a = (110 + hash(i + 3) * 140) * R, r = 30 + hash(i + 7) * 60; lights += `<circle cx="${f(Math.cos(a) * r)}" cy="${f(Math.sin(a) * r)}" r="1.8" fill="#FFE27A" opacity="${f(0.6 + 0.4 * Math.sin(t * 3 + i))}"/>`; }
+    return `<defs><radialGradient id="glbO" cx=".62" cy=".38" r=".75"><stop offset="0" stop-color="#8FD8FF"/><stop offset=".6" stop-color="#2E7FD9"/><stop offset="1" stop-color="#173E86"/></radialGradient>`
+      + `<linearGradient id="glbN" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0A0A26" stop-opacity=".78"/><stop offset=".42" stop-color="#0A0A26" stop-opacity=".7"/><stop offset=".56" stop-color="#0A0A26" stop-opacity="0"/></linearGradient>`
+      + `<clipPath id="glbC"><circle r="100"/></clipPath></defs>`
+      + `<circle r="118" fill="#7FD0FF" opacity="${f(0.22 + 0.05 * Math.sin(t * 2))}"/><circle r="100" fill="url(#glbO)"/>`
+      + `<g clip-path="url(#glbC)">${land}<rect x="-100" y="-100" width="200" height="200" fill="url(#glbN)"/>${lights}</g>`
+      + `<circle r="100" fill="none" stroke="${OUT}" stroke-width="2.6"/><path d="M30 -86 Q70 -66 84 -30" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".6"/>`; };
+  PROPS.globe = (t) => globeSvg(t);
+  // globeOrbit: the globe with a tilted orbit ring and the station going round it. v = laps done (0, 1, 2 … 16).
+  // The station starts on the night side (left), passes in front, crosses into daylight (sunrise flash) and goes behind.
+  PROPS.globeOrbit = (t, v) => { const a = Math.PI - (v || 0) * 2 * Math.PI, RX = 158, RY = 40, x = RX * Math.cos(a), y = RY * Math.sin(a);
+    const lit = x > 0 ? 1 : 0, behind = Math.sin(a) < 0;
+    const ring = (half) => `<path d="M${-RX} 0 A${RX} ${RY} 0 0 ${half} ${RX} 0" fill="none" stroke="#FFFDF7" stroke-width="2.6" stroke-dasharray="7 7" opacity=".85"/>`;
+    const st = `<g transform="translate(${f(x)} ${f(y)}) scale(.42)">${issSvg(lit)}</g>`;
+    const ca = Math.cos(a), fl = (!behind && ca >= 0 && ca < 0.45) ? 1 - ca / 0.45 : 0;
+    let flare = ''; if (fl > 0.02) { flare = `<g transform="translate(${f(x + 6)} ${f(y - 4)}) scale(${f(0.5 + fl)})" opacity="${f(fl)}"><circle r="22" fill="#FFF3A6" opacity=".55"/><path d="M0 -26 L5 -5 L26 0 L5 5 L0 26 L-5 5 L-26 0 L-5 -5 Z" fill="#FFD166" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/></g>`; }
+    return `<g transform="rotate(-12)">${ring(0)}${behind ? st : ''}</g>${globeSvg(t)}<g transform="rotate(-12)">${ring(1)}${behind ? '' : st}${flare}</g>`; };
+
   // TOON.shots = [{start, end, set, camera, shake, glow, mblur, bursts, pops, actors}] (times are global seconds)
   const S = TOON;
   // Smooth camera: one continuous curve through all keys (monotone cubic Hermite), so the camera never stops and
